@@ -1,0 +1,184 @@
+<html>
+<head>
+	<script type="text/javascript" src = "http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
+<script>
+tiles=[];
+
+$(document).ready(function(){
+for(var pos = 0; pos < 3; pos++){
+	newTile = makeTile(pos);
+	addTileHover(newTile);
+	tiles.push(newTile);
+	$(newTile).mousedown(function(){
+		toggle();
+	});
+	$(".tile_container").append(newTile);
+}
+for(var pos = 0; pos < 3; pos++){
+	newTile = makeTile(pos);
+	addTileHover(newTile);
+	tiles.push(newTile);
+	$(newTile).mousedown(function(){
+		toggle();
+	});
+	$(".focus_content").append(newTile);
+}
+});
+function makeTile(colNum){
+	main = $(document.createElement('div')).addClass("tile");
+	tint = $(document.createElement('div')).addClass("filler").addClass("tint");
+	caption = $(document.createElement('div')).text("Caption!").addClass("filler").addClass("caption");
+	content = $(document.createElement('div')).addClass("filler").addClass("content");
+	main.append(content).append(tint).append(caption);
+	return main.css("left", 300*colNum);
+}
+
+function addTileHover(tile){
+	tile.hover(function(){
+		$(this).children(".tint").addClass("hover");
+		$(this).children(".caption").addClass("hover");
+	},
+	function(){
+		$(this).children(".hover").removeClass("hover");
+	});
+}
+
+function toggle(){
+	if($(".off_screen").length >0){
+		//Return to normal view
+		$(".tile_container").removeClass("off_screen");
+		$(".focus_content").removeClass("on_screen");
+	}
+	else{
+		//Adjust view
+		$(".tile_container").addClass("off_screen");
+		$(".focus_content").addClass("on_screen");
+	}
+}
+
+
+
+</script>
+<style>
+body{
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	background-color: #292929;
+}
+.page_body{
+	position: relative;
+	overflow: hidden;
+}
+.tile_container{
+	position: relative;
+	left:0px;
+	max-width:900px;
+	width: 100%;
+	display: inline-block;
+	*display: inline;
+	opacity:1;
+	-webkit-transition: left 1s ease-in-out;
+	transition: left 1s ease-in-out;
+}
+.off_screen{
+	left: -1900px;
+}
+
+.focus_content{
+	overflow: hidden;
+	position:relative;
+	right:-1900;
+	max-width: 900px;
+	height:100%;
+	width: 100%;
+	display: inline-block;
+	*display: inline;
+	-webkit-transition: right 1s ease-in-out;
+	transition: right 1s ease-in-out;
+}
+
+.on_screen{
+	right:0px;
+}
+.tile{
+	position: absolute;
+	top:0;
+	border-radius: 5px;	
+	width: 283px;
+	height: 220;
+	box-shadow: 0px 3px 10px #191919;
+}
+.filler{
+	border-radius: 5px;	
+	position: absolute;
+	height:100%;
+	width: 100%;
+	top:0;
+	left:0;
+}
+
+.tint{
+	color: #FFFFFF;
+	opacity:0;
+	background-color: #000000;
+	-webkit-transition: opacity .2s;
+	transition: opacity .2s;
+}
+.tint.hover{
+	opacity:.75;
+}
+.caption{
+	text-align: left;
+	color: #FFFFFF;
+	opacity:0;
+	-webkit-transition: opacity .2s;
+	transition: opacity .2s;
+}
+.caption.hover{
+	opacity:1;
+}
+
+
+.content{
+	text-align: left;
+	opacity:1;
+	background-image: url(http://i.stack.imgur.com/pLhDi.png);
+	background-position: -100px -100px;
+}
+.title{
+	min-width: 920px;
+	color:#292929;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	font-size: 3.5em;
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px #292929;
+	background-image:url(faded.png);
+	width:100%;
+	height:200px;
+	margin-left:0px;
+	margin-right:0px;
+	margin-bottom:50px;
+	margin-top:25px;
+}
+.name{
+	color: #FFFFFF;
+	text-shadow: none;
+	font-family: Century Gothic, sans-serif;
+	display: inline-block;
+	*display: inline;
+}
+.title_body{
+	font-size: .5em;
+	text-shadow:none;
+}
+</style>
+</head>
+<body>
+	<div class="title"> Hi, I'm <div class="name">Matthew Persons</div>
+	<div class="title_body">I enjoy exploring our technical world inside and out &mdash; take a look!</div></div>
+	<div class="page_body">
+		<div class="tile_container"></div>
+		<div class="focus_content"></div>
+	</div>
+	
+</html>
