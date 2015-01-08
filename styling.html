@@ -147,6 +147,7 @@ body{
 	background-position: -100px -100px;
 }
 .title{
+	-webkit-font-smoothing: antialiased;
 	min-width: 920px;
 	color:#292929;
 	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
@@ -168,14 +169,40 @@ body{
 	*display: inline;
 }
 .title_body{
+	-webkit-font-smoothing: antialiased;
 	font-size: .5em;
 	text-shadow:none;
+}
+.icons{
+	margin-top:15px;
+}
+.facebook{
+	height: 32px;
+	width: 32px;
+	margin-right:8px;
+	margin-left: 8px;
+	background-image: url(facebook.png);
+	background-size: contain;
+	display: inline-block;
+	*display: inline;
+}
+.linkedin{
+	height: 32px;
+	width: 32px;
+	margin-right:8px;
+	margin-left: 8px;
+	background-image: url(linkedin.png);
+	background-size: contain;
+	display: inline-block;
+	*display: inline;
 }
 </style>
 </head>
 <body>
 	<div class="title"> Hi, I'm <div class="name">Matthew Persons</div>
-	<div class="title_body">I enjoy exploring our technical world inside and out &mdash; take a look!</div></div>
+	<div class="title_body">I enjoy exploring our technical world inside and out &mdash; take a look!</div>
+	<div class="icons"><a href="https://www.facebook.com/matthew.persons.1" class="facebook"></a><a href="okay" class="linkedin"></a></div>
+	</div>
 	<div class="page_body">
 		<div class="tile_container"></div>
 		<div class="focus_content"></div>
