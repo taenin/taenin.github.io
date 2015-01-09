@@ -17,6 +17,10 @@ for(var pos = 0; pos < 5; pos++){
 $(".focus_content").mousedown(function(){
 	toggle();
 });
+
+addIconHover($(".facebook"));
+addIconHover($(".linkedin"));
+addIconHover($(".email"));
 /*
 for(var pos = 0; pos < 3; pos++){
 	newTile = makeTile(pos);
@@ -44,6 +48,15 @@ function addTileHover(tile){
 	},
 	function(){
 		$(this).children(".hover").removeClass("hover");
+	});
+}
+
+function addIconHover(icon){
+	icon.hover(function(){
+		$(this).addClass("iconhover");
+	},
+	function(){
+		$(this).removeClass("iconhover");
 	});
 }
 
@@ -90,7 +103,6 @@ body{
 }
 
 .focus_content{
-	border-radius: 5px;	
 	overflow: hidden;
 	background-color: #F6F6F6;
 	position:relative;
@@ -167,6 +179,11 @@ body{
 	margin-bottom:50px;
 	margin-top:0px;
 }
+.titletext{
+	display: inline-block;
+	*display: inline;
+	margin-top:10px;
+}
 .name{
 	color: #F6F6F6;
 	text-shadow: none;
@@ -212,13 +229,18 @@ body{
 	display: inline-block;
 	*display: inline;
 }
+.iconhover{
+	-webkit-filter: invert(1);
+ 	filter: invert(1);
+}
 </style>
 </head>
 <body>
-	<div class="title"> Hi, I'm <div class="name">Matthew Persons</div>
+	<div class="title"> <div class="titletext"> Hi, I'm <div class="name">Matthew Persons</div>
 	<div class="title_body">I enjoy exploring our technical world inside and out &mdash; take a look!</div>
 	<div class="icons"><a href="https://www.facebook.com/matthew.persons.1" class="facebook"></a><a href="okay" class="linkedin"></a><a href="okay" class="email"></a></div>
 	</div>
+</div>
 	<div class="page_body">
 		<div class="tile_container"></div>
 		<div class="focus_content"></div>
