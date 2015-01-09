@@ -5,8 +5,8 @@
 tiles=[];
 
 $(document).ready(function(){
-for(var pos = 0; pos < 3; pos++){
-	newTile = makeTile(pos);
+for(var pos = 0; pos < 5; pos++){
+	newTile = makeTile(pos%3, Math.floor(pos/3));
 	addTileHover(newTile);
 	tiles.push(newTile);
 	$(newTile).mousedown(function(){
@@ -14,6 +14,10 @@ for(var pos = 0; pos < 3; pos++){
 	});
 	$(".tile_container").append(newTile);
 }
+$(".focus_content").mousedown(function(){
+	toggle();
+});
+/*
 for(var pos = 0; pos < 3; pos++){
 	newTile = makeTile(pos);
 	addTileHover(newTile);
@@ -22,15 +26,15 @@ for(var pos = 0; pos < 3; pos++){
 		toggle();
 	});
 	$(".focus_content").append(newTile);
-}
+}*/
 });
-function makeTile(colNum){
+function makeTile(colNum, rowNum){
 	main = $(document.createElement('div')).addClass("tile");
 	tint = $(document.createElement('div')).addClass("filler").addClass("tint");
 	caption = $(document.createElement('div')).text("Caption!").addClass("filler").addClass("caption");
 	content = $(document.createElement('div')).addClass("filler").addClass("content");
 	main.append(content).append(tint).append(caption);
-	return main.css("left", 300*colNum);
+	return main.css("left", 300*colNum).css("top", 250*rowNum);
 }
 
 function addTileHover(tile){
@@ -78,24 +82,26 @@ body{
 	display: inline-block;
 	*display: inline;
 	opacity:1;
-	-webkit-transition: left 1s ease-in-out;
-	transition: left 1s ease-in-out;
+	-webkit-transition: left .5s ease-in-out;
+	transition: left .5s ease-in-out;
 }
 .off_screen{
 	left: -1900px;
 }
 
 .focus_content{
+	border-radius: 5px;	
 	overflow: hidden;
+	background-color: #F6F6F6;
 	position:relative;
-	right:-1900;
+	right:-1900px;
 	max-width: 900px;
-	height:100%;
+	height:500px;
 	width: 100%;
 	display: inline-block;
 	*display: inline;
-	-webkit-transition: right 1s ease-in-out;
-	transition: right 1s ease-in-out;
+	-webkit-transition: right .5s ease-in-out;
+	transition: right .5s ease-in-out;
 }
 
 .on_screen{
@@ -159,10 +165,10 @@ body{
 	margin-left:0px;
 	margin-right:0px;
 	margin-bottom:50px;
-	margin-top:25px;
+	margin-top:0px;
 }
 .name{
-	color: #FFFFFF;
+	color: #F6F6F6;
 	text-shadow: none;
 	font-family: Century Gothic, sans-serif;
 	display: inline-block;
