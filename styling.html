@@ -1,5 +1,6 @@
 <html>
 <head>
+	<link rel="stylesheet" href="font-awesome-4.2.0/css/font-awesome.min.css">
 	<script type="text/javascript" src = "http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
 <script>
 tiles=[];
@@ -222,47 +223,46 @@ body{
 }
 .icons{
 	margin-top:15px;
+	color:#292929;
 }
+
 .facebook{
-	height: 32px;
-	width: 32px;
-	margin-right:8px;
-	margin-left: 8px;
-	background-image: url(facebook.png);
-	background-size: contain;
-	display: inline-block;
-	*display: inline;
+	color:#292929;
 }
 .linkedin{
-	height: 32px;
-	width: 32px;
-	margin-right:8px;
-	margin-left: 8px;
-	background-image: url(linkedin.png);
-	background-size: contain;
-	display: inline-block;
-	*display: inline;
+	color:#292929;
 }
+	
 .email{
-	height: 32px;
-	width: 32px;
-	margin-right:8px;
-	margin-left: 8px;
-	background-image: url(email.png);
-	background-size: contain;
-	display: inline-block;
-	*display: inline;
+	color: #292929;
 }
 .iconhover{
-	-webkit-filter: invert(1);
- 	filter: invert(1);
+	color: #3b5998;
+}
+.newicons{
+	margin-top: 15px;
+	font-size: .35em;
+	text-shadow: none;
 }
 </style>
 </head>
 <body>
 	<div class="title"> <div class="titletext"> Hi, I'm <div class="name">Matthew Persons</div>.
 	<div class="title_body">I enjoy exploring our technical world inside and out &mdash; take a look!</div>
-	<div class="icons"><a href="https://www.facebook.com/matthew.persons.1" class="facebook"></a><a href="okay" class="linkedin"></a><a href="okay" class="email"></a></div>
+		<div class="newicons">
+		<a class="fa-stack facebook" href="https://www.facebook.com/matthew.persons.1">
+			  <i class="fa fa-square-o fa-stack-2x"></i>
+			  <i class="fa fa-facebook fa-stack-1x"></i>
+		</a>
+		<a class="fa-stack linkedin" href="http://www.linkedin.com/in/matthewpersons/">
+			  <i class="fa fa-square-o fa-stack-2x"></i>
+			  <i class="fa fa-linkedin fa-stack-1x"></i>
+		</a>
+		<a class="fa-stack email" href="mailto:persons.matthew@gmail.com">
+			  <i class="fa fa-square-o fa-stack-2x"></i>
+			  <i class="fa fa-envelope fa-stack-1x"></i>
+		</a>
+		</div>
 	</div>
 </div>
 <div class="page">
