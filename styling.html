@@ -4,21 +4,19 @@
 	<script type="text/javascript" src = "http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
 <script>
 tiles=[];
-
 $(document).ready(function(){
 for(var pos = 0; pos < 5; pos++){
-	newTile = makeTile(pos%3, Math.floor(pos/3));
+	var img_loc = "tile" + pos + ".png";
+	newTile = makeTile(pos%3, Math.floor(pos/3), img_loc);
 	addTileHover(newTile);
 	tiles.push(newTile);
-	$(newTile).mousedown(function(){
-		toggle();
-	});
+	tileClickHandler(newTile, pos);
 	$(".tile_container").append(newTile);
 }
-$(".focus_wrapper").mousedown(function(){
+$(".backbar").mousedown(function(){
 	toggle();
 });
-
+addBackBarHover($(".backbar"));
 addIconHover($(".facebook"));
 addIconHover($(".linkedin"));
 addIconHover($(".email"));
@@ -33,13 +31,21 @@ for(var pos = 0; pos < 3; pos++){
 	$(".focus_content").append(newTile);
 }*/
 });
-function makeTile(colNum, rowNum){
+
+function tileClickHandler(tile, pos){
+	$(tile).mousedown(function(){
+		$(".focus_content").html("<img src='tile"+pos + ".png'></img>");
+		toggle();
+	});
+}
+
+function makeTile(colNum, rowNum, img){
 	main = $(document.createElement('div')).addClass("tile");
-	tint = $(document.createElement('div')).addClass("filler").addClass("tint");
-	caption = $(document.createElement('div')).text("Caption!").addClass("filler").addClass("caption");
-	content = $(document.createElement('div')).addClass("filler").addClass("content");
+	tint = $(document.createElement('div')).addClass("tile_banner").addClass("tint");
+	caption = $(document.createElement('div')).text("Caption!").addClass("tile_banner").addClass("caption");
+	content = $(document.createElement('div')).addClass("filler").addClass("content").css("background-image", "url("+ img+")");
 	main.append(content).append(tint).append(caption);
-	return main.css("left", 300*colNum).css("top", 250*rowNum);
+	return main.css("left", 8+300*colNum).css("top", 250*rowNum);
 }
 
 function addTileHover(tile){
@@ -51,7 +57,14 @@ function addTileHover(tile){
 		$(this).children(".hover").removeClass("hover");
 	});
 }
-
+function addBackBarHover(bar){
+	bar.hover(function(){
+		$(this).addClass("backbar_hover");
+	},
+	function(){
+		$(this).removeClass("backbar_hover");
+	});
+}
 function addIconHover(icon){
 	icon.hover(function(){
 		$(this).addClass("iconhover");
@@ -78,6 +91,9 @@ function toggle(){
 
 </script>
 <style>
+a {
+    text-decoration: none !important;
+}
 body{
 	margin: 0;
 	padding: 0;
@@ -86,6 +102,7 @@ body{
 }
 .page{
 	width:100%;
+	min-width: 900px;
 	overflow: hidden;
 }
 .page_body{
@@ -115,8 +132,9 @@ body{
 	top: -100%;
 	right:-10000px;
 	max-width: 900px;
-	height:500px;
+	min-height:400px;
 	width: 100%;
+	background-color: #F6F6F6;
 	display: block;
 	*display: block;
 	-webkit-transition: right .5s ease-in-out;
@@ -127,10 +145,11 @@ body{
 	font-family:  "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 	font-size: 1.25em;
 	width:100%;
-	height:100%;
+	min-height:300px;
 	background-color: #F6F6F6;
 	position:relative;
-	
+	margin-top: 50px;
+	margin-bottom: 50px;
 	
 }
 
@@ -141,35 +160,39 @@ body{
 	position: absolute;
 	top:0;
 	width: 283px;
-	height: 220;
+	height: 220px;
 	box-shadow: 0px 3px 10px #191919;
 }
 .filler{
-
 	position: absolute;
 	height:100%;
 	width: 100%;
 	top:0;
 	left:0;
-	-webkit-transition: top .2s;
-	transition: opacity top .2s;
+	-webkit-transition: opacity .2s;
+	transition: opacity .2s;
+}
+.tile_banner{
+	color:#F6F6F6;
+	width: 283px;
+	position: absolute;
+	bottom: 0px;
+	height: 50px;
+	padding-top:10px;
 }
 
 .tint{
-	color: #FFFFFF;
 	opacity:0;
-	background-color: #000000;
+	background-color: #292929;
 	-webkit-transition: opacity .2s;
 	transition: opacity .2s;
 }
 .tint.hover{
-	opacity:.85;
+	opacity:.95;
 }
 .caption{
-	text-align: left;
 	font-family: ‘Palatino Linotype’, ‘Book Antiqua’, Palatino, serif;
 	font-size: 1.5em;
-	color: #FFFFFF;
 	opacity:0;
 	text-align: center;
 	/*margin-top: 20px;
@@ -185,12 +208,12 @@ body{
 .content{
 	text-align: left;
 	opacity:1;
-	background-image: url(http://i.stack.imgur.com/pLhDi.png);
-	background-position: -100px -100px;
+	/*background-image: url(http://i.stack.imgur.com/pLhDi.png); 
+	background-position: -100px -100px; */
 }
 .title{
 	-webkit-font-smoothing: antialiased;
-	min-width: 920px;
+	min-width: 910px;
 	color:#292929;
 	font-family:  ‘Palatino Linotype’, ‘Book Antiqua’, Palatino, serif;
 	/*font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;*/
@@ -245,6 +268,44 @@ body{
 	font-size: .35em;
 	text-shadow: none;
 }
+.backbar{
+	position: absolute;
+	background-color: #595959;
+	color: #F6F6F6;
+	width:100%;
+	height: 28px;
+	-webkit-transition: color .3s, background-color .3s;
+	transition: color .3s, background-color .3s;
+}
+.backbar_upper{
+	top:0px;
+}
+.backbar_lower{
+	bottom: 0px;
+}
+.backbar_top{
+	top: 5px;
+}
+.backbar_bottom{
+	bottom: 5px;
+}
+.backbar_left{
+	position: absolute;
+	left: 10px;
+}
+.backbar_right{
+	position: absolute;
+	right: 10px;
+}
+.backbar_hover{
+	/*
+	color:#292929;
+	background-color: #D6D6D6; */
+	background-color: #202020;
+	color: #F6F6F6;
+	
+}
+
 </style>
 </head>
 <body>
@@ -269,7 +330,17 @@ body{
 <div class="page">
 	<div class="page_body">
 		<div class="tile_container"></div>
-		<div class="focus_wrapper"><div class="focus_content"> TEST Pokemon menace</div></div>
+		<div class="focus_wrapper">
+			<div class="focus_content"> TEST <br><br><br><br><br><br><br><br><br><br><br><br><br><br>Pokemon menace</div>
+			<div class="backbar backbar_upper">
+					<i class=" backbar_right backbar_top fa fa-chevron-circle-left"></i>
+					<i class=" backbar_left backbar_top fa fa-chevron-circle-left"></i>
+			</div>
+			<div class="backbar backbar_lower">
+					<i class=" backbar_right backbar_bottom fa fa-chevron-circle-left"></i>
+					<i class=" backbar_left backbar_bottom fa fa-chevron-circle-left"></i>
+			</div>
+		</div>
 	</div>
 </div>
 </html>
