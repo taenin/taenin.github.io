@@ -1,7 +1,219 @@
 <html>
 <head>
+	<script type="text/javascript" src = "http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
+	<script>
+	var worker = null;
+	$(document).ready(function(){
+		worker = createRoster();
+	});
+	function createRoster(){
+		var roster = {};
+		var teams = [];
+		roster.teamSize = $("#team_size").val();
+		roster.players = [];
+		roster.addPlayer = function(player){
+			if(player.length>0){
+				this.players.push(player);
+				var name = $(document.createElement('div')).addClass("name").append(player);
+				var hover = $(document.createElement('div')).addClass("remove").html("<a href='#'>Remove</a>");
+				name.append(hover);
+				$(".roster").append(name);
+				addHover(name);
+				this.removeControl(hover, name, player);
+			}			
+		};
+		roster.removeControl = function(selection, parent, player){
+			$(selection).mousedown(function(){
+				roster.removePlayer(player, parent);
+			});
+		};
+		roster.removePlayer = function(player, parent){
+			var pindex = this.players.indexOf(player);
+			if(pindex > -1){
+				this.players.splice(pindex, 1);
+			}
+			$(parent).remove();
+		};
+		roster.copyPlayers = function(){
+			return this.players.slice(0);
+		};
+
+		roster.createTeams = function(){
+			var helper = function(remainingRoster, acc){
+				if(remainingRoster.length === 0){
+					return acc;
+				}
+				else{
+					var rand = Math.floor(Math.random()*remainingRoster.length);
+					acc.push(remainingRoster[rand]);
+					remainingRoster.splice(rand, 1);
+					return helper(remainingRoster, acc);
+				}
+			}
+			this.teams = helper(this.copyPlayers(), []);
+		};
+
+		roster.drawTeams = function(){
+			$(".teamlist").remove();
+			this.createTeams();
+
+			if(this.teams.length > 0){
+				var main = $(document.createElement('div')).addClass("teamlist");
+				var divTeams = [];
+				latestTeam = $(document.createElement('div')).addClass("team").append("<center><h4>Team 1</h4></center>");
+				for(var ind = 0; ind<roster.teams.length; ind++){
+					if(ind%roster.teamSize ===0 && ind!=0){
+						divTeams.push(latestTeam);
+						latestTeam = $(document.createElement('div')).addClass("team").append("<center><h4>Team " + (1 + (ind / roster.teamSize)) + "</h4></center>");
+					}
+					var newplayer = $(document.createElement('div')).append(roster.teams[ind]);
+					latestTeam.append(newplayer);
+				}
+				if(roster.teams.length-1%roster.teamSize !=0 || roster.teams.length===1){
+					divTeams.push(latestTeam);
+				}
+				for(var teamind = 0; teamind < divTeams.length; teamind++){
+					main.append(divTeams[teamind]);
+				}
+				$(".teams").append(main);
+			}
+			
+		};
+
+		$("#team_gen").mousedown(function(){
+			roster.drawTeams();
+		});
+		$("#team_size").change(function(){
+			roster.teamSize = $(this).val();
+		});
+		$('#roster_input').bind("enterKey",function(e){
+   			roster.addPlayer($(this).val());
+   			$(this).val("");
+		});
+		$('#roster_input').keyup(function(e){
+		    if(e.keyCode == 13)
+		    {
+		        $(this).trigger("enterKey");
+		    }
+		});
+
+		return roster;
+	}
+	function addHover(selection){
+		$(selection).hover(function(){
+			$(this).children(".remove").addClass("remove_hover");
+			$(this).addClass("name_hover");
+		},
+		function(){
+			$(this).children(".remove").removeClass("remove_hover");
+			$(this).removeClass("name_hover");
+		});
+	}
+
+	</script>
+	<style>
+	body {
+		background-color: #EEEEEE;
+		color: #000000;
+	}
+	a {
+		color: #FFFFFF;
+	}
+	.wrapper{
+
+		margin: 0 auto;
+		width: 1000px;
+	}
+	.teams{
+		vertical-align: top;
+		position: relative;
+		left:0px;
+		width: 400px;
+		display: inline-block;
+	}
+	.roster{
+		min-height: 200px;
+		position: relative;
+		top: 3px;
+		border-radius: 3px;
+		background-color: #DDDDDD;
+	}
+	.rosters{
+		vertical-align: top;
+		text-align: left;
+		position: relative;
+		display: inline-block;
+		width: 400px;
+	}
+	.team{
+		border-radius: 3px;
+		background-color: #DDDDDD;
+		margin-top:10px;
+	}
+	.teams_controls{
+		text-align: center;
+		display: inline-block;
+		width: 400px;
+	}
+	.roster_controls{
+		text-align: center;
+		display: inline-block;
+		width: 400px;
+	}
+	.name{
+		width:400px;
+		height: 20px;
+	}
+	.name_hover{
+		border-radius: 3px;
+		background-color: #CCCCCC;
+	}
+	.remove{
+		margin-right: 15px;
+		float: right;
+		height: 20px;
+		opacity: 0;
+	}
+	.remove_hover{
+		opacity: 1;
+	}
+	</style>
 </head>
 <body>
-	Test
+	<center><h2>Random Team Generator</h2></center>
+	<div class="wrapper controls">
+		<div class="teams_controls">
+			Players per Team: <select id="team_size">
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5" selected=true>5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+		</select>
+			<input type="button" value="Generate Teams" id="team_gen" />
+		</div>
+		<div class="roster_controls">
+			Input a player name then press enter:
+			<input type="text" id="roster_input" width="250" />
+		</div>
+	</div>
+	<div class="wrapper">
+		<div class="teams">
+			<h3>Teams:</h3>
+		</div>
+		<div class="rosters">
+			<div class="name">
+				<h3>Roster:</h3>
+			</d9v>
+			<div class="roster">
+			</div>
+
+		</div>
+	</div>
 </body>
 </html>	
