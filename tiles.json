@@ -1,0 +1,23 @@
+{
+	"tile1": {
+		"tileimg": "riottile.png",
+		"caption": "Dynamic player stat tracking with a Python back-end."
+		},
+	"tile2": {
+		"tileimg": "pkmntile.png",
+		"caption": "An Artificial Intelligence implementation for Pokémon Showdown."
+		},
+	"tile3": {
+		"tileimg": "datatile.png",
+		"caption": "Data driven SVG visualizations."
+		},
+	"tile4": {
+		"tileimg": "hptile.png",
+		"caption": "Scalable Vector Graphic work for <br> HP OneView."
+	},
+	"tile5": {
+		"tileimg": "webtile.png",
+		"caption": "A scalable website design backed in Python."
+	}
+
+}

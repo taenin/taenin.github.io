@@ -13,7 +13,26 @@ $.preloadImages = function() {
 $(window).load(function(){
 	$.preloadImages(images);
 });
+
+
 $(document).ready(function(){
+$.getJSON("tiles.json", {}, function(data){
+	var tilecounter = 0;
+	for (var key in data) {
+	  if (data.hasOwnProperty(key)) {
+	    var tile = data[key];
+	    newTile = makeTile(tilecounter%3, Math.floor(tilecounter/3), tile);
+	    addTileHover(newTile);
+	    tileClickHandler(newTile, tile);
+	    $(".tile_container").append(newTile);
+	    tilecounter+=1;
+	  }
+	}
+});
+
+
+
+/*
 for(var pos = 0; pos < 5; pos++){
 	var img_loc = "tile" + pos + ".png";
 	newTile = makeTile(pos%3, Math.floor(pos/3), img_loc);
@@ -21,7 +40,8 @@ for(var pos = 0; pos < 5; pos++){
 	tiles.push(newTile);
 	tileClickHandler(newTile, pos);
 	$(".tile_container").append(newTile);
-}
+} */
+
 $(".backbar").mousedown(function(){
 	toggle();
 });
@@ -41,18 +61,18 @@ for(var pos = 0; pos < 3; pos++){
 }*/
 });
 
-function tileClickHandler(tile, pos){
+function tileClickHandler(tile, tiledata){
 	$(tile).mousedown(function(){
-		$(".focus_content").html("<img src='tile"+pos + ".png'></img>");
+		$(".focus_content").html("<img src='"+ tiledata.tileimg + "'></img>");
 		toggle();
 	});
 }
 
-function makeTile(colNum, rowNum, img){
+function makeTile(colNum, rowNum, tiledata){
 	main = $(document.createElement('div')).addClass("tile");
 	tint = $(document.createElement('div')).addClass("tile_banner").addClass("tint");
-	caption = $(document.createElement('div')).text("Caption!").addClass("tile_banner").addClass("caption");
-	content = $(document.createElement('div')).addClass("filler").addClass("content").css("background-image", "url("+ img+")");
+	caption = $(document.createElement('div')).append(tiledata.caption).addClass("tile_banner").addClass("caption");
+	content = $(document.createElement('div')).addClass("filler").addClass("content").css("background-image", "url("+ tiledata.tileimg+")");
 	main.append(content).append(tint).append(caption);
 	return main.css("left", 8+300*colNum).css("top", 250*rowNum);
 }
@@ -171,6 +191,7 @@ body{
 	width: 283px;
 	height: 220px;
 	box-shadow: 0px 3px 10px #191919;
+	overflow: hidden;
 }
 .filler{
 	position: absolute;
@@ -200,8 +221,9 @@ body{
 	opacity:.95;
 }
 .caption{
-	font-family: ‘Palatino Linotype’, ‘Book Antiqua’, Palatino, serif;
-	font-size: 1.5em;
+	font-family:  "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	/*font-family: ‘Palatino Linotype’, ‘Book Antiqua’, Palatino, serif;*/
+	font-size: 0.9em;
 	opacity:0;
 	text-align: center;
 	/*margin-top: 20px;
