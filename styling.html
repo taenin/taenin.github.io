@@ -4,6 +4,15 @@
 	<script type="text/javascript" src = "http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"> </script>
 <script>
 tiles=[];
+var images = ["tile0.png", "tile1.png", "tile2.png", "tile3.png", "tile4.png"];
+$.preloadImages = function() {
+  for (var i = 0; i < arguments.length; i++) {
+    $("<img />").attr("src", arguments[i]);
+  }
+};
+$(window).load(function(){
+	$.preloadImages(images);
+});
 $(document).ready(function(){
 for(var pos = 0; pos < 5; pos++){
 	var img_loc = "tile" + pos + ".png";
@@ -219,7 +228,8 @@ body{
 	/*font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;*/
 	font-size: 3.5em;
 	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px #292929; 
-	background-image:url(faded.png);
+	/*background-image:url(faded.png);*/
+	background-color: #3FA9DA;
 	width:100%;
 	height:200px;
 	margin-left:0px;
@@ -270,7 +280,7 @@ body{
 }
 .backbar{
 	position: absolute;
-	background-color: #595959;
+	background-color: #393939;
 	color: #F6F6F6;
 	width:100%;
 	height: 28px;
