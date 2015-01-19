@@ -87,8 +87,8 @@ function addTileHover(tile){
 	//check to see if using a mobile browser
 	//if so disable hovers
 	if(window.mobilecheck()){
-		$(this).children(".tint").addClass("hover");
-		$(this).children(".caption").addClass("hover");
+		$(tile).children(".tint").addClass("hover");
+		$(tile).children(".caption").addClass("hover");
 	}
 	else{
 		tile.hover(function(){
