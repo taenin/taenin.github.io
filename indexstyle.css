@@ -1,0 +1,246 @@
+a {
+    text-decoration: none !important;
+}
+body{
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	background-color: #292929;
+}
+.page{
+	width:100%;
+	min-width: 900px;
+	height: auto;
+	overflow: hidden;
+}
+.page_body{
+	margin: 0 auto;
+	position: relative;
+	width: 900px;
+	height: 100%;
+	min-height: 1000px;
+	/*overflow: hidden;*/
+}
+.tile_container{
+	margin: 0 auto;
+	position: relative;
+	left: 0px;
+	max-width:900px;
+	width: 100%;
+	height: 100%;
+	
+	-webkit-transition: left .5s ease-in-out;
+	transition: left .5s ease-in-out;
+}
+.off_screen{
+	left: -10000px;
+}
+.focus_wrapper{
+	position:relative;
+	overflow: hidden;
+	top: -100%;
+	right:-10000px;
+	max-width: 900px;
+	min-height:400px;
+	width: 100%;
+	background-color: #FFFFFF;
+	display: block;
+	*display: block;
+	-webkit-transition: right .5s ease-in-out;
+	transition: right .5s ease-in-out;
+}
+.focus_content{
+	font-color: #292929;
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.25em;
+	width:100%;
+	min-height:300px;
+	background-color: #FFFFFF;
+	position:relative;
+	margin-top: 50px;
+	margin-bottom: 50px;
+	
+}
+
+.on_screen{
+	right:0px;
+}
+.tile{
+	position: absolute;
+	top:0;
+	width: 283px;
+	height: 220px;
+	box-shadow: 0px 3px 10px #191919;
+	overflow: hidden;
+}
+.filler{
+	position: absolute;
+	height:100%;
+	width: 100%;
+	top:0;
+	left:0;
+	-webkit-transition: opacity .2s;
+	transition: opacity .2s;
+}
+.tile_banner{
+	color:#F6F6F6;
+	width: 284px;
+	position: absolute;
+	bottom: -1px;
+	height: 50px;
+	padding-top:10px;
+}
+
+.tint{
+	opacity:0;
+	background-color: #292929;
+	-webkit-transition: opacity .2s;
+	transition: opacity .2s;
+}
+.tint.hover{
+	opacity:.95;
+}
+.caption{
+	font-family: 'Roboto', sans-serif;
+	/*font-family:  "Lucida Sans Unicode", "Lucida Grande", sans-serif;*/
+	/*font-family: ‘Palatino Linotype’, ‘Book Antiqua’, Palatino, serif;*/
+	font-size: 1.0em;
+	opacity:0;
+	text-align: center;
+	/*margin-top: 20px;
+	margin-left: 20px; */
+	-webkit-transition: opacity .2s;
+	transition: opacity .2s;
+}
+.caption.hover{
+	opacity:1;
+}
+
+.focus_paragraph{
+	text-align: left;
+	margin-left: 10px;
+	margin-right: 10px;
+	font-size: 0.85em;
+}
+
+.focus_link{
+	color: #3FA9DA;
+}
+
+.focus_img{
+	text-align: center;
+}
+.focus_heading{
+	text-align: left;
+	margin-left: 25px;
+}
+.focus_hr{
+	margin-top: -20px;
+	margin-left:5px;
+	margin-right:5px;
+	color: #FFFFFF;
+}
+.content{
+	text-align: left;
+	opacity:1;
+	/*background-image: url(http://i.stack.imgur.com/pLhDi.png); 
+	background-position: -100px -100px; */
+}
+.title{
+	-webkit-font-smoothing: antialiased;
+	min-width: 910px;
+	color:#292929;
+	font-family:  ‘Palatino Linotype’, ‘Book Antiqua’, Palatino, serif;
+	/*font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;*/
+	font-size: 3.5em;
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px #292929; 
+	/*background-image:url(faded.png);*/
+	background-color: #3FA9DA;
+	width:100%;
+	height:200px;
+	margin-left:0px;
+	margin-right:0px;
+	margin-bottom:50px;
+	margin-top:0px;
+}
+.titletext{
+	display: inline-block;
+	*display: inline;
+	margin-top:10px;
+}
+.name{
+	color: #F6F6F6;
+	text-shadow: none;
+	font-family: Century Gothic, sans-serif;
+	display: inline-block;
+	*display: inline;
+}
+.title_body{
+	/*	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;*/
+	-webkit-font-smoothing: antialiased;
+	font-size: .5em;
+	font-family: 'Roboto', sans-serif;
+	text-shadow:none;
+}
+.icons{
+	margin-top:15px;
+	color:#292929;
+}
+
+.facebook{
+	color:#292929;
+}
+.linkedin{
+	color:#292929;
+}
+	
+.email{
+	color: #292929;
+}
+.iconhover{
+	color: #3b5998;
+}
+.newicons{
+	margin-top: 15px;
+	font-size: .35em;
+	text-shadow: none;
+}
+.backbar{
+	position: absolute;
+	background-color: #266583;
+	color: #F6F6F6;
+	width:100%;
+	height: 28px;
+	-webkit-transition: color .3s, background-color .3s;
+	transition: color .3s, background-color .3s;
+}
+.backbar_upper{
+	top:0px;
+}
+.backbar_lower{
+	bottom: 0px;
+}
+.backbar_top{
+	top: 5px;
+}
+.backbar_bottom{
+	bottom: 5px;
+}
+.backbar_left{
+	position: absolute;
+	left: 10px;
+}
+.backbar_right{
+	position: absolute;
+	right: 10px;
+}
+.backbar_hover{
+	/*
+	color:#292929;
+	background-color: #D6D6D6; */
+	/*background-color: #393939; */
+	background-color: #202020;
+	color: #F6F6F6;
+	
+	
+}
