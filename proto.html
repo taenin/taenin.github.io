@@ -22,6 +22,9 @@ div
     background: transparent;
     z-index: 10;
 }
+body{
+    background-color: #000000;
+}
 </style>
 </head>
 <body>
@@ -91,7 +94,7 @@ var force = d3.layout.force()
         .size([width, height])
         .linkStrength(function(link){
             largestWeight = Math.max.apply(Math,graph.links.map(function(o){return o.weight;}));
-            return .2*Math.pow(link.weight / largestWeight, 0.5);
+            return .3*Math.pow(link.weight / largestWeight, 0.5);
              
         });
 
