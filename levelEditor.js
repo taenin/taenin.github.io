@@ -62,7 +62,8 @@ function createWorker(categoryJSON){
                       "Nodes": [],
                       "Spawners": [],
                       "Enemies": [],
-                      "Goal": null
+                      "Goal": null,
+                      "Hazards": []
                    };
 
 
@@ -586,6 +587,19 @@ function createWorker(categoryJSON){
     return newLayer;
   };
 
+  worker.createHazard = function(canvasObject){
+    newHazard = {
+      "PNGSource": canvasObject.imgSource,
+      "Type" : worker.getTypeFromCanvasObject(canvasObject),
+      "Width": canvasObject.width,
+      "Height": canvasObject.height,
+      "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+      "Boundable": false,
+      "ObeysPhysics": true
+    }
+    return newHazard;
+  }
+
   worker.createNode = function(canvasObject){
     newNode = {
                 "PNGSource": canvasObject.imgSource,
@@ -593,9 +607,9 @@ function createWorker(categoryJSON){
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
                 "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
-                "Boundable": false,
-                "Collidable": true,
-                "ObeysPhysics": true,
+                "Boundable": true,
+                "Collidable": false,
+                "ObeysPhysics": false,
                 "EndLocation": {
                               "X": 0,
                               "Y": 0
@@ -897,7 +911,8 @@ function createWorker(categoryJSON){
                     "Nodes":  worker.createNode,
                     "Spawners":  worker.createSpawner,
                     "Enemies":  worker.createEnemy,
-                    "Goal":  worker.createGoal
+                    "Goal":  worker.createGoal,
+                    "Hazards": worker.createHazard
                  };
   }
 
