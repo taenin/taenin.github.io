@@ -21,8 +21,8 @@ function createWorker(categoryJSON){
     
     worker.grid = 32; //size of a meter in pixels
     worker.gridLines = []; //grid lines
-    worker.worldWidth = 30; //width of the world in meters
-    worker.worldHeight = 25; //height of the world in meters
+    worker.worldWidth = 62; //width of the world in meters
+    worker.worldHeight = 48; //height of the world in meters
     worker.zLevels = {
       "ForegroundLayers": 2,
       "BackgroundLayers": -2,
