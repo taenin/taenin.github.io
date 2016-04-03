@@ -185,7 +185,7 @@ function createWorker(categoryJSON){
     if(positions > currentPosition && zLevel!=0){
       worker.canvas.moveTo(canvasObject, currentPosition+1);
       if(worker.state.hasOwnProperty(canvasObject.categoryType)){
-        worker.arraySwap(worker.state[canvasObject.categoryType], positions-1 - currentPosition, positions - currentPosition );
+        worker.arraySwap(worker.state[canvasObject.categoryType], (worker.zCounts[zLevel] -1 - (positions - 1 - currentPosition)), (worker.zCounts[zLevel] -1 - (positions - currentPosition)));
       }
     }
   }
@@ -363,7 +363,7 @@ function createWorker(categoryJSON){
     });*/
 
     $("#slider").slider({
-      min: 30,
+      min: 10,
       max: 100,
       value: 100,
       slide: function(event, ui){
