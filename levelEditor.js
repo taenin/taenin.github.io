@@ -1,8 +1,17 @@
+
+
 function createWorker(categoryJSON){
   var worker = {};
   worker.canvas = new fabric.Canvas('myCanvas', { selection: false });
   worker.drawData = {};
   worker.objectTypeGenerators = {};
+
+  worker.debug = function(canvasObject){
+    console.log("Index in state: " + worker.state[canvasObject.categoryType].indexOf(canvasObject));
+    console.log("Index in Z levels: " + worker.canvas.getObjects().indexOf(canvasObject));
+    console.log("----");
+  }
+
   /******************************************************
   Call this function EVERY TIME we load in a new file!
   ******************************************************/
@@ -922,6 +931,24 @@ $(document).ready(function(){
   worker = createWorker();
 
   $.getJSON("drawTypes.json", {}, function(data){
+    //Preload Images
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) {
+        if(data[key].hasSubCategory){
+          for(var i = 0; i<data[key].img.length; i++){
+            for(var subI = 0; subI<data[key].img[i].imgList.length; subI++){
+              $("<img />").attr("src", data[key].img[i].imgList[subI]);
+            }
+          }
+        }
+        else{
+          for(var i = 0; i<data[key].img.length; i++){
+            $("<img />").attr("src", data[key].img[i]);
+          }
+        }
+      }
+    }
+    //----
     worker.drawData = data;
     worker.removeAllOptions("#categorySelect");
     worker.removeAllOptions("#categoryTool");
@@ -1101,3 +1128,4 @@ function download(filename, text) {
 
   document.body.removeChild(element);
 }
+
