@@ -5,9 +5,12 @@ res = []
 output = {}
 for root,dirs,files in os.walk(path, topdown=True):
     for folder in dirs:
-        output[folder] = {}
-        output[folder]["img"] = []
-        output[folder]["hasSubCategory"] = False
+        key = os.path.join(root, folder).replace("\\","/")
+        depth = key.count("/")
+        if depth == 1:
+            output[folder] = {}
+            output[folder]["img"] = []
+            output[folder]["hasSubCategory"] = False
     if len(files) > 0:
         key = os.path.join(root, files[0]).replace("\\","/")
         depth = key.count("/")

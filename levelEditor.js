@@ -2,6 +2,7 @@ function createWorker(categoryJSON){
   var worker = {};
   worker.canvas = new fabric.Canvas('myCanvas', { selection: false });
   worker.drawData = {};
+  worker.objectTypeGenerators = {};
   /******************************************************
   Call this function EVERY TIME we load in a new file!
   ******************************************************/
@@ -54,8 +55,6 @@ function createWorker(categoryJSON){
                       "Enemies": [],
                       "Goal": null
                    };
-
-    worker.objectTypeGenerators = {};
 
 
     worker.toolDropMap = {}; //Maps from a subcategory name to its index in drawData[selection].img
