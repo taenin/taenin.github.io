@@ -1,0 +1,219 @@
+<html>
+<head>
+	<title>Inari Level Editor</title>
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js">
+</script>
+<script type="text/javascript" src = "fabric.js">
+</script>
+<script type="text/javascript" src = "levelEditor.js">
+</script>
+<style>
+body{
+	font-family:  "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+.name{
+	color: #3FA9DA;
+}
+.zButton{
+	margin: 10px;
+}
+.outputField{
+	margin: 10px;
+}
+#wrapper {
+	min-height: 800px;
+	white-space: nowrap;
+	width: 100%;
+	min-width: 1200px;
+	display: inline-block;
+	*display: inline-block;
+}
+.block{
+	display: inline-block;
+	*display: inline-block;
+}
+#canvas {
+	min-width: 200px;
+	width: 50%;
+	height: 100%;
+	overflow: auto;
+	text-align: left;
+	vertical-align: top;
+	display: inline-block;
+	*display: inline-block;
+}
+.tools{
+	white-space: normal;
+	width : 50%;
+	min-height: 100%;
+	overflow: auto;
+	display: inline-block;
+	*display: inline-block;
+}
+#toolbar{
+	display: inline-block;
+	*display: inline-block;
+}
+.toolPopulateCanvas{
+	width: 100%;
+	min-height: 400px;
+}
+.title{
+	margin-top: 50px;
+	margin-bottom: 25px;
+	color: #3FA9DA;
+	font-size: 60;
+	opacity:1;
+}
+.bartitle{
+	margin-top: 10px;
+	margin-bottom: 15px;
+	color: #3FA9DA;
+	font-size: 30;
+	opacity:1;
+}
+
+.subtitle{
+	margin-top: 10px;
+	margin-bottom: 15px;
+	color: #3FA9DA;
+	font-size: 20;
+	opacity:1;
+}
+.testing{
+	color: #FFFFFF;
+	opacity:1;
+	transition: opacity .2s ease;
+}
+.testing.Hover{
+	opacity:0;
+}
+#time_wrapper{
+	color: #FFFFFF;
+	font-size: 45;
+}
+.assist{
+	display: inline-block;
+}
+.mainPortrait{
+	height: 120px;
+	width: 120px;
+	display: inline-block;
+}
+.symbol{
+	height: 31px;
+	width: 33px;
+	background-size: contain;
+	display: inline-block;
+}
+.selectable{
+	display: inline-block;
+	margin: 10px;
+}
+.selected{
+	outline: 2px solid #BF384F;
+}
+.image{
+	width: 100%;
+	max-width: 200px;
+}
+#slider{
+	display: inline-block;
+	*display: inline-block;
+	width: 200px;
+	margin-left: 20px;
+	margin-top: 10px;
+}
+
+#fileToolbar{
+	margin: 20px;
+}
+.fileToolbarBlock{
+	margin-left: 12.5%;
+	margin-right: 12.5%;
+	display:inline-block;
+	*display: inline-block;
+}
+
+body {
+	text-align: center;
+}
+
+</style>
+</head>
+<body>
+	<div class="title"><i class="name">Inari</i> Level Editor</div>
+	<div id="wrapper">
+		<div id = "fileToolbar">
+			<div class="fileToolbarBlock">
+				<input type="file" id="fileinput"/>
+		        <input type='button' id='btnLoad' value='Load Level'>
+	    	</div>
+	    	<div class = "fileToolbarBlock">
+	        	<input type="text" id="levelName" placeholder="saveFile.json">
+	        	<input type="button" id="btnSave" value="Save Level">
+	    	</div>
+	    </div>
+		<div id="canvas">
+			<canvas id="myCanvas" width="900" height="800" style="border:1px solid #ccc;">
+			</canvas>
+		</div>
+		<div class="tools">
+			<div class="bartitle">
+				Canvas Tile Sets
+			</div>
+			<div id="toolbar">
+				<select id = "categoryTool">
+					<option>Loading</option>
+				</select>
+				<select id = "subcategoryTool">
+					<option>Loading</option>
+				</select>
+			</div>
+			<div class="toolPopulate">
+				<div class="toolPopulateCanvas">
+					Tool Populate
+				</div>
+			</div>
+			<hr>
+			<div class="bartitle">
+				Canvas Parameters
+			</div>
+			<div>
+			<div class = "block">
+				World Width (meters): <input type="text" id="worldWidth"/>
+			</div>
+			<div class = "block">
+				World Height (meters): <input type="text" id="worldHeight"/>
+			</div>
+			</div>
+
+			<div>
+				Zoom: <div id="slider"></div>
+			</div>
+			<div class="subtitle">
+				Select an Object on the Canvas
+			</div>
+			<div id="selector">
+				<div id="selectbar">
+					<select id = "categorySelect">
+						<option>Loading</option>
+					</select>
+					<select id = "subcategorySelect">
+						<option>Loading</option>
+					</select>
+				</div>
+				<div class="selectPopulate">
+					<div class="selectPopulateCanvas">
+					Select Populate
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>
