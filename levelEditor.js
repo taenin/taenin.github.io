@@ -158,7 +158,7 @@ function createWorker(categoryJSON){
     currentPosition = worker.canvas.getObjects().indexOf(canvasObject);
     zLevel = worker.getZLevel(canvasObject);
     positions = 0;
-    positions += worker.gridLines.length;
+    //positions += worker.gridLines.length;
     for(var key in worker.zCounts){
       if(key < zLevel && worker.zCounts.hasOwnProperty(String(key))){
         positions += worker.zCounts[String(key)];
@@ -176,7 +176,7 @@ function createWorker(categoryJSON){
     var currentPosition = worker.canvas.getObjects().indexOf(canvasObject);
     var zLevel = worker.getZLevel(canvasObject);
     var positions = -1;
-    positions += worker.gridLines.length;
+    //positions += worker.gridLines.length;
     for(var key in worker.zCounts){
       if(key <= zLevel && worker.zCounts.hasOwnProperty(String(key))){
         positions += worker.zCounts[String(key)];
@@ -239,7 +239,7 @@ function createWorker(categoryJSON){
     if(worker.state.hasOwnProperty(canvasObject.categoryType)){
       //canvasObject.outputObject = worker.generateDefaulfObject(canvasObject);
       var positions = 0;
-      positions += worker.gridLines.length;
+      //positions += worker.gridLines.length;
       for(var key in worker.zCounts){
         if(key <= zLevel && worker.zCounts.hasOwnProperty(String(key))){
           positions += worker.zCounts[String(key)];
@@ -420,16 +420,16 @@ function createWorker(categoryJSON){
     var height = worker.convertMetersToPixels(worker.worldHeight);
     var width = worker.convertMetersToPixels(worker.worldWidth);
     for (var i = 0; i <= (height / worker.grid); i++) {
-      var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#000', selectable: false });
+      var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#000', selectable: false, opacity: 0.5 });
       worker.gridLines.push(line);
       worker.canvas.add(line);
-      line.sendToBack();
+      line.bringToFront();
     }
     for (var i = 0; i<= (width / worker.grid); i++){
-      var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#000', selectable: false });
+      var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#000', selectable: false, opacity: 0.5 });
       worker.gridLines.push(line);
       worker.canvas.add(line);
-      line.sendToBack();
+      line.bringToFront();
     }
   }
 

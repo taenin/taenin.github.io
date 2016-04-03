@@ -23,7 +23,7 @@ body{
 .outputField{
 	margin: 10px;
 }
-#wrapper {
+.wrapper {
 	min-height: 800px;
 	white-space: nowrap;
 	width: 100%;
@@ -37,7 +37,7 @@ body{
 }
 #canvas {
 	min-width: 200px;
-	width: 50%;
+	max-width: 90%;
 	height: 100%;
 	overflow: auto;
 	text-align: left;
@@ -47,7 +47,7 @@ body{
 }
 .tools{
 	white-space: normal;
-	width : 50%;
+	width : 35%;
 	min-height: 100%;
 	overflow: auto;
 	display: inline-block;
@@ -131,6 +131,11 @@ body{
 #fileToolbar{
 	margin: 20px;
 }
+.helperTool{
+	vertical-align: top;
+	display:inline-block;
+	*display: inline-block;
+}
 .fileToolbarBlock{
 	margin-left: 12.5%;
 	margin-right: 12.5%;
@@ -146,7 +151,7 @@ body {
 </head>
 <body>
 	<div class="title"><i class="name">Inari</i> Level Editor</div>
-	<div id="wrapper">
+	<div class="wrapper">
 		<div id = "fileToolbar">
 			<div class="fileToolbarBlock">
 				<input type="file" id="fileinput"/>
@@ -161,6 +166,9 @@ body {
 			<canvas id="myCanvas" width="900" height="800" style="border:1px solid #ccc;">
 			</canvas>
 		</div>
+	</div>
+	<div class="wrapper">
+		<div class="helperTool">
 		<div class="tools">
 			<div class="bartitle">
 				Canvas Tile Sets
@@ -178,7 +186,8 @@ body {
 					Tool Populate
 				</div>
 			</div>
-			<hr>
+		</div>
+			<div class = "helperTool">
 			<div class="bartitle">
 				Canvas Parameters
 			</div>
@@ -212,6 +221,7 @@ body {
 					</div>
 				</div>
 			</div>
+		</div>
 		</div>
 	</div>
 	
