@@ -5,7 +5,7 @@ function createWorker(categoryJSON){
   worker.canvas = new fabric.Canvas('myCanvas', { selection: false });
   worker.drawData = {};
   worker.objectTypeGenerators = {};
-
+  worker.toolDropMap = {}; //Maps from a subcategory name to its index in drawData[selection].img
   worker.debug = function(canvasObject){
     console.log("Index in state: " + worker.state[canvasObject.categoryType].indexOf(canvasObject));
     console.log("Index in Z levels: " + worker.canvas.getObjects().indexOf(canvasObject));
@@ -67,7 +67,6 @@ function createWorker(categoryJSON){
                    };
 
 
-    worker.toolDropMap = {}; //Maps from a subcategory name to its index in drawData[selection].img
     worker.selectDropMap = {}; //Maps from a subcategory name to its 
 
     //Clear the canvas!
