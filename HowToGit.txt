@@ -1,0 +1,24 @@
+HOW TO GIT:
+
+Change any files you want. When you're ready to send the changes to the server, do the following.
+
+1) Open Git Bash. You can do this by navigating in Windows Explorer to the folder where the files are contained, right click, and select "GIT BASH HERE"
+
+2) Type:     git status
+   This will show you the files you changed
+
+3) Did you double click the python file? If not, double click the python file and do step (2) again.
+
+4) For each file you changed, you need to run:
+   git add filename.filextension
+
+   If you changed the texture directory, you can just run
+
+   git add textures
+
+5) type git status
+   Everything you changed should be in greed. If not, add the files until everything is green.
+
+6) Type: git commit -m "This is a message describing my changes"
+
+7) Type: git push
