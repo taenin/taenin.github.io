@@ -2,7 +2,7 @@
 
 function createWorker(categoryJSON){
   var worker = {};
-  worker.canvas = new fabric.Canvas('myCanvas', { selection: false });
+  worker.canvas = new fabric.Canvas('myCanvas', { selection: true });
   worker.drawData = {};
   worker.objectTypeGenerators = {};
   worker.toolDropMap = {}; //Maps from a subcategory name to its index in drawData[selection].img
@@ -18,7 +18,8 @@ function createWorker(categoryJSON){
   worker.refresh = function(){
     //initialize all of the variables we need to start things off
 
-    
+    worker.mousePosition = { "pageX": 0,
+                             "pageY": 0};
     worker.grid = 32; //size of a meter in pixels
     worker.gridLines = []; //grid lines
     worker.worldWidth = 62; //width of the world in meters
@@ -264,6 +265,21 @@ function createWorker(categoryJSON){
     }
   }
 
+  worker.redrawSelection = function(){
+    fabric.Image.fromURL(worker.hoverImage.src, function(oImg){
+          oImg.dropDownID = worker.generateDropDownID(worker.hoverImage.src);
+          oImg.imgSource = worker.hoverImage.src;
+          oImg.categoryType = worker.hoverImage.type;
+          oImg.lockScalingX = true; //make it so we cannot resize the images
+          oImg.lockScalingY = true;
+          worker.hoverImage.canvasElement = oImg;
+          oImg.outputObject = worker.generateDefaultObject(oImg);
+          //worker.setLocation(oImg);
+          worker.canvas.add(oImg); 
+          worker.drawOnMouseMove(worker.mousePosition);
+        }); 
+  }
+
   worker.updateSelectDropDown = function(canvasObject){
     $("#categorySelect").val(canvasObject.categoryType).change();
     $("#subcategorySelect").val(canvasObject.dropDownID).change();
@@ -284,21 +300,29 @@ function createWorker(categoryJSON){
     });
 
     worker.canvas.on('object:selected', function(options) {
-      var selectedObject = worker.canvas.getActiveObject()
-      if(worker.hoverImage){
-        worker.deselect();
-        if(selectedObject){
+      var selectedObject = worker.canvas.getActiveObject();
+      var selectedGroup = worker.canvas.getActiveGroup();
+      if(selectedObject){
+        //This means that only one object is selected rather than a group
+        if(worker.hoverImage){
+          //worker.deselect();
           worker.addObject(selectedObject);
           worker.updateDropDownID(selectedObject.imgSource);
+          worker.redrawSelection();
+
         }
+        $("#categorySelect").val(selectedObject.categoryType);
+        categorySelectRedraw();
+        
+        //$("#categorySelect").change();
+        $("#subcategorySelect").val(selectedObject.dropDownID);
+        //$("#subcategorySelect").change();
+        worker.drawSelection();
       }
-      $("#categorySelect").val(selectedObject.categoryType);
-      categorySelectRedraw();
-      
-      //$("#categorySelect").change();
-      $("#subcategorySelect").val(selectedObject.dropDownID);
-      //$("#subcategorySelect").change();
-      worker.drawSelection();
+      else if(selectedGroup){
+
+      }
+        
     });
 
     worker.canvas.on('selection:cleared', function(options) {
@@ -313,41 +337,15 @@ function createWorker(categoryJSON){
     });
     $("#canvas").mouseenter(function(){
       if(worker.hoverImage){
-        fabric.Image.fromURL(worker.hoverImage.src, function(oImg){
-          oImg.dropDownID = worker.generateDropDownID(worker.hoverImage.src);
-          oImg.imgSource = worker.hoverImage.src;
-          oImg.categoryType = worker.hoverImage.type;
-          oImg.lockScalingX = true; //make it so we cannot resize the images
-          oImg.lockScalingY = true;
-          worker.hoverImage.canvasElement = oImg;
-          oImg.outputObject = worker.generateDefaultObject(oImg);
-          //worker.setLocation(oImg);
-          worker.canvas.add(oImg); 
-        }); 
+        worker.redrawSelection();
       }
     });
 
     $("#canvas").mousemove(function(e){
+      worker.mousePosition.pageX = e.pageX;
+      worker.mousePosition.pageY = e.pageY;
       //Moving the object along with mouse cursor
-      if (worker.hoverImage && worker.hoverImage.canvasElement) {
-          worker.hoverImage.canvasElement.left = ((e.pageX + $('#canvas').scrollLeft() - $('#canvas').offset().left)/worker.canvas.getZoom()) - worker.hoverImage.canvasElement.width /2;
-          worker.hoverImage.canvasElement.top = ((e.pageY + $('#canvas').scrollTop() - $('#canvas').offset().top)/ worker.canvas.getZoom()) - worker.hoverImage.canvasElement.height /2 ;
-          if(worker.shouldSnapToGrid.indexOf(worker.hoverImage.type) > -1){
-            worker.hoverImage.canvasElement.left = worker.snapToGrid(worker.hoverImage.canvasElement.left);
-            worker.hoverImage.canvasElement.top = worker.snapToGrid(worker.hoverImage.canvasElement.top);
-          }
-          worker.hoverImage.canvasElement.setCoords();
-          if(worker.hoverImage.canvasElement.outputObject){
-            if(worker.getZLevel(worker.hoverImage.canvasElement) !=0){
-              worker.hoverImage.canvasElement.outputObject.Location = worker.getPixelLocationFromCanvasObject(worker.hoverImage.canvasElement);
-            }
-            else{
-              worker.hoverImage.canvasElement.outputObject.Location = worker.getMeterLocationFromCanvasObject(worker.hoverImage.canvasElement);
-            }
-          }
-          
-          worker.canvas.renderAll();
-        }
+      worker.drawOnMouseMove(worker.mousePosition);
       });
 
     /*$("#canvas").click(function(e){
@@ -383,6 +381,28 @@ function createWorker(categoryJSON){
         worker.updateWorldHeight(Number($(this).val()));
       }
     });
+  }
+
+  worker.drawOnMouseMove = function(e){
+    if (worker.hoverImage && worker.hoverImage.canvasElement) {
+          worker.hoverImage.canvasElement.left = ((e.pageX + $('#canvas').scrollLeft() - $('#canvas').offset().left)/worker.canvas.getZoom()) - worker.hoverImage.canvasElement.width /2;
+          worker.hoverImage.canvasElement.top = ((e.pageY + $('#canvas').scrollTop() - $('#canvas').offset().top)/ worker.canvas.getZoom()) - worker.hoverImage.canvasElement.height /2 ;
+          if(worker.shouldSnapToGrid.indexOf(worker.hoverImage.type) > -1){
+            worker.hoverImage.canvasElement.left = worker.snapToGrid(worker.hoverImage.canvasElement.left);
+            worker.hoverImage.canvasElement.top = worker.snapToGrid(worker.hoverImage.canvasElement.top);
+          }
+          worker.hoverImage.canvasElement.setCoords();
+          if(worker.hoverImage.canvasElement.outputObject){
+            if(worker.getZLevel(worker.hoverImage.canvasElement) !=0){
+              worker.hoverImage.canvasElement.outputObject.Location = worker.getPixelLocationFromCanvasObject(worker.hoverImage.canvasElement);
+            }
+            else{
+              worker.hoverImage.canvasElement.outputObject.Location = worker.getMeterLocationFromCanvasObject(worker.hoverImage.canvasElement);
+            }
+          }
+          
+          worker.canvas.renderAll();
+        }
   }
 
   worker.updateWorldHeight = function(val){
@@ -441,32 +461,32 @@ function createWorker(categoryJSON){
     return canvasObject.imgSource.slice(0, -4);
   }
   worker.getPixelLocationFromCanvasObject = function(canvasObject){
-    //Return the center of the object
+    //Return the lower left-hand corner of the object
     var location = {};
-    location["X"] = canvasObject.left + (canvasObject.width / 2);
-    location["Y"] = worker.convertMetersToPixels(worker.worldHeight) - canvasObject.top - (canvasObject.height/2);
+    location["X"] = canvasObject.left;
+    location["Y"] = worker.convertMetersToPixels(worker.worldHeight) - canvasObject.top - canvasObject.height;
     return location;
   }
 
   worker.getMeterLocationFromCanvasObject = function(canvasObject){
-    //Return the center of the object
+    //Return the lower left-hand corner of the object
     var location = {};
-    location["X"] = worker.convertPixelsToMeters(canvasObject.left + (canvasObject.width / 2));
-    location["Y"] = worker.worldHeight - worker.convertPixelsToMeters(canvasObject.top + (canvasObject.height/2));
+    location["X"] = worker.convertPixelsToMeters(canvasObject.left);
+    location["Y"] = worker.worldHeight - worker.convertPixelsToMeters(canvasObject.top + canvasObject.height);
     return location;
   }
 
   worker.getCanvasLocationFromMeterLocation = function(meterLoc, canvasObject){
     var location = {};
-    location["left"] = worker.convertMetersToPixels(meterLoc.X) - (canvasObject.width / 2);
-    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - worker.convertMetersToPixels(meterLoc.Y) - (canvasObject.height / 2);
+    location["left"] = worker.convertMetersToPixels(meterLoc.X);
+    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - worker.convertMetersToPixels(meterLoc.Y) - canvasObject.height;
     return location;
   }
 
   worker.getCanvasLocationFromPixelLocation = function(pixelLoc, canvasObject){
     var location = {};
-    location["left"] = pixelLoc.X - (canvasObject.width / 2);
-    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - pixelLoc.Y - (canvasObject.height/2);
+    location["left"] = pixelLoc.X;
+    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - pixelLoc.Y - canvasObject.height;
     return location;
   }
 
