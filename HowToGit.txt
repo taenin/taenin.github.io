@@ -17,7 +17,7 @@ Change any files you want. When you're ready to send the changes to the server, 
    git add textures
 
 5) type git status
-   Everything you changed should be in greed. If not, add the files until everything is green.
+   Everything you changed should be in green. If not, add the files until everything is green.
 
 6) Type: git commit -m "This is a message describing my changes"
 
