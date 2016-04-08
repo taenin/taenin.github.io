@@ -82,27 +82,47 @@ function createWorker(categoryJSON){
 
 
   //Use this function to update the outputObject for Inari
-  worker.setLocation = function(canvasObject){
+  worker.setLocation = function(canvasObject, group){
     var zLevel = worker.getZLevel(canvasObject);
-    if(worker.shouldSnapToGrid.indexOf(canvasObject.categoryType) > -1){
-      canvasObject.set({
-        left: Math.round(canvasObject.left / worker.grid) * worker.grid,
-        top: Math.round(canvasObject.top / worker.grid) * worker.grid
-      });
-      canvasObject.setCoords();
-      worker.canvas.renderAll();
-    }
-    if(zLevel != 0){
-      //Leave them as raw pixel values
-      canvasObject.outputObject.Location = worker.getPixelLocationFromCanvasObject(canvasObject);
+    //Check if isGrouped, then only modify the correct properties
+    if(group){
+      var left = group.left  + canvasObject.left + (group.width/2);
+      var top = group.top + canvasObject.top + (group.height/2);
+      var fakeCanvasObject = {};
+      fakeCanvasObject.width = canvasObject.width;
+      fakeCanvasObject.height = canvasObject.height;
+      fakeCanvasObject.left = left;
+      fakeCanvasObject.top = top;
+      if(zLevel != 0){
+        //Leave them as raw pixel values
+        canvasObject.outputObject.Location = worker.getPixelLocationFromCanvasObject(fakeCanvasObject);
+      }
+      else{
+        //convert to meters
+        canvasObject.outputObject.Location = worker.getMeterLocationFromCanvasObject(fakeCanvasObject);
+      }
     }
     else{
-      //convert to meters
-      canvasObject.outputObject.Location = worker.getMeterLocationFromCanvasObject(canvasObject);
-    }
-    if(worker.canvas.getActiveObject() == canvasObject){
-      $("#inari_Location_X").val(canvasObject.outputObject.Location.X);
-      $("#inari_Location_Y").val(canvasObject.outputObject.Location.Y);
+      if(worker.shouldSnapToGrid.indexOf(canvasObject.categoryType) > -1){
+        canvasObject.set({
+          left: Math.round(canvasObject.left / worker.grid) * worker.grid,
+          top: Math.round(canvasObject.top / worker.grid) * worker.grid
+        });
+        canvasObject.setCoords();
+        worker.canvas.renderAll();
+      }
+      if(zLevel != 0){
+        //Leave them as raw pixel values
+        canvasObject.outputObject.Location = worker.getPixelLocationFromCanvasObject(canvasObject);
+      }
+      else{
+        //convert to meters
+        canvasObject.outputObject.Location = worker.getMeterLocationFromCanvasObject(canvasObject);
+      }
+      if(worker.canvas.getActiveObject() == canvasObject){
+        $("#inari_Location_X").val(canvasObject.outputObject.Location.X);
+        $("#inari_Location_Y").val(canvasObject.outputObject.Location.Y);
+      }
     }
   }
 
@@ -289,14 +309,35 @@ function createWorker(categoryJSON){
     $('html').keyup(function(e){
       //Check for the delete key
       var selectedObject = worker.canvas.getActiveObject();
+      var selectedGroup = worker.canvas.getActiveGroup();
       if(e.keyCode == 46 && selectedObject) {
           worker.removeObject(selectedObject);
+          $("#categorySelect").change();
+      }
+      else if(e.keyCode == 46 && selectedGroup){
+          objectList = selectedGroup.getObjects();
+          worker.canvas.deactivateAll().renderAll();
+          for(var i = 0; i < objectList.length; i++){
+            worker.removeObject(objectList[i]);
+          }
           $("#categorySelect").change();
       }
     });
 
     worker.canvas.on('object:moving', function(options) {
-      worker.setLocation(options.target);
+      if(options.target._objects){
+        //Snap the selection to grid
+        options.target.set({
+          left: Math.round(options.target.left / worker.grid) * worker.grid,
+          top: Math.round(options.target.top / worker.grid) * worker.grid
+        });
+        for(var i = 0; i<options.target._objects.length; i++){
+          worker.setLocation(options.target._objects[i], options.target);
+        }
+      }
+      else{
+        worker.setLocation(options.target);
+      }
     });
 
     worker.canvas.on('object:selected', function(options) {
@@ -839,6 +880,7 @@ function createWorker(categoryJSON){
         }
       }
     }
+    worker.canvas.renderAll();
   }
 
   worker.populateImage  = function(outputObject, category){
@@ -857,7 +899,7 @@ function createWorker(categoryJSON){
               worker.addObject(oImg);
               worker.updateDropDownID(oImg.imgSource);
               $("#categorySelect").change();
-    }); 
+    });
   }
 
   worker.handleDownload = function(){
