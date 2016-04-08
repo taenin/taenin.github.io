@@ -504,30 +504,30 @@ function createWorker(categoryJSON){
   worker.getPixelLocationFromCanvasObject = function(canvasObject){
     //Return the lower left-hand corner of the object
     var location = {};
-    location["X"] = canvasObject.left;
-    location["Y"] = worker.convertMetersToPixels(worker.worldHeight) - canvasObject.top - canvasObject.height;
+    location["X"] = canvasObject.left + (canvasObject.width / 2);
+    location["Y"] = worker.convertMetersToPixels(worker.worldHeight) - canvasObject.top - (canvasObject.height/2);
     return location;
   }
 
   worker.getMeterLocationFromCanvasObject = function(canvasObject){
     //Return the lower left-hand corner of the object
     var location = {};
-    location["X"] = worker.convertPixelsToMeters(canvasObject.left);
-    location["Y"] = worker.worldHeight - worker.convertPixelsToMeters(canvasObject.top + canvasObject.height);
+    location["X"] = worker.convertPixelsToMeters(canvasObject.left + (canvasObject.width / 2));
+    location["Y"] = worker.worldHeight - worker.convertPixelsToMeters(canvasObject.top + (canvasObject.height/2));
     return location;
   }
 
   worker.getCanvasLocationFromMeterLocation = function(meterLoc, canvasObject){
     var location = {};
-    location["left"] = worker.convertMetersToPixels(meterLoc.X);
-    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - worker.convertMetersToPixels(meterLoc.Y) - canvasObject.height;
+    location["left"] = worker.convertMetersToPixels(meterLoc.X) - (canvasObject.width / 2);
+    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - worker.convertMetersToPixels(meterLoc.Y) - (canvasObject.height/2);
     return location;
   }
 
   worker.getCanvasLocationFromPixelLocation = function(pixelLoc, canvasObject){
     var location = {};
-    location["left"] = pixelLoc.X;
-    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - pixelLoc.Y - canvasObject.height;
+    location["left"] = pixelLoc.X - (canvasObject.width/2);
+    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - pixelLoc.Y - (canvasObject.height/2);
     return location;
   }
 
