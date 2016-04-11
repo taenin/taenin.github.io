@@ -22,7 +22,7 @@ function createWorker(categoryJSON){
                              "pageY": 0};
     worker.grid = 32; //size of a meter in pixels
     worker.gridLines = []; //grid lines
-    worker.worldWidth = 62; //width of the world in meters
+    worker.worldWidth = 64; //width of the world in meters
     worker.worldHeight = 48; //height of the world in meters
     worker.zLevels = {
       "ForegroundLayers": 2,
@@ -422,6 +422,24 @@ function createWorker(categoryJSON){
         worker.updateWorldHeight(Number($(this).val()));
       }
     });
+    $("#hideBackground").change(function(){
+      if(worker.state.hasOwnProperty("BackgroundLayers")){
+        var bgLayers = worker.state.BackgroundLayers;
+        var isChecked = $(this).is(":checked");
+        for(var i = 0; i < bgLayers.length; i++){
+          worker.updateVisible(bgLayers[i], !isChecked);
+        }
+      }
+    });
+    $("#hideForeground").change(function(){
+      if(worker.state.hasOwnProperty("ForegroundLayers")){
+        var fgLayers = worker.state.ForegroundLayers;
+        var isChecked = $(this).is(":checked");
+        for(var i = 0; i < fgLayers.length; i++){
+          worker.updateVisible(fgLayers[i], !isChecked);
+        }
+      }
+    });
   }
 
   worker.drawOnMouseMove = function(e){
@@ -504,30 +522,30 @@ function createWorker(categoryJSON){
   worker.getPixelLocationFromCanvasObject = function(canvasObject){
     //Return the lower left-hand corner of the object
     var location = {};
-    location["X"] = canvasObject.left + (canvasObject.width / 2);
-    location["Y"] = worker.convertMetersToPixels(worker.worldHeight) - canvasObject.top - (canvasObject.height/2);
+    location["X"] = canvasObject.left;
+    location["Y"] = worker.convertMetersToPixels(worker.worldHeight) - canvasObject.top - canvasObject.height;
     return location;
   }
 
   worker.getMeterLocationFromCanvasObject = function(canvasObject){
     //Return the lower left-hand corner of the object
     var location = {};
-    location["X"] = worker.convertPixelsToMeters(canvasObject.left + (canvasObject.width / 2));
-    location["Y"] = worker.worldHeight - worker.convertPixelsToMeters(canvasObject.top + (canvasObject.height/2));
+    location["X"] = worker.convertPixelsToMeters(canvasObject.left);
+    location["Y"] = worker.worldHeight - worker.convertPixelsToMeters(canvasObject.top + canvasObject.height);
     return location;
   }
 
   worker.getCanvasLocationFromMeterLocation = function(meterLoc, canvasObject){
     var location = {};
-    location["left"] = worker.convertMetersToPixels(meterLoc.X) - (canvasObject.width / 2);
-    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - worker.convertMetersToPixels(meterLoc.Y) - (canvasObject.height/2);
+    location["left"] = worker.convertMetersToPixels(meterLoc.X);
+    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - worker.convertMetersToPixels(meterLoc.Y) - canvasObject.height;
     return location;
   }
 
   worker.getCanvasLocationFromPixelLocation = function(pixelLoc, canvasObject){
     var location = {};
-    location["left"] = pixelLoc.X - (canvasObject.width/2);
-    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - pixelLoc.Y - (canvasObject.height/2);
+    location["left"] = pixelLoc.X;
+    location["top"] = worker.convertMetersToPixels(worker.worldHeight) - pixelLoc.Y - canvasObject.height;
     return location;
   }
 
@@ -627,8 +645,8 @@ function createWorker(categoryJSON){
                 "Height": canvasObject.height,
                 "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
                 "ParallaxRates": {
-                  "X": 1.0,
-                  "Y": 1.0}
+                  "X": 0.0,
+                  "Y": 0.0}
     };
     return newLayer;
   };
@@ -641,8 +659,8 @@ function createWorker(categoryJSON){
                 "Height": canvasObject.height,
                 "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
                 "ParallaxRates": {
-                  "X": 1.0,
-                  "Y": 1.0}
+                  "X": 0.0,
+                  "Y": 0.0}
     };
     return newLayer;
   };
@@ -741,6 +759,12 @@ function createWorker(categoryJSON){
       }
       
     };
+
+  worker.updateVisible = function(canvasObject, isVisible){
+    canvasObject.visible = isVisible;
+    canvasObject.outputObject.visible = isVisible;
+    worker.canvas.renderAll();
+  }
 
   worker.drawSelection = function(){
     /*****************************
@@ -892,6 +916,9 @@ function createWorker(categoryJSON){
               oImg.lockScalingY = true;
               oImg.width = outputObject.Width;
               oImg.height = outputObject.Height;
+              if(outputObject.hasOwnProperty('visible')){
+                oImg.visible = outputObject.visible;
+              }
               oImg.outputObject = outputObject;
               //worker.setLocation(oImg);
               worker.canvas.add(oImg); 
@@ -908,6 +935,8 @@ function createWorker(categoryJSON){
       "Width": worker.worldWidth,
       "Height": worker.worldHeight
     };
+    output.hideBackground = $("#hideBackground").is(":checked");
+    output.hideForeground = $("hideForeground").is(":checked");
     filename = $("#levelName").val();
     for(var key in worker.state){
       if(worker.state.hasOwnProperty(key)){
@@ -949,6 +978,12 @@ function createWorker(categoryJSON){
   worker.receivedFile = function() {           
      worker.refresh();
      var newState = JSON.parse(fr.result);
+     if(newState.hasOwnProperty("hideForeground")){
+      $("#hideForeground").prop("checked", newState.hideForeground);
+     }
+     if(newState.hasOwnProperty("hideBackground")){
+      $("#hideBackground").prop("checked", newState.hideBackground);
+     }
      worker.populate(newState);
   } 
 
