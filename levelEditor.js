@@ -295,6 +295,9 @@ function createWorker(categoryJSON){
           worker.hoverImage.canvasElement = oImg;
           oImg.outputObject = worker.generateDefaultObject(oImg);
           //worker.setLocation(oImg);
+          if(oImg.outputObject.hasOwnProperty("PlistSource")){
+            worker.updatePList(oImg.outputObject.PlistSource, oImg);
+          }
           worker.canvas.add(oImg); 
           worker.drawOnMouseMove(worker.mousePosition);
         }); 
@@ -697,11 +700,17 @@ function createWorker(categoryJSON){
     };
     return newNode;
   }
+  worker.imgToPlist = function(imgSrc){
+    var splitList = imgSrc.split("/");
+    var newSrc = splitList[splitList.length-1];
+    var dot = newSrc.indexOf('.');
+    return "/plists/" + newSrc.slice(0, dot) + ".json";
+  }
 
   worker.createTile = function(canvasObject){
     newTile = {
                 "PNGSource": canvasObject.imgSource,
-                "PlistSource": "not implemented",
+                "PlistSource": worker.imgToPlist(canvasObject.imgSource),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
                 "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
@@ -798,7 +807,7 @@ function createWorker(categoryJSON){
               for (var subkey in outputObject[key]){
                 if (outputObject[key].hasOwnProperty(subkey)){
                   var newID = "inari_" + key + "_" + subkey;
-                  latestField.append(subkey + ": <input type = 'text' 'outputField' id=" + newID + ">");
+                  latestField.append("<div>" + subkey + ": <input type = 'text' class = 'outputField' id=" + newID + "></div>");
                   fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
                   //selectionUpdateHandlers("#"+newID, canvasObject, key, subkey);
                 }
@@ -833,7 +842,7 @@ function createWorker(categoryJSON){
               for (var subkey in outputObject[key]){
                 if (outputObject[key].hasOwnProperty(subkey)){
                   var newID = "inari_" + key + "_" + subkey;
-                  latestField.append(subkey + ": <input type = 'text' 'outputField' id=" + newID + ">");
+                  latestField.append("<div>" + subkey + ": <input type = 'text' 'outputField' id=" + newID + "></div>");
                   fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
                 }
               }
@@ -921,6 +930,12 @@ function createWorker(categoryJSON){
               }
               oImg.outputObject = outputObject;
               //worker.setLocation(oImg);
+              if(oImg.outputObject.hasOwnProperty("PlistSource")){
+                if(oImg.outputObject.PlistSource === "not implemented"){
+                  oImg.outputObject.PlistSource = worker.imgToPlist(oImg.imgSource);
+                }
+                worker.updatePList(oImg.outputObject.PlistSource, oImg);
+              }
               worker.canvas.add(oImg); 
               worker.updateLocation(oImg);
               worker.addObject(oImg);
@@ -1012,7 +1027,13 @@ function createWorker(categoryJSON){
                  };
   }
 
-
+  worker.updatePList = function(plistFile, canvasObject){
+    $.getJSON(plistFile, {}, function(data){
+      if(data.hasOwnProperty("shape")){
+        canvasObject.outputObject.PList = data.shape;
+      }
+    });
+  }
 
   worker.initializeDownloader = function(){
     $("#btnLoad").click(worker.handleFileSelect);
@@ -1187,6 +1208,9 @@ function selectionUpdateHandlers(selection,canvasObject, key, subkey){
       var typedReturn = typeFunctions(canvasObject.outputObject[key], $(selection).val());
       $(selection).val(typedReturn);
       canvasObject.outputObject[key] = typedReturn;
+      if(key==="PlistSource"){
+        worker.updatePList(typedReturn, canvasObject);
+      }
     }
   });
   $(selection).keyup(function(event){
@@ -1203,7 +1227,9 @@ function selectionUpdateHandlers(selection,canvasObject, key, subkey){
         var typedReturn = typeFunctions(canvasObject.outputObject[key], $(selection).val());
         $(selection).val(typedReturn);
         canvasObject.outputObject[key] = typedReturn;
-
+        if(key==="PlistSource"){
+          worker.updatePList(typedReturn, canvasObject);
+        }
       }
     }
   });
