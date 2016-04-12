@@ -1068,6 +1068,7 @@ $(document).ready(function(){
       if (data.hasOwnProperty(key)) {
         if(data[key].hasSubCategory){
           for(var i = 0; i<data[key].img.length; i++){
+            console.log(data[key].img);
             for(var subI = 0; subI<data[key].img[i].imgList.length; subI++){
               $("<img />").attr("src", data[key].img[i].imgList[subI]);
             }
