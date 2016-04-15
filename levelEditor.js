@@ -29,6 +29,7 @@ function createWorker(categoryJSON){
       "BackgroundLayers": -2,
       "BackgroundAestheticDetails": -1,
       "ForegroundAestheticDetails": 1,
+      "Portals": 1
     };
 
     worker.defaultSelectPrompt = "Select an Object";
@@ -64,7 +65,8 @@ function createWorker(categoryJSON){
                       "Spawners": [],
                       "Enemies": [],
                       "Goal": null,
-                      "Hazards": []
+                      "Hazards": [],
+                      "Portals": []
                    };
 
 
@@ -566,6 +568,18 @@ function createWorker(categoryJSON){
     return avatar;
   };
 
+  worker.createPortal = function(canvasObject){
+    var portal = {
+                  "Width": canvasObject.width,
+                  "Height" : canvasObject.height,
+                  "PNGSource" : canvasObject.imgSource,
+                  "Location" : worker.getPixelLocationFromCanvasObject(canvasObject),
+                  "DrawDepth" : 1,
+                  "LevelTarget" : "levels/leveName.json"
+                 };
+   return portal;
+  }
+
   worker.createGoal = function(canvasObject){
     var goal = {
                   "PNGSource": canvasObject.imgSource,
@@ -1023,7 +1037,8 @@ function createWorker(categoryJSON){
                     "Spawners":  worker.createSpawner,
                     "Enemies":  worker.createEnemy,
                     "Goal":  worker.createGoal,
-                    "Hazards": worker.createHazard
+                    "Hazards": worker.createHazard,
+                    "Portals": worker.createPortal
                  };
   }
 
@@ -1068,7 +1083,6 @@ $(document).ready(function(){
       if (data.hasOwnProperty(key)) {
         if(data[key].hasSubCategory){
           for(var i = 0; i<data[key].img.length; i++){
-            console.log(data[key].img);
             for(var subI = 0; subI<data[key].img[i].imgList.length; subI++){
               $("<img />").attr("src", data[key].img[i].imgList[subI]);
             }
