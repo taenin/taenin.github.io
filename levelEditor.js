@@ -627,7 +627,9 @@ function createWorker(categoryJSON){
                               "Y": 0
                             },
                 "SpawnRate": 1,
-                "Angle": 1.0
+                "Angle": 1.0,
+                "flipHorizontal": false,
+                "flipVertical" : false
     };
     return newSpawner;
   };
@@ -937,10 +939,24 @@ function createWorker(categoryJSON){
               oImg.categoryType = category;
               oImg.lockScalingX = true; //make it so we cannot resize the images
               oImg.lockScalingY = true;
-              oImg.width = outputObject.Width;
-              oImg.height = outputObject.Height;
+              //oImg.width = outputObject.Width;
+              //oImg.height = outputObject.Height;
+              outputObject.Width = oImg.width;
+              outputObject.Height = oImg.height;
+              var defaultObj = worker.generateDefaultObject(oImg);
+              for (var property in defaultObj) {
+                if (defaultObj.hasOwnProperty(property) && !outputObject.hasOwnProperty(property)) {
+                    outputObject[property] = defaultObj[property];
+                }
+              }
               if(outputObject.hasOwnProperty('visible')){
                 oImg.visible = outputObject.visible;
+              }
+              if(outputObject.hasOwnProperty("flipVertical")){
+                oImg.set("flipY", outputObject.flipVertical);
+              }
+              if(outputObject.hasOwnProperty("flipHorizontal")){
+                oImg.set("flipX", outputObject.flipHorizontal);
               }
               oImg.outputObject = outputObject;
               //worker.setLocation(oImg);
@@ -956,6 +972,16 @@ function createWorker(categoryJSON){
               worker.updateDropDownID(oImg.imgSource);
               $("#categorySelect").change();
     });
+  }
+
+  worker.toggleHorizontalFlip = function(isFlipped, canvasObject){
+    canvasObject.set("flipX", isFlipped);
+    worker.canvas.renderAll();
+  }
+
+  worker.toggleVerticalFlip = function(isFlipped, canvasObject){
+    canvasObject.set("flipY", isFlipped);
+    worker.canvas.renderAll();
   }
 
   worker.handleDownload = function(){
@@ -1226,6 +1252,12 @@ function selectionUpdateHandlers(selection,canvasObject, key, subkey){
       if(key==="PlistSource"){
         worker.updatePList(typedReturn, canvasObject);
       }
+      if(key==="flipVertical"){
+        worker.toggleVerticalFlip(typedReturn, canvasObject);
+      }
+      if(key==="flipHorizontal"){
+        worker.toggleHorizontalFlip(typedReturn, canvasObject);
+      }
     }
   });
   $(selection).keyup(function(event){
@@ -1244,6 +1276,12 @@ function selectionUpdateHandlers(selection,canvasObject, key, subkey){
         canvasObject.outputObject[key] = typedReturn;
         if(key==="PlistSource"){
           worker.updatePList(typedReturn, canvasObject);
+        }
+        if(key==="flipVertical"){
+        worker.toggleVerticalFlip(typedReturn, canvasObject);
+        }
+        if(key==="flipHorizontal"){
+          worker.toggleHorizontalFlip(typedReturn, canvasObject);
         }
       }
     }
