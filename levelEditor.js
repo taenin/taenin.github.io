@@ -1012,7 +1012,6 @@ function createWorker(categoryJSON){
             worker.addObject(oImg);
             worker.updateDropDownID(oImg.imgSource);
             $("#categorySelect").change();
-            worker.canvas.renderAll();
           }
         }
         else if(desiredState.hasOwnProperty(category) && Object.prototype.toString.call( desiredState[category] ) === "[object Object]" && desiredState[category]){
@@ -1021,10 +1020,10 @@ function createWorker(categoryJSON){
             worker.addObject(oImg);
             worker.updateDropDownID(oImg.imgSource);
             $("#categorySelect").change(); 
-            worker.canvas.renderAll();
         }
       }
     }
+    worker.canvas.renderAll();
   }
 
   worker.verifyPopulated = function(targetSize){
