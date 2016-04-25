@@ -17,7 +17,7 @@ function createWorker(categoryJSON){
   ******************************************************/
   worker.refresh = function(){
     //initialize all of the variables we need to start things off
-
+    worker.desiredState = {};
     worker.mousePosition = { "pageX": 0,
                              "pageY": 0};
     worker.grid = 32; //size of a meter in pixels
@@ -25,10 +25,10 @@ function createWorker(categoryJSON){
     worker.worldWidth = 64; //width of the world in meters
     worker.worldHeight = 48; //height of the world in meters
     worker.zLevels = {
-      "ForegroundLayers": 2,
+      "ForegroundLayers": 3,
       "BackgroundLayers": -2,
       "BackgroundAestheticDetails": -1,
-      "ForegroundAestheticDetails": 1,
+      "ForegroundAestheticDetails": 2,
       "Portals": 1
     };
 
@@ -39,7 +39,8 @@ function createWorker(categoryJSON){
       "-1": 0,
        "0": 0,
        "1": 0,
-       "2": 0
+       "2": 0,
+       "3": 0
     };
     worker.shouldSnapToGrid = ["Spawners", "EnvironmentTiles"];
     worker.hoverImage = null;
@@ -59,6 +60,7 @@ function createWorker(categoryJSON){
                       "BackgroundLayers": [],
                       "BackgroundAestheticDetails": [],
                       "ForegroundAestheticDetails": [],
+                      "AnimatedDetails" : [],
                       "EnvironmentTiles": [],
                       "Avatar": null,
                       "Nodes": [],
@@ -558,6 +560,7 @@ function createWorker(categoryJSON){
     return val / worker.grid;
   };
 
+
   worker.createAvatar = function(canvasObject){
     var avatar = {
                   "Width": canvasObject.width,
@@ -567,6 +570,16 @@ function createWorker(categoryJSON){
                   };
     return avatar;
   };
+
+  worker.createAnimatedDetail = function(canvasObject){
+    var detail = {
+                "SpriteSheet": canvasObject.imgSource,
+                "Width": canvasObject.width,
+                "Height": canvasObject.height,
+                "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
+    };
+    return detail;
+  }
 
   worker.createPortal = function(canvasObject){
     var portal = {
@@ -578,7 +591,34 @@ function createWorker(categoryJSON){
                   "LevelTarget" : "levels/leveName.json"
                  };
    return portal;
-  }
+  };
+
+  worker.createReceptacle = function(canvasObject){
+    var receptacle = {
+                    "Width" : canvasObject.width,
+                    "Height" : canvasObject.height,
+                    "PNGSource" : canvasObject.imgSource,
+                    "Location" : worker.getMeterLocationFromCanvasObject(canvasObject),
+                    "drawDepth" : 0,
+                    "targetChild" : {},
+                    "active" : false //Active means the wall is down
+    };
+    Object.defineProperty(receptacle, "targetChild", {
+      enumerable: false,
+      writable: true
+    });
+    return receptacle;
+  };
+
+  worker.createReceptacleWall = function(canvasObject){
+    var wall = worker.createTile(canvasObject);
+    wall.targetParent = {};
+    Object.defineProperty(wall, "targetParent", {
+      enumerable: false,
+      writable: true
+    });
+    return wall;
+  };
 
   worker.createGoal = function(canvasObject){
     var goal = {
@@ -627,7 +667,9 @@ function createWorker(categoryJSON){
                               "Y": 0
                             },
                 "SpawnRate": 1,
-                "Angle": 1.0
+                "Angle": 1.0,
+                "flipHorizontal": false,
+                "flipVertical" : false
     };
     return newSpawner;
   };
@@ -910,7 +952,33 @@ function createWorker(categoryJSON){
     return null;
   }
 
+  worker.countFields = function(state){
+    count = 0;
+    for(var category in state) {
+      if(state.hasOwnProperty(category)){
+        if(category==="World"){
+        }
+        else if(state.hasOwnProperty(category) && Object.prototype.toString.call( state[category] ) === "[object Array]" && state[category].length > 0){
+          for(var i =0; i < state[category].length; i++){
+            if(state[category][i] != null){
+              count+=1;
+            }
+          }
+        }
+        else if(state.hasOwnProperty(category) && Object.prototype.toString.call( state[category] ) === "[object Object]" && state[category]){
+          if(state[category]!=null){
+            count+=1;
+          }
+        }
+      }
+    }
+    return count;
+  }
+
   worker.populate = function(newState) {
+    worker.desiredState = {};
+    var desiredState = worker.desiredState;
+    var total = worker.countFields(newState);
     for(var category in newState) {
       if(newState.hasOwnProperty(category)){
         if(category==="World"){
@@ -918,29 +986,154 @@ function createWorker(categoryJSON){
           worker.updateWorldHeight(newState.World.Height);
         }
         else if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Array]" && newState[category].length > 0){
+          if(!desiredState.hasOwnProperty(category)){
+            desiredState[category] = [];
+          }
           for(var i =0; i < newState[category].length; i++){
-            worker.populateImage(newState[category][i], category);
+            worker.populateImage(newState[category][i], category, i, desiredState);
           }
         }
         else if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Object]" && newState[category]){
-          worker.populateImage(newState[category], category);
+          if(!desiredState.hasOwnProperty(category)){
+            desiredState[category] = {};
+          }
+          worker.populateImage(newState[category], category, -1, desiredState);
+        }
+      }
+    }/*
+    var total = worker.countFields(newState);
+    //Wait for async to finish
+    while(worker.countFields(desiredState) != total){
+      console.log("--");
+      console.log(total);
+      console.log(worker.countFields(desiredState));
+    }
+    for(var category in desiredState) {
+      if(desiredState.hasOwnProperty(category)){
+        if(category==="World"){
+        }
+        else if(desiredState.hasOwnProperty(category) && Object.prototype.toString.call( desiredState[category] ) === "[object Array]" && desiredState[category].length > 0){
+          for(var i =0; i < desiredState[category].length; i++){
+            oImg = desiredState[category][i];
+            worker.canvas.add(oImg);
+            worker.addObject(oImg);
+            worker.updateDropDownID(oImg.imgSource);
+            $("#categorySelect").change(); 
+          }
+        }
+        else if(desiredState.hasOwnProperty(category) && Object.prototype.toString.call( desiredState[category] ) === "[object Object]" && desiredState[category]){
+          oImg = desiredState[category];
+            worker.canvas.add(oImg);
+            worker.addObject(oImg);
+            worker.updateDropDownID(oImg.imgSource);
+            $("#categorySelect").change(); 
+        }
+      }
+    }
+    */
+    console.log("function finished");
+    worker.verifyPopulated(total);
+    //worker.canvas.add(oImg);
+    //worker.addObject(oImg);
+    //worker.updateDropDownID(oImg.imgSource);
+    //$("#categorySelect").change(); 
+    //worker.canvas.renderAll();
+  }
+  worker.drawInOrder = function(desiredState){
+    for(var category in desiredState) {
+      if(desiredState.hasOwnProperty(category)){
+        if(category==="World"){
+        }
+        else if(desiredState.hasOwnProperty(category) && Object.prototype.toString.call( desiredState[category] ) === "[object Array]" && desiredState[category].length > 0){
+          for(var i =0; i < desiredState[category].length; i++){
+            oImg = desiredState[category][i];
+            worker.canvas.add(oImg);
+            worker.addObject(oImg);
+            worker.updateDropDownID(oImg.imgSource);
+            $("#categorySelect").change();
+          }
+        }
+        else if(desiredState.hasOwnProperty(category) && Object.prototype.toString.call( desiredState[category] ) === "[object Object]" && desiredState[category]){
+          oImg = desiredState[category];
+            worker.canvas.add(oImg);
+            worker.addObject(oImg);
+            worker.updateDropDownID(oImg.imgSource);
+            $("#categorySelect").change(); 
         }
       }
     }
     worker.canvas.renderAll();
   }
 
-  worker.populateImage  = function(outputObject, category){
+  worker.verifyPopulated = function(targetSize){
+    if(worker.countFields(worker.desiredState) == targetSize){
+      console.log("Async call finished. Drawing Canvas...");
+      worker.drawInOrder(worker.desiredState);
+    }
+    else{
+      setTimeout(function(){worker.verifyPopulated(targetSize);}, 1000);
+    }
+  }
+
+
+worker.asyncLoop = function (iterations, func, callback) {
+    var index = 0;
+    var done = false;
+    var loop = {
+        next: function() {
+            if (done) {
+                return;
+            }
+
+            if (index < iterations) {
+                index++;
+                func(loop);
+
+            } else {
+                done = true;
+                callback();
+            }
+        },
+
+        iteration: function() {
+            return index - 1;
+        },
+
+        break: function() {
+            done = true;
+            callback();
+        }
+    };
+    loop.next();
+    return loop;
+}
+
+  worker.populateImage  = function(outputObject, category, drawOrder, desiredState){
     fabric.Image.fromURL(outputObject.PNGSource, function(oImg){
+              console.log("loaded");
               oImg.dropDownID = worker.generateDropDownID(outputObject.PNGSource);
               oImg.imgSource = outputObject.PNGSource;
               oImg.categoryType = category;
               oImg.lockScalingX = true; //make it so we cannot resize the images
               oImg.lockScalingY = true;
-              oImg.width = outputObject.Width;
-              oImg.height = outputObject.Height;
+              //oImg.width = outputObject.Width;
+              //oImg.height = outputObject.Height;
+              outputObject.Width = oImg.width;
+              outputObject.Height = oImg.height;
+              var defaultObj = worker.generateDefaultObject(oImg);
+              for (var property in defaultObj) {
+                if (defaultObj.hasOwnProperty(property) && !outputObject.hasOwnProperty(property)) {
+                    outputObject[property] = defaultObj[property];
+                }
+              }
               if(outputObject.hasOwnProperty('visible')){
                 oImg.visible = outputObject.visible;
+              }
+              if(outputObject.hasOwnProperty("flipVertical")){
+                oImg.set("flipY", outputObject.flipVertical);
+              }
+              if(outputObject.hasOwnProperty("flipHorizontal")){
+                oImg.set("flipX", outputObject.flipHorizontal);
               }
               oImg.outputObject = outputObject;
               //worker.setLocation(oImg);
@@ -950,12 +1143,26 @@ function createWorker(categoryJSON){
                 }
                 worker.updatePList(oImg.outputObject.PlistSource, oImg);
               }
-              worker.canvas.add(oImg); 
+
               worker.updateLocation(oImg);
-              worker.addObject(oImg);
-              worker.updateDropDownID(oImg.imgSource);
-              $("#categorySelect").change();
+              
+              if(drawOrder >=0){
+                desiredState[category][drawOrder] = oImg;
+              }
+              else{
+                desiredState[category] = oImg;
+              }
     });
+  }
+
+  worker.toggleHorizontalFlip = function(isFlipped, canvasObject){
+    canvasObject.set("flipX", isFlipped);
+    worker.canvas.renderAll();
+  }
+
+  worker.toggleVerticalFlip = function(isFlipped, canvasObject){
+    canvasObject.set("flipY", isFlipped);
+    worker.canvas.renderAll();
   }
 
   worker.handleDownload = function(){
@@ -1031,6 +1238,7 @@ function createWorker(categoryJSON){
                     "BackgroundLayers":  worker.createBackgroundLayer,
                     "BackgroundAestheticDetails":  worker.createBackgroundAestheticDetail,
                     "ForegroundAestheticDetails":  worker.createForegroundAestheticDetail,
+                    "AnimatedDetails" : worker.createAnimatedDetail,
                     "EnvironmentTiles":  worker.createTile,
                     "Avatar":  worker.createAvatar,
                     "Nodes":  worker.createNode,
@@ -1038,7 +1246,8 @@ function createWorker(categoryJSON){
                     "Enemies":  worker.createEnemy,
                     "Goal":  worker.createGoal,
                     "Hazards": worker.createHazard,
-                    "Portals": worker.createPortal
+                    "Portals": worker.createPortal,
+                    "Receptacles" : worker.createReceptacle
                  };
   }
 
@@ -1226,6 +1435,12 @@ function selectionUpdateHandlers(selection,canvasObject, key, subkey){
       if(key==="PlistSource"){
         worker.updatePList(typedReturn, canvasObject);
       }
+      if(key==="flipVertical"){
+        worker.toggleVerticalFlip(typedReturn, canvasObject);
+      }
+      if(key==="flipHorizontal"){
+        worker.toggleHorizontalFlip(typedReturn, canvasObject);
+      }
     }
   });
   $(selection).keyup(function(event){
@@ -1244,6 +1459,12 @@ function selectionUpdateHandlers(selection,canvasObject, key, subkey){
         canvasObject.outputObject[key] = typedReturn;
         if(key==="PlistSource"){
           worker.updatePList(typedReturn, canvasObject);
+        }
+        if(key==="flipVertical"){
+        worker.toggleVerticalFlip(typedReturn, canvasObject);
+        }
+        if(key==="flipHorizontal"){
+          worker.toggleHorizontalFlip(typedReturn, canvasObject);
         }
       }
     }
