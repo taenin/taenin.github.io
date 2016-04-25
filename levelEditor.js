@@ -60,6 +60,7 @@ function createWorker(categoryJSON){
                       "BackgroundLayers": [],
                       "BackgroundAestheticDetails": [],
                       "ForegroundAestheticDetails": [],
+                      "AnimatedDetails" : [],
                       "EnvironmentTiles": [],
                       "Avatar": null,
                       "Nodes": [],
@@ -559,6 +560,7 @@ function createWorker(categoryJSON){
     return val / worker.grid;
   };
 
+
   worker.createAvatar = function(canvasObject){
     var avatar = {
                   "Width": canvasObject.width,
@@ -568,6 +570,16 @@ function createWorker(categoryJSON){
                   };
     return avatar;
   };
+
+  worker.createAnimatedDetail = function(canvasObject){
+    var detail = {
+                "SpriteSheet": canvasObject.imgSource,
+                "Width": canvasObject.width,
+                "Height": canvasObject.height,
+                "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
+    };
+    return detail;
+  }
 
   worker.createPortal = function(canvasObject){
     var portal = {
@@ -579,7 +591,34 @@ function createWorker(categoryJSON){
                   "LevelTarget" : "levels/leveName.json"
                  };
    return portal;
-  }
+  };
+
+  worker.createReceptacle = function(canvasObject){
+    var receptacle = {
+                    "Width" : canvasObject.width,
+                    "Height" : canvasObject.height,
+                    "PNGSource" : canvasObject.imgSource,
+                    "Location" : worker.getMeterLocationFromCanvasObject(canvasObject),
+                    "drawDepth" : 0,
+                    "targetChild" : {},
+                    "active" : false //Active means the wall is down
+    };
+    Object.defineProperty(receptacle, "targetChild", {
+      enumerable: false,
+      writable: true
+    });
+    return receptacle;
+  };
+
+  worker.createReceptacleWall = function(canvasObject){
+    var wall = worker.createTile(canvasObject);
+    wall.targetParent = {};
+    Object.defineProperty(wall, "targetParent", {
+      enumerable: false,
+      writable: true
+    });
+    return wall;
+  };
 
   worker.createGoal = function(canvasObject){
     var goal = {
@@ -1199,6 +1238,7 @@ worker.asyncLoop = function (iterations, func, callback) {
                     "BackgroundLayers":  worker.createBackgroundLayer,
                     "BackgroundAestheticDetails":  worker.createBackgroundAestheticDetail,
                     "ForegroundAestheticDetails":  worker.createForegroundAestheticDetail,
+                    "AnimatedDetails" : worker.createAnimatedDetail,
                     "EnvironmentTiles":  worker.createTile,
                     "Avatar":  worker.createAvatar,
                     "Nodes":  worker.createNode,
@@ -1206,7 +1246,8 @@ worker.asyncLoop = function (iterations, func, callback) {
                     "Enemies":  worker.createEnemy,
                     "Goal":  worker.createGoal,
                     "Hazards": worker.createHazard,
-                    "Portals": worker.createPortal
+                    "Portals": worker.createPortal,
+                    "Receptacles" : worker.createReceptacle
                  };
   }
 
