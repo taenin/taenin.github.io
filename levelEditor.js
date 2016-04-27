@@ -574,6 +574,7 @@ function createWorker(categoryJSON){
   worker.createAnimatedDetail = function(canvasObject){
     var detail = {
                 "SpriteSheet": canvasObject.imgSource,
+                "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
                 "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
