@@ -583,6 +583,7 @@ function createWorker(categoryJSON){
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
                 "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
+                "GoalLocation": worker.getMeterLocationFromCanvasObject(canvasObject)
     };
     return detail;
   }
