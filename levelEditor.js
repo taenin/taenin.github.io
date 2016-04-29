@@ -42,7 +42,10 @@ function createWorker(categoryJSON){
        "2": 0,
        "3": 0
     };
-    worker.shouldSnapToGrid = ["Spawners", "EnvironmentTiles"];
+    worker.shouldSnapToGrid = function(){
+      return $("#snapToGrid").is(":checked");
+    }
+    //["Spawners", "EnvironmentTiles"];
     worker.hoverImage = null;
     /*
     The hoverImage object has the form:
@@ -107,7 +110,7 @@ function createWorker(categoryJSON){
       }
     }
     else{
-      if(worker.shouldSnapToGrid.indexOf(canvasObject.categoryType) > -1){
+      if(worker.shouldSnapToGrid()){
         canvasObject.set({
           left: Math.round(canvasObject.left / worker.grid) * worker.grid,
           top: Math.round(canvasObject.top / worker.grid) * worker.grid
@@ -145,7 +148,7 @@ function createWorker(categoryJSON){
       canvasObject.left = newLocation.left;
       canvasObject.top  = newLocation.top;
     }
-    if(worker.shouldSnapToGrid.indexOf(canvasObject.categoryType) > -1){
+    if(worker.shouldSnapToGrid()){
       //Update the text boxes
       worker.setLocation(canvasObject);
     }
@@ -334,10 +337,12 @@ function createWorker(categoryJSON){
     worker.canvas.on('object:moving', function(options) {
       if(options.target._objects){
         //Snap the selection to grid
-        options.target.set({
-          left: Math.round(options.target.left / worker.grid) * worker.grid,
-          top: Math.round(options.target.top / worker.grid) * worker.grid
-        });
+        if(worker.shouldSnapToGrid()){
+          options.target.set({
+            left: Math.round(options.target.left / worker.grid) * worker.grid,
+            top: Math.round(options.target.top / worker.grid) * worker.grid
+          });
+        }
         for(var i = 0; i<options.target._objects.length; i++){
           worker.setLocation(options.target._objects[i], options.target);
         }
@@ -453,7 +458,7 @@ function createWorker(categoryJSON){
     if (worker.hoverImage && worker.hoverImage.canvasElement) {
           worker.hoverImage.canvasElement.left = ((e.pageX + $('#canvas').scrollLeft() - $('#canvas').offset().left)/worker.canvas.getZoom()) - worker.hoverImage.canvasElement.width /2;
           worker.hoverImage.canvasElement.top = ((e.pageY + $('#canvas').scrollTop() - $('#canvas').offset().top)/ worker.canvas.getZoom()) - worker.hoverImage.canvasElement.height /2 ;
-          if(worker.shouldSnapToGrid.indexOf(worker.hoverImage.type) > -1){
+          if(worker.shouldSnapToGrid()){
             worker.hoverImage.canvasElement.left = worker.snapToGrid(worker.hoverImage.canvasElement.left);
             worker.hoverImage.canvasElement.top = worker.snapToGrid(worker.hoverImage.canvasElement.top);
           }
