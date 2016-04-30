@@ -23,69 +23,144 @@ body{
 .outputField{
 	margin: 10px;
 }
+
+/* TITLE */
+.title{
+	margin: 0 0 0 0;
+	color: #3FA9DA;
+	font-size: 40;
+	opacity:1;
+	height: 99px;
+	width: 40%;
+	display: inline-block;
+	vertical-align: top;
+}
+/* CANVAS PARAMS */
+#canvasParam {
+	display: inline-block;
+	width: 30%;
+	height: 99px;
+	font-size: 12;
+	overflow: auto;
+	vertical-align: top;
+}
+
+	.block {
+		display: inline-block;
+		*display: inline-block;
+		width: calc(100%/3.1);
+		vertical-align: top;
+	}
+
+	#sliderWrapper {
+		margin: 15 0 15 0;
+	}
+
+	#slider{
+	display: inline-block;
+	*display: inline-block;
+	width: 200px;
+}
+
+
+/* SAVING AND LOADING STUFF */
+#fileToolbar{
+	height: 99px;
+	width: 29%;
+	display: inline-block;
+}
+
+	.fileToolbarBlock{
+		display:inline-block;
+		*display: inline-block;
+	}
+
+		#fileinput, #levelName {
+			width: 200px;
+		}
+
+/*MAIN BODY*/
 .wrapper {
 	min-height: 800px;
-	white-space: nowrap;
 	width: 100%;
 	min-width: 1200px;
 	display: inline-block;
 	*display: inline-block;
 }
-.block{
-	display: inline-block;
-	*display: inline-block;
-}
-#canvas {
-	min-width: 200px;
-	max-width: 90%;
-	height: 100%;
-	overflow: auto;
-	text-align: left;
-	vertical-align: top;
-	display: inline-block;
-	*display: inline-block;
-}
 
+	/*CANVAS (LEFT) */
+	#canvas {
+		min-width: 70%;
+		max-width: 70%;
+		height: calc(100% - 100px);
+		overflow: auto;
+		text-align: left;
+		vertical-align: top;
+		display: inline-block;
+		*display: inline-block;
+		float: left;
+	}
 
+	/*TOOL STUFF START (RIGHT)*/
+	.toolWrapper {
+		display: inline-block;
+		vertical-align: top;
+		width: 30%;
+		overflow: hidden;
+	}
 
-.tools{
-	white-space: normal;
-	width : 35%;
-	min-height: 100%;
-	overflow: auto;
-	display: inline-block;
-	*display: inline-block;
-}
-#toolbar{
-	display: inline-block;
-	*display: inline-block;
-}
+		.toolWrapper select {
+			width: 40%;
+		}
+
+		/*TILE SETS*/
+		.tools{
+			display: block;
+			white-space: normal;
+			overflow: auto;
+			height: 80px;
+		}
+
+			.bartitle{
+				margin: 0 0 0 0;
+				color: #3FA9DA;
+				font-size: 20;
+				opacity:1;
+				margin: 10 0 10 0;
+			}
+
+			.toolPopulate, .selectPopulate {
+				height: calc((100% - 100px)/2 - 80px);
+				overflow: auto;
+			}
+
+		/*CANVAS PARAMS + OBJECT PROPERTIES*/
+		.helperTool{
+			display: block;
+			vertical-align: top;
+			border-top: 1px solid black;
+			height: 80px;
+			overflow: auto;
+			font-size: 12;
+		}
+
+			.worldInput {
+				width: 40px;
+			}
+
+			.subtitle{
+				margin-top: 10px;
+				margin-bottom: 15px;
+				color: #3FA9DA;
+				font-size: 20;
+				opacity:1;
+			}
+
 .toolPopulateCanvas{
 	width: 100%;
 	min-height: 400px;
 }
-.title{
-	margin-top: 50px;
-	margin-bottom: 25px;
-	color: #3FA9DA;
-	font-size: 60;
-	opacity:1;
-}
-.bartitle{
-	margin-top: 10px;
-	margin-bottom: 15px;
-	color: #3FA9DA;
-	font-size: 30;
-	opacity:1;
-}
 
-.subtitle{
-	margin-top: 10px;
-	margin-bottom: 15px;
-	color: #3FA9DA;
-	font-size: 20;
-	opacity:1;
-}
 .testing{
 	color: #FFFFFF;
 	opacity:1;
@@ -123,28 +198,6 @@ body{
 	width: 100%;
 	max-width: 200px;
 }
-#slider{
-	display: inline-block;
-	*display: inline-block;
-	width: 200px;
-	margin-left: 20px;
-	margin-top: 10px;
-}
-
-#fileToolbar{
-	margin: 20px;
-}
-.helperTool{
-	vertical-align: top;
-	display:inline-block;
-	*display: inline-block;
-}
-.fileToolbarBlock{
-	margin-left: 12.5%;
-	margin-right: 12.5%;
-	display:inline-block;
-	*display: inline-block;
-}
 
 body {
 	text-align: center;
@@ -153,91 +206,104 @@ body {
 </style>
 </head>
 <body>
+	<!-- TOP SECTION -->
 	<div class="title"><i class="name">Inari</i> Level Editor</div>
+
+	<div id = "canvasParam">
+		<div class = "block">
+			<div>
+				Snap to Grid<input type = "checkbox" id="snapToGrid"/>
+			</div>
+		</div>
+
+		<div class ="block">
+			<div>
+				World Width (m): <input type="text" class="worldInput" id="worldWidth"/>
+			</div>
+			<div>
+				World Height (m): <input type="text" class="worldInput" id="worldHeight"/>
+			</div>
+		</div>
+
+		<div class ="block">
+			<div>
+				Hide BG Layers <input type="checkbox" id="hideBackground"/>
+			</div>
+			<div>
+				Hide FG Layers <input type="checkbox" id="hideForeground"/>
+			</div>
+		</div>
+
+		<div id = "sliderWrapper">
+			Zoom: <div id="slider"></div>
+		</div>
+	</div>
+
+	<div id = "fileToolbar">
+		<div class="fileToolbarBlock">
+			<input type="file" id="fileinput"/>
+	        <input type='button' id='btnLoad' value='Load Level'>
+    	</div>
+    	<div class = "fileToolbarBlock">
+        	<input type="text" id="levelName" placeholder="saveFile.json">
+        	<input type="button" id="btnSave" value="Save Level">
+    	</div>
+    </div>
+    <!-- MAIN BODY: CANVAS + TOOLS -->
 	<div class="wrapper">
-		<div id = "fileToolbar">
-			<div class="fileToolbarBlock">
-				<input type="file" id="fileinput"/>
-		        <input type='button' id='btnLoad' value='Load Level'>
-	    	</div>
-	    	<div class = "fileToolbarBlock">
-	        	<input type="text" id="levelName" placeholder="saveFile.json">
-	        	<input type="button" id="btnSave" value="Save Level">
-	    	</div>
-	    </div>
+		<!-- CANVAS -->
 		<div id="canvas">
 			<canvas id="myCanvas" width="900" height="800" style="border:1px solid #ccc;">
 			</canvas>
 		</div>
-	</div>
-	<div class="wrapper">
-		<div class="helperTool">
-		<div class="tools">
-			<div class="bartitle">
-				Canvas Tile Sets
+		<!-- TOOLS -->
+		<div class="toolWrapper">
+			<!-- TOOL 1: TILE SETS -->
+			<div class="tools">
+				<div class="bartitle">
+					Canvas Tile Sets
+				</div>
+				<div id="toolbar">
+					<select id = "categoryTool">
+						<option>Loading</option>
+					</select>
+					<select id = "subcategoryTool">
+						<option>Loading</option>
+					</select>
+				</div>
 			</div>
-			<div id="toolbar">
-				<select id = "categoryTool">
-					<option>Loading</option>
-				</select>
-				<select id = "subcategoryTool">
-					<option>Loading</option>
-				</select>
-			</div>
+
 			<div class="toolPopulate">
 				<div class="toolPopulateCanvas">
 					Tool Populate
 				</div>
 			</div>
-		</div>
+			<!-- TOOL 2: OBJECT PROPERTIES -->
 			<div class = "helperTool">
-			<div class="bartitle">
-				Canvas Parameters
-			</div>
-			<div>
-			<div class = "block">
-				World Width (meters): <input type="text" id="worldWidth"/>
-			</div>
-			<div class = "block">
-				World Height (meters): <input type="text" id="worldHeight"/>
-			</div>
-			</div>
-
-			<div>
-				Zoom: <div id="slider"></div>
-			</div>
-			<div>
-				Snap Objects to Grid While Moving <input type = "checkbox" id="snapToGrid"/>
-			</div>
-			<div>
-				<div class="block">
-					Hide Background Layers <input type="checkbox" id="hideBackground"/>
+				<div class="bartitle">
+					Object Properties / Selection
 				</div>
-				<div class="block">
-					Hide Foreground Layers <input type="checkbox" id="hideForeground"/>
-				</div>
-			</div>
-			<div class="subtitle">
-				Select an Object on the Canvas
-			</div>
-			<div id="selector">
-				<div id="selectbar">
-					<select id = "categorySelect">
-						<option>Loading</option>
-					</select>
-					<select id = "subcategorySelect">
-						<option>Loading</option>
-					</select>
-				</div>
-				<div class="selectPopulate">
-					<div class="selectPopulateCanvas">
-					Select Populate
+			
+				<div id="selector">
+					<div id="selectbar">
+						<select id = "categorySelect">
+							<option>Loading</option>
+						</select>
+						<select id = "subcategorySelect">
+							<option>Loading</option>
+						</select>
 					</div>
 				</div>
 			</div>
+
+			<div class="selectPopulate">
+				<div class="selectPopulateCanvas">
+				Select Populate
+				</div>
+			</div>
+
 		</div>
-		</div>
-	</div>
-	
+
+	</div>	
 </body>
 </html>
