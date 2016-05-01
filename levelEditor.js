@@ -662,6 +662,7 @@ function createWorker(categoryJSON){
   worker.createSpawner = function(canvasObject){
     newSpawner = {
                 "PNGSource": canvasObject.imgSource,
+                "PlistSource": worker.imgToPlist(canvasObject.imgSource),
                 "Type": worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
