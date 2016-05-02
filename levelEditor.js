@@ -80,7 +80,7 @@ function createWorker(categoryJSON){
     //Clear the canvas!
     worker.canvas.clear().renderAll();
     worker.updateWorldWidth(worker.worldWidth);
-    worker.updateWorldHeight(worker.worldHeight);
+    worker.updateWorldHeight(worker.worldHeight, true);
     $("#categorySelect").change();
   }
   
@@ -476,20 +476,28 @@ function createWorker(categoryJSON){
         }
   }
 
-  worker.updateWorldHeight = function(val){
+  worker.updateWorldHeight = function(val, repopulating){
     $("#worldHeight").val(val);
+    var oldHeight = worker.worldHeight;
     worker.worldHeight = val;
     worker.canvas.setHeight(worker.convertMetersToPixels(val));
+    var delta = worker.convertMetersToPixels(val - oldHeight);
     worker.redrawLines();
     //Need to update the Y coordinates of every drawn element
     for(var category in worker.state){
       if(worker.state.hasOwnProperty(category)){
         if(Object.prototype.toString.call( worker.state[category] ) === "[object Array]" && worker.state[category].length > 0){
           for(var i =0; i < worker.state[category].length; i++){
+            if(!repopulating){
+              worker.state[category][i].top += delta;
+            }
             worker.setLocation(worker.state[category][i]);
           }
         }
         else if(Object.prototype.toString.call( worker.state[category] ) === "[object Object]" && worker.state[category]){
+          if(!repopulating){
+              worker.state[category].top += delta;
+          }
           worker.setLocation(worker.state[category]);
         }
       }
@@ -991,7 +999,7 @@ function createWorker(categoryJSON){
       if(newState.hasOwnProperty(category)){
         if(category==="World"){
           worker.updateWorldWidth(newState.World.Width);
-          worker.updateWorldHeight(newState.World.Height);
+          worker.updateWorldHeight(newState.World.Height, true);
         }
         else if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Array]" && newState[category].length > 0){
           if(!desiredState.hasOwnProperty(category)){
