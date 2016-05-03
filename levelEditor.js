@@ -756,6 +756,7 @@ function createWorker(categoryJSON){
   worker.createHazard = function(canvasObject){
     newHazard = {
       "PNGSource": canvasObject.imgSource,
+      "PlistSource": worker.imgToPlist(canvasObject.imgSource),
       "Type" : worker.getTypeFromCanvasObject(canvasObject),
       "Width": canvasObject.width,
       "Height": canvasObject.height,
