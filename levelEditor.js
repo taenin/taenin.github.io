@@ -29,7 +29,7 @@ function createWorker(categoryJSON){
       "BackgroundLayers": -2,
       "BackgroundAestheticDetails": -1,
       "ForegroundAestheticDetails": 2,
-      "Portals": 1
+      "Portals": 1, 
     };
 
     worker.defaultSelectPrompt = "Select an Object";
@@ -71,7 +71,8 @@ function createWorker(categoryJSON){
                       "Enemies": [],
                       "Goal": null,
                       "Hazards": [],
-                      "Portals": []
+                      "Portals": [],
+                      "CheckPoints": []
                    };
 
 
@@ -592,6 +593,18 @@ function createWorker(categoryJSON){
                 "Height": canvasObject.height,
                 "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
                 "GoalLocation": worker.getMeterLocationFromCanvasObject(canvasObject)
+    };
+    return detail;
+  }
+
+  worker.createCheckPoint = function(canvasObject){
+    var detail = {
+                "SpriteSheet": canvasObject.imgSource,
+                "PNGSource": canvasObject.imgSource,
+                "Width": canvasObject.width,
+                "Height": canvasObject.height,
+                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "DrawDepth" : 1,
     };
     return detail;
   }
@@ -1263,6 +1276,7 @@ worker.asyncLoop = function (iterations, func, callback) {
                     "Goal":  worker.createGoal,
                     "Hazards": worker.createHazard,
                     "Portals": worker.createPortal,
+                    "CheckPoints": worker.createCheckPoint,
                     "Receptacles" : worker.createReceptacle
                  };
   }
