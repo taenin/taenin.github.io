@@ -606,7 +606,7 @@ function createWorker(categoryJSON){
                 "Height": canvasObject.height,
                 "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
                 "GoalLocation": worker.getMeterLocationFromCanvasObject(canvasObject),
-                "FadeOut": false,
+                "ShowCheckmark": true,
                 "Radius": 0.0,
                 "UseRadius": false,
                 "LoopAfterCompletion": false,
