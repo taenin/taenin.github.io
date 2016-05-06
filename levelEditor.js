@@ -18,6 +18,7 @@ function createWorker(categoryJSON){
   worker.refresh = function(){
     //initialize all of the variables we need to start things off
     worker.desiredState = {};
+    worker.groupContents = [];
     worker.mousePosition = { "pageX": 0,
                              "pageY": 0};
     worker.grid = 32; //size of a meter in pixels
@@ -337,6 +338,7 @@ function createWorker(categoryJSON){
 
     worker.canvas.on('object:moving', function(options) {
       if(options.target._objects){
+        worker.groupContents = options.target._objects;
         //Snap the selection to grid
         if(worker.shouldSnapToGrid()){
           options.target.set({
@@ -379,7 +381,18 @@ function createWorker(categoryJSON){
         
     });
 
+
     worker.canvas.on('selection:cleared', function(options) {
+      if(worker.shouldSnapToGrid() && worker.groupContents.length > 0){
+        for(var i = 0; i<worker.groupContents.length; i++){
+          worker.groupContents[i].set({
+            left: Math.round(worker.groupContents[i].left / worker.grid) * worker.grid,
+            top: Math.round(worker.groupContents[i].top / worker.grid) * worker.grid
+          });
+          worker.setLocation(worker.groupContents[i]);
+        }    
+      }
+        
       $("#categorySelect").change();
     });
 
@@ -592,7 +605,12 @@ function createWorker(categoryJSON){
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
                 "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
-                "GoalLocation": worker.getMeterLocationFromCanvasObject(canvasObject)
+                "GoalLocation": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "FadeOut": false,
+                "Radius": 0.0,
+                "UseRadius": false,
+                "LoopAfterCompletion": false,
+                "TriggerOnRight": true
     };
     return detail;
   }
