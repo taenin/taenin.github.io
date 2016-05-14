@@ -81,6 +81,7 @@ function createWorker(categoryJSON){
 
     //Clear the canvas!
     worker.canvas.clear().renderAll();
+    worker.drawHideToggles();
     worker.updateWorldWidth(worker.worldWidth);
     worker.updateWorldHeight(worker.worldHeight, true);
     $("#categorySelect").change();
@@ -609,6 +610,7 @@ function createWorker(categoryJSON){
                 "ShowCheckmark": true,
                 "Radius": 0.0,
                 "UseRadius": false,
+                "InvertRadius": false,
                 "LoopAfterCompletion": false,
                 "TriggerOnRight": true
     };
@@ -617,7 +619,6 @@ function createWorker(categoryJSON){
 
   worker.createCheckPoint = function(canvasObject){
     var detail = {
-                "SpriteSheet": canvasObject.imgSource,
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
@@ -638,6 +639,7 @@ function createWorker(categoryJSON){
                  };
    return portal;
   };
+
 
   worker.createReceptacle = function(canvasObject){
     var receptacle = {
@@ -871,6 +873,25 @@ function createWorker(categoryJSON){
         $(".toolPopulate").append(main);
       }
       
+    };
+
+  worker.drawHideToggles = function(){
+    $(".toggleVisibility").remove();
+    var main = $(document.createElement('div')).addClass("toggleVisibility");
+      for(var name in worker.state){
+        if(worker.state.hasOwnProperty(name)){
+          var toggleID = "hide" + name;
+          latestToggle = $(document.createElement('div')).append("Hide " + name + "<input type='checkbox' id=" + toggleID +">");
+          main.append(latestToggle);
+        }
+      }
+      $("#hideTools").append(main);
+      for(var name in worker.state){
+        if(worker.state.hasOwnProperty(name)){
+          var toggleID = "hide" + name;
+          toggleChangeHandler(toggleID, name);
+        }
+      }
     };
 
   worker.updateVisible = function(canvasObject, isVisible){
@@ -1465,6 +1486,23 @@ function tileClickHandler(tile){
   $(tile).mousedown(function(){
     toggle(this);
   });
+}
+
+function toggleChangeHandler(toggleID, stateName){
+  $("#" + toggleID).change(function(){
+      if(worker.state.hasOwnProperty(stateName)){
+        var elems = worker.state[stateName];
+        var isChecked = $(this).is(":checked");
+        if(Object.prototype.toString.call( elems ) === "[object Array]"){
+          for(var i=0; i< elems.length; i++){
+            worker.updateVisible(elems[i], !isChecked);
+          }
+        }
+        else{
+          worker.updateVisible(elems, !isChecked);
+        }
+      }
+    });
 }
 
 function selectionUpdateHandlers(selection,canvasObject, key, subkey){
