@@ -449,24 +449,6 @@ function createWorker(categoryJSON){
         worker.updateWorldHeight(Number($(this).val()));
       }
     });
-    $("#hideBackground").change(function(){
-      if(worker.state.hasOwnProperty("BackgroundLayers")){
-        var bgLayers = worker.state.BackgroundLayers;
-        var isChecked = $(this).is(":checked");
-        for(var i = 0; i < bgLayers.length; i++){
-          worker.updateVisible(bgLayers[i], !isChecked);
-        }
-      }
-    });
-    $("#hideForeground").change(function(){
-      if(worker.state.hasOwnProperty("ForegroundLayers")){
-        var fgLayers = worker.state.ForegroundLayers;
-        var isChecked = $(this).is(":checked");
-        for(var i = 0; i < fgLayers.length; i++){
-          worker.updateVisible(fgLayers[i], !isChecked);
-        }
-      }
-    });
   }
 
   worker.drawOnMouseMove = function(e){
@@ -715,6 +697,8 @@ function createWorker(categoryJSON){
                               "X": 0,
                               "Y": 0
                             },
+                "Fancy": false,
+                "Delay": 0,
                 "SpawnRate": 1,
                 "Angle": 1.0,
                 "flipHorizontal": false,
@@ -896,7 +880,7 @@ function createWorker(categoryJSON){
 
   worker.updateVisible = function(canvasObject, isVisible){
     canvasObject.visible = isVisible;
-    canvasObject.outputObject.visible = isVisible;
+    //canvasObject.outputObject.visible = isVisible;
     worker.canvas.renderAll();
   }
 
@@ -1195,6 +1179,7 @@ worker.asyncLoop = function (iterations, func, callback) {
                     outputObject[property] = defaultObj[property];
                 }
               }
+              //This is for legacy purposes
               if(outputObject.hasOwnProperty('visible')){
                 oImg.visible = outputObject.visible;
               }
@@ -1240,8 +1225,6 @@ worker.asyncLoop = function (iterations, func, callback) {
       "Width": worker.worldWidth,
       "Height": worker.worldHeight
     };
-    output.hideBackground = $("#hideBackground").is(":checked");
-    output.hideForeground = $("hideForeground").is(":checked");
     filename = $("#levelName").val();
     for(var key in worker.state){
       if(worker.state.hasOwnProperty(key)){
@@ -1283,12 +1266,6 @@ worker.asyncLoop = function (iterations, func, callback) {
   worker.receivedFile = function() {           
      worker.refresh();
      var newState = JSON.parse(fr.result);
-     if(newState.hasOwnProperty("hideForeground")){
-      $("#hideForeground").prop("checked", newState.hideForeground);
-     }
-     if(newState.hasOwnProperty("hideBackground")){
-      $("#hideBackground").prop("checked", newState.hideBackground);
-     }
      worker.populate(newState);
   } 
 
