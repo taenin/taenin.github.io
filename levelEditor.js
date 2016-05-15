@@ -700,7 +700,7 @@ function createWorker(categoryJSON){
                 "Fancy": false,
                 "Delay": 0,
                 "SpawnRate": 1,
-                "Angle": 1.0,
+                "Angle": 0,
                 "flipHorizontal": false,
                 "flipVertical" : false
     };
