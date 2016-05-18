@@ -69,6 +69,7 @@ function createWorker(categoryJSON){
                       "Avatar": null,
                       "Nodes": [],
                       "Spawners": [],
+                      "Turrets": [],
                       "Enemies": [],
                       "Goal": null,
                       "Hazards": [],
@@ -707,6 +708,21 @@ function createWorker(categoryJSON){
     return newSpawner;
   };
 
+  worker.createTurret = function(canvasObject){
+    newTurret = {
+                "PNGSource": canvasObject.imgSource,
+                "Type": worker.getTypeFromCanvasObject(canvasObject),
+                "Width": canvasObject.width,
+                "Height": canvasObject.height,
+                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "ProjectileSpeed": 5,
+                "Delay": 0,
+                "TimeBetweenShots": 60,
+                "Angle": 90
+    };
+    return newTurret;
+  };
+
   worker.createEnemy = function(canvasObject){
     newEnemy = {
                 "PNGSource": canvasObject.imgSource,
@@ -1289,6 +1305,7 @@ worker.asyncLoop = function (iterations, func, callback) {
                     "Avatar":  worker.createAvatar,
                     "Nodes":  worker.createNode,
                     "Spawners":  worker.createSpawner,
+                    "Turrets": worker.createTurret,
                     "Enemies":  worker.createEnemy,
                     "Goal":  worker.createGoal,
                     "Hazards": worker.createHazard,
