@@ -336,6 +336,7 @@ function createWorker(categoryJSON){
           }
           $("#categorySelect").change();
       }
+      worker.groupContents = [];
     });
 
     worker.canvas.on('object:moving', function(options) {
