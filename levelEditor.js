@@ -397,8 +397,8 @@ function createWorker(categoryJSON){
           });
           worker.setLocation(worker.groupContents[i]);
         }
-        worker.groupContents = [];    
       }
+      worker.groupContents = [];    
         
       $("#categorySelect").change();
     });
