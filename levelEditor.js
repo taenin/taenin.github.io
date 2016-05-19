@@ -392,7 +392,8 @@ function createWorker(categoryJSON){
             top: Math.round(worker.groupContents[i].top / worker.grid) * worker.grid
           });
           worker.setLocation(worker.groupContents[i]);
-        }    
+        }
+        worker.groupContents = [];    
       }
         
       $("#categorySelect").change();
