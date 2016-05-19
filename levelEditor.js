@@ -1185,6 +1185,7 @@ worker.asyncLoop = function (iterations, func, callback) {
   worker.populateImage  = function(outputObject, category, drawOrder, desiredState){
     fabric.Image.fromURL(outputObject.PNGSource, function(oImg){
               console.log("loaded");
+              worker.updateDropDownID(outputObject.PNGSource);
               oImg.dropDownID = worker.generateDropDownID(outputObject.PNGSource);
               oImg.imgSource = outputObject.PNGSource;
               oImg.categoryType = category;
