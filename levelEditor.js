@@ -176,6 +176,7 @@ function createWorker(categoryJSON){
     if(!worker.imageCount.hasOwnProperty(key)){
       worker.imageCount[key] = 0;
     }
+    worker.imageCount[key] += 1;
     return key + worker.imageCount[key];
   }
 
@@ -183,6 +184,9 @@ function createWorker(categoryJSON){
     key = imgString.slice(0, -4);
     if(worker.imageCount.hasOwnProperty(key)){
       worker.imageCount[key] += 1;
+    }
+    else{
+      worker.imageCount[key] = 0;
     }
   }
 
