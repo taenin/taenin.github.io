@@ -69,6 +69,7 @@ function createWorker(categoryJSON){
                       "Avatar": null,
                       "Nodes": [],
                       "Spawners": [],
+                      "Turrets": [],
                       "Enemies": [],
                       "Goal": null,
                       "Hazards": [],
@@ -182,6 +183,9 @@ function createWorker(categoryJSON){
     key = imgString.slice(0, -4);
     if(worker.imageCount.hasOwnProperty(key)){
       worker.imageCount[key] += 1;
+    }
+    else{
+      worker.imageCount[key] = 0;
     }
   }
 
@@ -335,6 +339,7 @@ function createWorker(categoryJSON){
           }
           $("#categorySelect").change();
       }
+      worker.groupContents = [];
     });
 
     worker.canvas.on('object:moving', function(options) {
@@ -391,8 +396,9 @@ function createWorker(categoryJSON){
             top: Math.round(worker.groupContents[i].top / worker.grid) * worker.grid
           });
           worker.setLocation(worker.groupContents[i]);
-        }    
+        }
       }
+      worker.groupContents = [];    
         
       $("#categorySelect").change();
     });
@@ -705,6 +711,21 @@ function createWorker(categoryJSON){
                 "flipVertical" : false
     };
     return newSpawner;
+  };
+
+  worker.createTurret = function(canvasObject){
+    newTurret = {
+                "PNGSource": canvasObject.imgSource,
+                "Type": worker.getTypeFromCanvasObject(canvasObject),
+                "Width": canvasObject.width,
+                "Height": canvasObject.height,
+                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "ProjectileSpeed": 5,
+                "Delay": 0,
+                "TimeBetweenShots": 60,
+                "Angle": 90
+    };
+    return newTurret;
   };
 
   worker.createEnemy = function(canvasObject){
@@ -1164,6 +1185,7 @@ worker.asyncLoop = function (iterations, func, callback) {
   worker.populateImage  = function(outputObject, category, drawOrder, desiredState){
     fabric.Image.fromURL(outputObject.PNGSource, function(oImg){
               console.log("loaded");
+              worker.updateDropDownID(outputObject.PNGSource);
               oImg.dropDownID = worker.generateDropDownID(outputObject.PNGSource);
               oImg.imgSource = outputObject.PNGSource;
               oImg.categoryType = category;
@@ -1289,6 +1311,7 @@ worker.asyncLoop = function (iterations, func, callback) {
                     "Avatar":  worker.createAvatar,
                     "Nodes":  worker.createNode,
                     "Spawners":  worker.createSpawner,
+                    "Turrets": worker.createTurret,
                     "Enemies":  worker.createEnemy,
                     "Goal":  worker.createGoal,
                     "Hazards": worker.createHazard,
