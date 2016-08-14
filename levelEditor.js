@@ -2,7 +2,7 @@
 
 function createWorker(categoryJSON){
   var worker = {};
-  worker.canvas = new fabric.Canvas('myCanvas', { selection: true });
+  worker.canvas = new fabric.Canvas('myCanvas', { selection: true, stateful: false});
   worker.drawData = {};
   worker.objectTypeGenerators = {};
   worker.toolDropMap = {}; //Maps from a subcategory name to its index in drawData[selection].img
@@ -12,16 +12,20 @@ function createWorker(categoryJSON){
     console.log("----");
   }
 
+
   /******************************************************
   Call this function EVERY TIME we load in a new file!
   ******************************************************/
   worker.refresh = function(){
     //initialize all of the variables we need to start things off
+    worker.setDrawingMode(false);
     worker.desiredState = {};
     worker.groupContents = [];
     worker.mousePosition = { "pageX": 0,
                              "pageY": 0};
     worker.grid = 32; //size of a meter in pixels
+    worker.tileWidth = 128; //width of a tile in pixels
+    worker.tileHeight = 128; // height of a tile in pixels
     worker.gridLines = []; //grid lines
     worker.worldWidth = 64; //width of the world in meters
     worker.worldHeight = 48; //height of the world in meters
@@ -90,7 +94,15 @@ function createWorker(categoryJSON){
   
   //Bashes the old avatar state with the new avatar location. We assume there was no previous avatar spawn point.
 
-
+  worker.setDrawingMode = function(state){
+    worker.canvas.isDrawingMode = state;
+    if(worker.canvas.isDrawingMode){
+      $("#drawing-mode").html("Cancel drawing mode");
+    }
+    else{
+      $("#drawing-mode").html("Enter drawing mode");
+    }
+  };
 
   //Use this function to update the outputObject for Inari
   worker.setLocation = function(canvasObject, group){
@@ -291,12 +303,36 @@ function createWorker(categoryJSON){
           worker.zCounts[String(zLevel)] +=1;
         }
         else{
+          console.log("REMOVE!");
           worker.canvas.remove(worker.state[canvasObject.categoryType]);
         }
         worker.state[canvasObject.categoryType] = canvasObject;
       }
+      console.log("Move to: " + positions);
       worker.canvas.moveTo(canvasObject, positions);
     }
+  }
+
+  worker.addDynamicImage = function(src, categoryType, x, y){
+    var oldDrawingMode = worker.canvas.isDrawingMode;
+    worker.canvas.isDrawingMode = false;
+    fabric.Image.fromURL(src, function(oImg){
+          oImg.dropDownID = worker.generateDropDownID(src);
+          oImg.imgSource = src;
+          oImg.categoryType = categoryType;
+          oImg.lockScalingX = true; //make it so we cannot resize the images
+          oImg.lockScalingY = true;
+          oImg.outputObject = worker.generateDefaultObject(oImg);
+          oImg.left = x;//worker.shouldSnapToGrid() ? worker.snapToGrid(x) : x;
+          oImg.top = y;//worker.shouldSnapToGrid() ? worker.snapToGrid(y) : y;
+          if(oImg.outputObject.hasOwnProperty("PlistSource")){
+            worker.updatePList(oImg.outputObject.PlistSource, oImg);
+          }
+          worker.canvas.add(oImg);
+          //worker.addObject(oImg);
+          //worker.setLocation(oImg);
+        }); 
+    worker.canvas.isDrawingMode = oldDrawingMode;
   }
 
   worker.redrawSelection = function(){
@@ -322,7 +358,376 @@ function createWorker(categoryJSON){
     $("#subcategorySelect").val(canvasObject.dropDownID).change();
   }
 
+  worker.createPathString = function(pathArray){
+    var output = "";
+    for (var i = 0; i < pathArray.length; i++){
+      for (var ind = 0; ind < pathArray[i].length; ind++){
+        output += " " + pathArray[i][ind];
+      }
+    }
+    return output + " z";
+  }
+
+  worker.createPathObject = function(pathArray){
+    var pathString = worker.createPathString(pathArray);
+    var outputPath =document.createElementNS("http://www.w3.org/2000/svg", 'path');
+    outputPath.setAttribute("d", pathString);
+    return new Path(outputPath);
+  }
+
+  worker.createPathForLine = function(x1, y1, x2, y2){
+    var pathString = "M " + x1 + " " + y1 + " L " + x2 + " " + y2;
+    var outputPath =document.createElementNS("http://www.w3.org/2000/svg", 'path');
+    outputPath.setAttribute("d", pathString);
+    return new Path(outputPath);
+  }
+
+  worker.createLineSegments = function(pathArray){
+    var MINDELTA = .01;
+    var needNext = false;
+    var tempSegment = false;
+    var lineSegments = [];
+    for (var i = 0; i < pathArray.length; i++){
+      var pathElement = pathArray[i];
+      if(needNext && pathElement.length >= 3){
+        needNext = false;
+        var segment = worker.createLineSegment(tempSegment.x1, tempSegment.y1, pathElement[1], pathElement[2]);
+        if(worker.isValidSegment(segment)){
+          lineSegments.push(segment);
+        }
+      }
+      if(pathElement.length == 3){
+        needNext = true;
+        tempSegment = worker.createLineSegment(pathElement[1], pathElement[2], 0, 0);
+      }
+      if(pathElement.length == 5){
+        var segment = worker.createLineSegment(pathElement[1], pathElement[2],pathElement[3], pathElement[4]);
+        if(worker.isValidSegment(segment)){
+          lineSegments.push(segment);
+        }
+      }
+    }
+    //Check to see if we need to add a  
+    if(lineSegments.length > 0){
+      if(needNext){
+        var segment = worker.createLineSegment(tempSegment.x1, tempSegment.y1, lineSegments[0]["x1"], lineSegments[0]["y1"]);
+        if(worker.isValidSegment(segment)){
+          lineSegments.push(segment);
+        }
+      }
+      else{
+        var segment =worker.createLineSegment(lineSegments[lineSegments.length-1]["x2"], lineSegments[lineSegments.length-1]["y2"], lineSegments[0]["x1"], lineSegments[0]["y1"]);
+        if(worker.isValidSegment(segment)){
+          lineSegments.push(segment);
+        }
+      }
+    }
+    return lineSegments;
+  }
+
+  worker.isValidRectangle = function(cornerArray, lineSegmentsArray){
+
+  }
+
+  worker.hasIntersection = function(ray, lineSegment){
+    var minRx = Math.min(ray.x1, ray.x2);
+    var maxRx = Math.max(ray.x1, ray.x2);
+    var minRy = Math.min(ray.y1, ray.y2);
+    var maxRy = Math.max(ray.y1, ray.y2);
+
+    var minLx = Math.min(lineSegment.x1, lineSegment.x2);
+    var maxLx = Math.max(lineSegment.x1, lineSegment.x2);
+    var minLy = Math.min(lineSegment.y1, lineSegment.y2);
+    var maxLy = Math.max(lineSegment.y1, lineSegment.y2);
+
+    var domainMin = Math.max(minRx, minLx);
+    var domainMax = Math.min(maxRx, maxLx);
+
+    var rangeMin = Math.max(minRy, minLy);
+    var rangeMax = Math.min(maxRy, maxLy);
+
+    return domainMax >= domainMin && rangeMin <= rangeMax;
+
+  }
+  worker.isVerticalLine = function(lineSegment){
+    return lineSegment.x1 === lineSegment.x2;
+  }
+  worker.isHorizontalLine = function(lineSegment){
+    return lineSegment.y1 === lineSegment.y2;
+  }
+
+  worker.makePoint = function(x,y){
+    return {"x": x, "y":y};
+  }
+
+  worker.isValidIntersection = function(ray, lineSegment, pointSet){
+    var minRx = Math.min(ray.x1, ray.x2);
+    var maxRx = Math.max(ray.x1, ray.x2);
+    var minRy = Math.min(ray.y1, ray.y2);
+    var maxRy = Math.max(ray.y1, ray.y2);
+
+    var minLx = Math.min(lineSegment.x1, lineSegment.x2);
+    var maxLx = Math.max(lineSegment.x1, lineSegment.x2);
+    var minLy = Math.min(lineSegment.y1, lineSegment.y2);
+    var maxLy = Math.max(lineSegment.y1, lineSegment.y2);
+
+    var aTerm = (ray.y2 - ray.y1) / (ray.x2 - ray.x1);
+    var bTerm = (lineSegment.y2 - lineSegment.y1) / (lineSegment.x2 - lineSegment.x1);
+    var x;
+    if(worker.isVerticalLine(ray) && worker.isVerticalLine(lineSegment)){
+      //Both lines are vertical. See if they have the same X value and a valid, overlapping domain.
+      var point = worker.makePoint(ray.x1, min(maxLy, maxRy));
+      if (ray.x1 === lineSegment.x1 && min(maxLy, maxRy) >= max(minLy, minRy) && !worker.containsTwoDMap(ray.x1, min(maxLy, maxRy), pointSet)){
+        worker.updateTwoDMap(ray.x1, min(maxLy, maxRy), true, pointSet);
+        return true;
+      }
+      return false;
+    }
+    else if (worker.isVerticalLine(lineSegment)){
+      //Just the linesegment is vertical
+      x = lineSegment.x1;
+    }
+    else if (worker.isVerticalLine(ray)){
+      x = ray.x1;
+    }
+    else if (aTerm === bTerm){
+      //They are otherwise parallel
+      console.log('2 return');
+      var point = worker.makePoint(max(minRx, minLx), min(maxRy, maxLy));
+      if(ray.y1 - (aTerm * ray.x1) === lineSegment.y1 - (bTerm * lineSegment.x1) && !worker.containsTwoDMap(max(minRx, minLx), min(maxRy, maxLy), pointSet)){
+        worker.updateTwoDMap(max(minRx, minLx), min(maxRy, maxLy), true, pointSet);
+        return true;
+      }
+      return false;
+    }
+    else{
+      x = ((lineSegment.y1 - ray.y1) + (ray.x1 * aTerm) - (lineSegment.x1 * bTerm)) / (aTerm - bTerm);
+    }
+    var y = (aTerm*(x - ray.x1)) + ray.y1;
+    var point = worker.makePoint(x,y);
+    if(isNaN(x) || isNaN(y)){
+      console.log("NAN!" + " " + lineSegment.x1 + " " + lineSegment.y1 + " " + lineSegment.x2 + " " + lineSegment.y2);
+      console.log('3 return ' + x + " " + y);
+    }
+    
+    if(worker.isInDomain(lineSegment, x) && worker.isInRange(lineSegment, y) && worker.isInDomain(ray, x) && worker.isInRange(ray, y) && !worker.containsTwoDMap(x, y, pointSet)){
+      worker.updateTwoDMap(x, y, true, pointSet);
+      console.log("----------");
+      console.log("For ray: ");
+      console.log(ray);
+      console.log(lineSegment);
+      console.log("intersection at (" + x + ", " + y + ")");
+      return true;
+    }
+    return false;
+  }
+
+  worker.isInsidePolygon = function(x, y, shape){
+    var rayPath = worker.createPathForLine(x, y, worker.canvas.width, worker.canvas.height);
+    /*
+    var ray = worker.createLineSegment(x, y, worker.canvas.width, worker.canvas.height);
+    var pointSet = {};
+    for (var segmentInd = 0; segmentInd < lineSegmentArray.length; segmentInd++){
+      //console.log(worker.isValidIntersection(ray, lineSegmentArray[segmentInd]));
+      var validInter = worker.isValidIntersection(ray, lineSegmentArray[segmentInd], pointSet);
+    }
+    var rayIntersections = 0;
+    for (var subObj in pointSet){
+      rayIntersections += Object.keys(subObj).length;
+    }
+    //console.log(rayIntersections);
+    if(rayIntersections % 2 === 0){
+      console.log("Failed with ray: (" + x + ", " + y + ") (" + worker.canvas.width + ", " + worker.canvas.height + ")");
+      console.log(rayIntersections);
+      console.log("--------------------------");
+    }
+    else{
+      console.log("Success with ray: (" + x + ", " + y + ") (" + worker.canvas.width + ", " + worker.canvas.height + ")");
+      console.log(rayIntersections);
+      console.log(lineSegmentArray);
+      console.log("--------------------------");
+    }
+    */
+    var intersections = Intersection.intersectShapes(rayPath, shape);
+    if(intersections.hasOwnProperty("points")){
+      return intersections.points.length % 2 ===1;
+    }
+    return false;
+  }
+
+  worker.isValidTile = function(cornerArray, shape, seenCorners){
+    //console.log(seenCorners);
+    var validTile = false;
+    console.log("New tile");
+    for (var cornerIndex = 0; cornerIndex < cornerArray.length; cornerIndex++){
+      var x = cornerArray[cornerIndex].x;
+      var y = cornerArray[cornerIndex].y;
+      if(!worker.containsTwoDMap(x, y, seenCorners)){
+        console.log("Requesting new corner...");
+        worker.updateTwoDMap(x, y, worker.isInsidePolygon(x, y, shape), seenCorners);
+        //console.log("Corner: (" + x + ", " + y+") is " + seenCorners[x][y]);
+      }
+      console.log(seenCorners[x][y]);
+      validTile = validTile || seenCorners[x][y];
+    }
+    console.log(validTile);
+    console.log("----");
+    return validTile;
+  }
+
+  worker.updateTwoDMap = function(x, y, value, existingMap){
+    if(existingMap.hasOwnProperty(x)){
+      if(!existingMap[x].hasOwnProperty(y)){
+        existingMap[x][y] = value;
+      }
+    }
+    else{
+      existingMap[x] = {};
+      existingMap[x][y] = value;
+    }
+  }
+
+  worker.containsTwoDMap = function(x, y, existingMap){
+    return existingMap.hasOwnProperty(x) && existingMap[x].hasOwnProperty(y);
+  }
+
+  /*
+  worker.isValidTile = function(cornerArray, lineSegmentsArray){
+    //Corner Array: BL, BR, TL , TR
+    var xTR = cornerArray[3].x;
+    var xBL = cornerArray[0].x;
+    var yTR = cornerArray[3].y;
+    var yBL = cornerArray[0].y;
+    for (var segmentInd = 0; segmentInd < lineSegmentsArray.length; segmentInd++){
+      var segment = lineSegmentsArray[segmentInd];
+      //Check condition 1
+      var conditionOneArray = [];
+      for (var i = 0; i < cornerArray.length; i++){
+        var corner = cornerArray[i];
+        var conditionOne = ((segment.y2-segment.y1)*corner.x) + ((segment.x1-segment.x2)*corner.y) + ((segment.x2*segment.y1)-(segment.x1*segment.y2));
+        if(conditionOne == 0){
+          console.log(segment);
+          console.log(corner);
+          console.log("Condition 1");
+          return true;
+        }
+        else{
+          conditionOne = conditionOne > 0;
+        }
+        conditionOneArray.push(conditionOne);
+      }
+      var allTrue = true;
+      var allFalse = true;
+      for (var condInd = 0; condInd < conditionOneArray.length; condInd++){
+
+        allTrue = allTrue && conditionOneArray[condInd];
+        allFalse = allFalse && !conditionOneArray[condInd];
+      }
+      if(!(allTrue || allFalse) ){
+        //Keep looking
+        if(!(
+          (segment.x1 > xTR && segment.x2 > xTR) ||
+          (segment.x1 < xBL && segment.x2 < xBL) ||
+          (segment.y1 > yTR && segment.y2 > yTR) ||
+          (segment.y1 < yBL && segment.y2 < yBL)
+          )){
+          console.log("--");
+          console.log(segment);
+          console.log("Condition 2");
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  */
+
+  worker.createLineSegment = function(x1, y1, x2, y2){
+    //round them all up to prevent small deltas.
+    /*var tmp = {x1: Math.ceil(x1), y1: Math.ceil(y1), x2: Math.ceil(x2), y2: Math.ceil(y2)};
+    if(tmp.x1 === tmp.x2){
+      tmp.x2 += 1;
+    }
+    if(tmp.y1 === tmp.y2){
+      tmp.y2 += 1;
+    }*/
+    var tmp = {x1: x1, y1: y1, x2:x2, y2: y2};
+    return tmp;
+  }
+
+  worker.isValidSegment = function(lineSegment){
+    return !(lineSegment.x1 == lineSegment.x2 && lineSegment.y1 == lineSegment.y2);
+  }
+
+  worker.isInDomain = function(lineSegment, xValue){
+    return xValue >= Math.min(lineSegment.x1, lineSegment.x2) && xValue <= Math.max(lineSegment.x1, lineSegment.x2);
+  }
+  worker.isInRange = function(lineSegment, yValue){
+    return yValue >= Math.min(lineSegment.y1, lineSegment.y2) && yValue <= Math.max(lineSegment.y1, lineSegment.y2);
+  }
+
+
   worker.initializeCanvasHandlers = function(){
+
+    worker.canvas.on('path:created', function(path) {
+      var numObjects = worker.canvas._objects.length;
+      if(numObjects > 0 && worker.canvas._objects[numObjects-1].hasOwnProperty("path")){
+        var targetPath = worker.canvas._objects[numObjects-1];
+        var segmentList = worker.createLineSegments(targetPath.path);
+        var shape = worker.createPathObject(targetPath.path);
+        //worker.canvas.remove(targetPath);
+        var minX = worker.canvas.width;
+        var maxX = 0;
+        var minY = worker.canvas.height;
+        var maxY = 0;
+        //get the min and max X and Y values
+        //Don't look at the same corner twice
+        var seenCorners = {};
+        for (var segmentInd = 0; segmentInd < segmentList.length; segmentInd++){
+          minX = Math.min(Math.min(segmentList[segmentInd].x1, segmentList[segmentInd].x2), minX);
+          maxX = Math.max(Math.max(segmentList[segmentInd].x1, segmentList[segmentInd].x2), maxX);
+          minY = Math.min(Math.min(segmentList[segmentInd].y1, segmentList[segmentInd].y2), minY);
+          maxY = Math.max(Math.max(segmentList[segmentInd].y1, segmentList[segmentInd].y2), maxY);
+        }
+        var width = maxX - minX;
+        var height = maxY - minY;
+       
+        var numTilesWide = Math.ceil(width / worker.tileWidth);
+        var numTileHigh = Math.ceil(height / worker.tileHeight);
+        //Create the line segment list
+        var segmentList = worker.createLineSegments(targetPath.path);
+        
+
+        //Iterate over the tiles
+        for(var tileCol = minX; tileCol < maxX; tileCol+= worker.tileWidth){
+          for(var tileRow = minY; tileRow < maxY; tileRow += worker.tileHeight){
+            //For each tile, create all of its corners
+            var TL = {x: tileCol, y: (tileRow+worker.tileHeight)};
+            var TR = {x: (tileCol+worker.tileWidth), y: (tileRow+worker.tileHeight)};
+            var BL = {x: tileCol, y: tileRow };
+            var BR = {x: (tileCol+worker.tileWidth), y: tileRow};
+            var center = {x: (tileCol + (worker.tileWidth/2)), y: tileRow + (worker.tileHeight/2)};
+            if(worker.isValidTile([center], shape, seenCorners)){
+            //if(true){
+              //console.log("Valid at x: " + (tileCol) + " y: " + (tileRow));
+              worker.addDynamicImage("textures/EnvironmentTiles/Rocky_Shadow/M_C2.png", "EnvironmentTiles", tileCol, tileRow);
+            }
+            else{
+              //console.log("Tile at x: " + ((tileCol - minX) / worker.tileWidth) + " y: " + ((tileRow - minY) / worker.tileHeight) + " failed!");
+            }
+          }
+        }
+        //Check if the tile is valid.
+
+        
+      }
+
+      console.log(seenCorners); 
+    });
+
+    $("#drawing-mode").click(function(){
+      worker.setDrawingMode(!worker.canvas.isDrawingMode);
+    });
     $('html').keyup(function(e){
       //Check for the delete key
       var selectedObject = worker.canvas.getActiveObject();
@@ -1362,6 +1767,11 @@ $(document).ready(function(){
       if (data.hasOwnProperty(key)) {
         if(data[key].hasSubCategory){
           for(var i = 0; i<data[key].img.length; i++){
+            //Set up the dropdown menu for drawing tiles
+            if(key === "EnvironmentTiles"){
+              worker.addToDropDown("#drawing-mode-selector", data[key].img[i].name);
+              //console.log(data[key].img[i]);
+            }
             for(var subI = 0; subI<data[key].img[i].imgList.length; subI++){
               $("<img />").attr("src", data[key].img[i].imgList[subI]);
             }

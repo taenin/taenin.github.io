@@ -6,6 +6,8 @@
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js">
 </script>
+<script type="text/javascript" src="2D.js">
+</script>
 <script type="text/javascript" src = "fabric.js">
 </script>
 <script type="text/javascript" src = "levelEditor.js">
@@ -225,7 +227,13 @@ body {
 			<div>
 				World Height (m): <input type="text" class="worldInput" id="worldHeight"/>
 			</div>
-
+			<div>
+				<button id="drawing-mode" class="btn btn-info">Enter drawing mode</button>
+			</div>
+			<div id="drawing-mode-options">
+				Tile Set: <select id="drawing-mode-selector">
+				</select>
+			</div>
 		</div>
 
 		<div class ="block" id="hideTools">
