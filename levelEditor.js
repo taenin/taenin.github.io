@@ -308,7 +308,7 @@ function createWorker(categoryJSON){
         }
         worker.state[canvasObject.categoryType] = canvasObject;
       }
-      console.log("Move to: " + positions);
+      //console.log("Move to: " + positions);
       worker.canvas.moveTo(canvasObject, positions);
     }
   }
@@ -329,8 +329,8 @@ function createWorker(categoryJSON){
             worker.updatePList(oImg.outputObject.PlistSource, oImg);
           }
           worker.canvas.add(oImg);
-          //worker.addObject(oImg);
-          //worker.setLocation(oImg);
+          worker.addObject(oImg);
+          worker.setLocation(oImg);
         }); 
     worker.canvas.isDrawingMode = oldDrawingMode;
   }
@@ -492,7 +492,6 @@ function createWorker(categoryJSON){
     }
     else if (aTerm === bTerm){
       //They are otherwise parallel
-      console.log('2 return');
       var point = worker.makePoint(max(minRx, minLx), min(maxRy, maxLy));
       if(ray.y1 - (aTerm * ray.x1) === lineSegment.y1 - (bTerm * lineSegment.x1) && !worker.containsTwoDMap(max(minRx, minLx), min(maxRy, maxLy), pointSet)){
         worker.updateTwoDMap(max(minRx, minLx), min(maxRy, maxLy), true, pointSet);
@@ -506,17 +505,10 @@ function createWorker(categoryJSON){
     var y = (aTerm*(x - ray.x1)) + ray.y1;
     var point = worker.makePoint(x,y);
     if(isNaN(x) || isNaN(y)){
-      console.log("NAN!" + " " + lineSegment.x1 + " " + lineSegment.y1 + " " + lineSegment.x2 + " " + lineSegment.y2);
-      console.log('3 return ' + x + " " + y);
     }
     
     if(worker.isInDomain(lineSegment, x) && worker.isInRange(lineSegment, y) && worker.isInDomain(ray, x) && worker.isInRange(ray, y) && !worker.containsTwoDMap(x, y, pointSet)){
       worker.updateTwoDMap(x, y, true, pointSet);
-      console.log("----------");
-      console.log("For ray: ");
-      console.log(ray);
-      console.log(lineSegment);
-      console.log("intersection at (" + x + ", " + y + ")");
       return true;
     }
     return false;
@@ -558,20 +550,15 @@ function createWorker(categoryJSON){
   worker.isValidTile = function(cornerArray, shape, seenCorners){
     //console.log(seenCorners);
     var validTile = false;
-    console.log("New tile");
     for (var cornerIndex = 0; cornerIndex < cornerArray.length; cornerIndex++){
       var x = cornerArray[cornerIndex].x;
       var y = cornerArray[cornerIndex].y;
       if(!worker.containsTwoDMap(x, y, seenCorners)){
-        console.log("Requesting new corner...");
         worker.updateTwoDMap(x, y, worker.isInsidePolygon(x, y, shape), seenCorners);
         //console.log("Corner: (" + x + ", " + y+") is " + seenCorners[x][y]);
       }
-      console.log(seenCorners[x][y]);
       validTile = validTile || seenCorners[x][y];
     }
-    console.log(validTile);
-    console.log("----");
     return validTile;
   }
 
@@ -675,7 +662,6 @@ function createWorker(categoryJSON){
         var targetPath = worker.canvas._objects[numObjects-1];
         var segmentList = worker.createLineSegments(targetPath.path);
         var shape = worker.createPathObject(targetPath.path);
-        //worker.canvas.remove(targetPath);
         var minX = worker.canvas.width;
         var maxX = 0;
         var minY = worker.canvas.height;
@@ -707,7 +693,7 @@ function createWorker(categoryJSON){
             var BL = {x: tileCol, y: tileRow };
             var BR = {x: (tileCol+worker.tileWidth), y: tileRow};
             var center = {x: (tileCol + (worker.tileWidth/2)), y: tileRow + (worker.tileHeight/2)};
-            if(worker.isValidTile([center], shape, seenCorners)){
+            if(worker.isValidTile([BL, BR, TL, TR], shape, seenCorners)){
             //if(true){
               //console.log("Valid at x: " + (tileCol) + " y: " + (tileRow));
               worker.addDynamicImage("textures/EnvironmentTiles/Rocky_Shadow/M_C2.png", "EnvironmentTiles", tileCol, tileRow);
@@ -718,11 +704,8 @@ function createWorker(categoryJSON){
           }
         }
         //Check if the tile is valid.
-
-        
+        worker.canvas.remove(targetPath);
       }
-
-      console.log(seenCorners); 
     });
 
     $("#drawing-mode").click(function(){
