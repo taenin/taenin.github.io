@@ -653,11 +653,136 @@ function createWorker(categoryJSON){
     return yValue >= Math.min(lineSegment.y1, lineSegment.y2) && yValue <= Math.max(lineSegment.y1, lineSegment.y2);
   }
 
+  worker.generateTileNeighbors = function(validTileSet){
+    var neighborMap = {};
+    for (var x in validTileSet){
+      for (var y in validTileSet[x]){
+        var neighbors = {};
+        //Iterate over all X values
+        for (var xMultiplier = -1; xMultiplier <= 1; xMultiplier++){
+          //Iterate over all Y values
+          for (var yMultiplier = -1; yMultiplier <= 1; yMultiplier++){
+            var neighX = Number(x) + (worker.tileWidth * xMultiplier);
+            var neighY = Number(y) + (worker.tileHeight * yMultiplier);
+            if(worker.containsTwoDMap(neighX, neighY, validTileSet)){
+              worker.updateTwoDMap(neighX, neighY, true, neighbors);
+            }
+          }
+        }
+      worker.updateTwoDMap(x, y, neighbors, neighborMap);
+      }
+    }
+    return neighborMap;
+  }
+
+  worker.drawDynamicTiles = function(validTileSet){
+    console.log("starting to draw");
+    var neighbors = worker.generateTileNeighbors(validTileSet);
+    var tileLabelMap = {}; // A map from tile locations to their respective labels
+    var prefix = "textures/EnvironmentTiles/Rocky_Shadow/";
+    var suffix = ".png";
+    var tileClass = "EnvironmentTiles";
+    for (var x in validTileSet){
+      for (var y in validTileSet[x]){
+        var label = "M";
+        var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
+        var sides = [curNeigh.T, curNeigh.R, curNeigh.L, curNeigh.B].filter(function(val){return val;});
+        var corners = [curNeigh.TL, curNeigh.TR, curNeigh.BL, curNeigh.BR].filter(function(val){return val;});
+        console.log("----");
+        console.log(curNeigh);
+        console.log(neighbors);
+        console.log(sides);
+        console.log(corners);
+        console.log(curNeigh.number);
+        //Check if it's a corner piece
+        //Must have exactly 3 neighbors, 2 of which are sides, one of which is a corner
+
+
+        //THIS LOGIC IS WRONG--FIX ME!!
+
+
+        if(curNeigh.number == 3 && sides.length == 2 && corners.length == 1){
+          //We know it's a side. Which side is it?
+          //We'll just check the corner for simplicity
+          if (curNeigh.TL){
+            label = "C4";
+          }
+          else if(curNeigh.TR){
+            label = "C3";
+          }
+          else if(curNeigh.BL){
+            label = "C2";
+          }
+          else{
+            label = "C1";
+          }
+        }
+        //Check if we have an edge piece
+        else if (curNeigh.number < 8 && sides.length == 3 && corners.length >= 2){
+          //We have an edge piece, but which one?
+          //We'll check the sides for simplicity
+          if(!curNeigh.T){
+            label = "S1";
+          }
+          else if(!curNeigh.B){
+            label = "S3";
+          }
+          else if(!curNeigh.R){
+            label = "S2";
+          }
+          else{
+            label = "S4";
+          }
+        }
+        //Check if we have an inverse neighbor
+        else if (curNeigh.number == 7 && sides.length == 4 && corners.length == 3){
+          //We have an inverse corner, but which one?
+          //Check the corners for simplicity
+          if (!curNeigh.TL){
+            label = "iC4";
+          }
+          else if(!curNeigh.TR){
+            label = "iC3";
+          }
+          else if(!curNeigh.BL){
+            label = "iC2";
+          }
+          else{
+            label = "iC1";
+          }
+        }
+        console.log(prefix + label + suffix);
+        worker.addDynamicImage(prefix + label + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
+      }
+    }
+  }
+
+  worker.quantifyNeighbors = function(x, y, neighborsMap){
+    x = Number(x);
+    y = Number(y);
+    var output = {
+      'TL' : worker.containsTwoDMap(x - worker.tileWidth, y - worker.tileHeight, neighborsMap),
+      'T' : worker.containsTwoDMap(x, y - worker.tileHeight, neighborsMap),
+      'TR': worker.containsTwoDMap(x + worker.tileWidth, y - worker.tileHeight, neighborsMap),
+      'R' : worker.containsTwoDMap(x + worker.tileWidth, y, neighborsMap),
+      'L' : worker.containsTwoDMap(x - worker.tileWidth, y, neighborsMap),
+      'BL': worker.containsTwoDMap(x - worker.tileWidth, y + worker.tileHeight, neighborsMap),
+      'B' : worker.containsTwoDMap(x, y + worker.tileHeight, neighborsMap),
+      'BR': worker.containsTwoDMap(x + worker.tileWidth, y + worker.tileHeight, neighborsMap)
+    };
+    var numNeighbors = 0;
+    for (var i in output){
+      numNeighbors = output[i] ? numNeighbors+1 : numNeighbors;
+    }
+    output["number"] = numNeighbors;
+    return output;
+  }
 
   worker.initializeCanvasHandlers = function(){
 
     worker.canvas.on('path:created', function(path) {
       var numObjects = worker.canvas._objects.length;
+      var validTileSet = {}
       if(numObjects > 0 && worker.canvas._objects[numObjects-1].hasOwnProperty("path")){
         var targetPath = worker.canvas._objects[numObjects-1];
         var segmentList = worker.createLineSegments(targetPath.path);
@@ -681,7 +806,7 @@ function createWorker(categoryJSON){
         var numTilesWide = Math.ceil(width / worker.tileWidth);
         var numTileHigh = Math.ceil(height / worker.tileHeight);
         //Create the line segment list
-        var segmentList = worker.createLineSegments(targetPath.path);
+        //var segmentList = worker.createLineSegments(targetPath.path);
         
 
         //Iterate over the tiles
@@ -696,13 +821,13 @@ function createWorker(categoryJSON){
             if(worker.isValidTile([BL, BR, TL, TR], shape, seenCorners)){
             //if(true){
               //console.log("Valid at x: " + (tileCol) + " y: " + (tileRow));
-              worker.addDynamicImage("textures/EnvironmentTiles/Rocky_Shadow/M_C2.png", "EnvironmentTiles", tileCol, tileRow);
-            }
-            else{
-              //console.log("Tile at x: " + ((tileCol - minX) / worker.tileWidth) + " y: " + ((tileRow - minY) / worker.tileHeight) + " failed!");
+              worker.updateTwoDMap(center.x, center.y, true, validTileSet);
+              //worker.addDynamicImage("textures/EnvironmentTiles/Rocky_Shadow/M_C2.png", "EnvironmentTiles", tileCol, tileRow);
             }
           }
         }
+        //Start drawing
+        worker.drawDynamicTiles(validTileSet);
         //Check if the tile is valid.
         worker.canvas.remove(targetPath);
       }
