@@ -767,8 +767,8 @@ function createWorker(categoryJSON){
         //worker.addDynamicImage(prefix + label + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
       }
     }
-    /*
-    //Second pass: Only correct corners that may not be labeled.
+    
+    //Second pass: label center pieces.
     for (var x in centerLabelMap){
       for (var y in centerLabelMap[x]){
         var label = centerLabelMap[x][y];
@@ -779,7 +779,7 @@ function createWorker(categoryJSON){
         } 
       }
     }
-    */
+
 
     //Draw the tiles!
     for (var x in validTileSet){
