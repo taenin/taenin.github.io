@@ -664,7 +664,7 @@ function createWorker(categoryJSON){
           for (var yMultiplier = -1; yMultiplier <= 1; yMultiplier++){
             var neighX = Number(x) + (worker.tileWidth * xMultiplier);
             var neighY = Number(y) + (worker.tileHeight * yMultiplier);
-            if(worker.containsTwoDMap(neighX, neighY, validTileSet)){
+            if(worker.containsTwoDMap(neighX, neighY, validTileSet) && !(xMultiplier==0 && yMultiplier==0)){
               worker.updateTwoDMap(neighX, neighY, true, neighbors);
             }
           }
@@ -678,6 +678,7 @@ function createWorker(categoryJSON){
   worker.drawDynamicTiles = function(validTileSet){
     console.log("starting to draw");
     var neighbors = worker.generateTileNeighbors(validTileSet);
+    console.log(neighbors);
     var tileLabelMap = {}; // A map from tile locations to their respective labels
     var prefix = "textures/EnvironmentTiles/Rocky_Shadow/";
     var suffix = ".png";
@@ -688,12 +689,12 @@ function createWorker(categoryJSON){
         var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
         var sides = [curNeigh.T, curNeigh.R, curNeigh.L, curNeigh.B].filter(function(val){return val;});
         var corners = [curNeigh.TL, curNeigh.TR, curNeigh.BL, curNeigh.BR].filter(function(val){return val;});
-        console.log("----");
+        /*console.log("----");
         console.log(curNeigh);
         console.log(neighbors);
         console.log(sides);
         console.log(corners);
-        console.log(curNeigh.number);
+        console.log(curNeigh.number);*/
         //Check if it's a corner piece
         //Must have exactly 3 neighbors, 2 of which are sides, one of which is a corner
 
@@ -719,6 +720,9 @@ function createWorker(categoryJSON){
         }
         //Check if we have an edge piece
         else if (curNeigh.number < 8 && sides.length == 3 && corners.length >= 2){
+          /*console.log(neighbors[x][y]);
+          console.log(curNeigh);
+          console.log("--");*/
           //We have an edge piece, but which one?
           //We'll check the sides for simplicity
           if(!curNeigh.T){
@@ -751,7 +755,6 @@ function createWorker(categoryJSON){
             label = "iC1";
           }
         }
-        console.log(prefix + label + suffix);
         worker.addDynamicImage(prefix + label + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
       }
     }
@@ -810,8 +813,8 @@ function createWorker(categoryJSON){
         
 
         //Iterate over the tiles
-        for(var tileCol = minX; tileCol < maxX; tileCol+= worker.tileWidth){
-          for(var tileRow = minY; tileRow < maxY; tileRow += worker.tileHeight){
+        for(var tileCol = Math.round(minX); tileCol < maxX; tileCol+= worker.tileWidth){
+          for(var tileRow = Math.round(minY); tileRow < maxY; tileRow += worker.tileHeight){
             //For each tile, create all of its corners
             var TL = {x: tileCol, y: (tileRow+worker.tileHeight)};
             var TR = {x: (tileCol+worker.tileWidth), y: (tileRow+worker.tileHeight)};
