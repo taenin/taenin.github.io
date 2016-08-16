@@ -701,19 +701,19 @@ function createWorker(categoryJSON){
         //THIS LOGIC IS WRONG--FIX ME!!
 
 
-        if(curNeigh.number == 3 && sides.length == 2 && corners.length == 1){
+        if(curNeigh.number >= 3 && curNeigh.number <=5 && sides.length == 2 && corners.length >= 1){
           //We know it's a side. Which side is it?
-          //We'll just check the corner for simplicity
-          if (curNeigh.TL){
+          //We'll just check the sides
+          if (curNeigh.T && curNeigh.L){
             label = "C4";
           }
-          else if(curNeigh.TR){
+          else if(curNeigh.T && curNeigh.R){
             label = "C3";
           }
-          else if(curNeigh.BL){
+          else if(curNeigh.L && curNeigh.B){
             label = "C2";
           }
-          else{
+          else if(curNeigh.R && curNeigh.B){
             label = "C1";
           }
         }
