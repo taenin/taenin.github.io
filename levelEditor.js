@@ -680,6 +680,8 @@ function createWorker(categoryJSON){
     var neighbors = worker.generateTileNeighbors(validTileSet);
     console.log(neighbors);
     var tileLabelMap = {}; // A map from tile locations to their respective labels
+    var edgeLabelMap = {};
+    var centerLabelMap = {};
     var prefix = "textures/EnvironmentTiles/Rocky_Shadow/";
     var suffix = ".png";
     var tileClass = "EnvironmentTiles";
@@ -702,8 +704,8 @@ function createWorker(categoryJSON){
         //THIS LOGIC IS WRONG--FIX ME!!
 
 
-        if(curNeigh.number >= 3 && curNeigh.number <=5 && sides.length == 2 && corners.length >= 1){
-          //We know it's a side. Which side is it?
+        if(curNeigh.number >= 3 && curNeigh.number <=6 && sides.length == 2 && corners.length >= 1){
+          //We know it's a corner. Which corner is it?
           //We'll just check the sides
           if (curNeigh.T && curNeigh.L){
             label = "C4";
@@ -755,7 +757,34 @@ function createWorker(categoryJSON){
             label = "iC1";
           }
         }
-        worker.addDynamicImage(prefix + label + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
+        if(label === "M"){
+          worker.updateTwoDMap(x,y, label, centerLabelMap);
+        }
+        else{
+          worker.updateTwoDMap(x, y, label, edgeLabelMap);
+        }
+        worker.updateTwoDMap(x, y, label, tileLabelMap);
+        //worker.addDynamicImage(prefix + label + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
+      }
+    }
+    /*
+    //Second pass: Only correct corners that may not be labeled.
+    for (var x in centerLabelMap){
+      for (var y in centerLabelMap[x]){
+        var label = centerLabelMap[x][y];
+        var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
+        if(curNeigh.number < 8){
+          //We might have an odd corner. Let's check:
+
+        } 
+      }
+    }
+    */
+
+    //Draw the tiles!
+    for (var x in validTileSet){
+      for (var y in validTileSet[x]){
+        worker.addDynamicImage(prefix + tileLabelMap[x][y] + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
       }
     }
   }
