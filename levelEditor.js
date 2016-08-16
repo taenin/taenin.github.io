@@ -564,9 +564,7 @@ function createWorker(categoryJSON){
 
   worker.updateTwoDMap = function(x, y, value, existingMap){
     if(existingMap.hasOwnProperty(x)){
-      if(!existingMap[x].hasOwnProperty(y)){
-        existingMap[x][y] = value;
-      }
+      existingMap[x][y] = value;
     }
     else{
       existingMap[x] = {};
@@ -767,7 +765,132 @@ function createWorker(categoryJSON){
         //worker.addDynamicImage(prefix + label + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
       }
     }
-    
+
+    //Select all "bad tiles". Force them to be "M2"
+    var madeChange = true;
+    while(madeChange){
+      madeChange = false;
+      for (var x in centerLabelMap){
+        for (var y in centerLabelMap[x]){
+          if(centerLabelMap[x][y] === "M" && !worker.canShadeCenterTile(x, y, tileLabelMap, centerLabelMap, neighbors, false)){
+            madeChange = true;
+            worker.updateTwoDMap(x, y, "M2", tileLabelMap);
+            worker.updateTwoDMap(x, y, "M2", centerLabelMap);
+          }
+        }
+      }
+    }
+
+
+
+    var didChangeTile = true;
+    //while(didChangeTile){
+      console.log(didChangeTile);
+      didChangeTile = false;
+      console.log(didChangeTile);
+      //Iterate through all of the center pieces until there are none left that we need to change.
+      for (var x in centerLabelMap){
+        for (var y in centerLabelMap[x]){
+          var label = centerLabelMap[x][y];
+          var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
+          var centerNeighbors = worker.classifyNeighborsByCenter(x, y, tileLabelMap, centerLabelMap);
+          console.log(centerNeighbors);
+          if(curNeigh.number === 8 && tileLabelMap[x][y] === "M"){
+
+            //check for normal corners
+            if(!centerNeighbors.T && !centerNeighbors.L && !centerNeighbors.TL && centerNeighbors.R && centerNeighbors.B && centerNeighbors.BR){
+              didChangeTile = true;
+              console.log("1");
+              worker.updateTwoDMap(x,y, "M_C1", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_C1", tileLabelMap);
+            }
+            else if(!centerNeighbors.T && !centerNeighbors.R && !centerNeighbors.TR && centerNeighbors.L && centerNeighbors.B && centerNeighbors.BL){
+              didChangeTile = true;
+              console.log("2");
+              worker.updateTwoDMap(x,y, "M_C2", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_C2", tileLabelMap);
+            }
+            else if(!centerNeighbors.B && !centerNeighbors.L && !centerNeighbors.BL && centerNeighbors.R && centerNeighbors.T && centerNeighbors.TR){
+              didChangeTile = true;
+              console.log("3");
+              worker.updateTwoDMap(x,y, "M_C3", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_C3", tileLabelMap);
+            }
+            else if(!centerNeighbors.B && !centerNeighbors.R && !centerNeighbors.BR && centerNeighbors.L && centerNeighbors.T && centerNeighbors.TL){
+              didChangeTile = true;
+              console.log("4");
+              worker.updateTwoDMap(x,y, "M_C4", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_C4", tileLabelMap);
+            }
+            //Check for inverse corners
+            else if(!centerNeighbors.TL && centerNeighbors.number === 7){
+              didChangeTile = true;
+              console.log("5");
+              worker.updateTwoDMap(x,y, "M_iC4", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_iC4", tileLabelMap);
+            }
+            else if(!centerNeighbors.TR && centerNeighbors.number === 7){
+              didChangeTile = true;
+              console.log("6");
+              worker.updateTwoDMap(x,y, "M_iC3", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_iC3", tileLabelMap);
+            }
+            else if(!centerNeighbors.BL && centerNeighbors.number === 7){
+              didChangeTile = true;
+              console.log("7");
+              worker.updateTwoDMap(x,y, "M_iC2", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_iC2", tileLabelMap);
+            }
+            else if(!centerNeighbors.BR && centerNeighbors.number === 7){
+              didChangeTile = true;
+              console.log("8");
+              worker.updateTwoDMap(x,y, "M_iC1", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_iC1", tileLabelMap);
+            }
+            //check for edges
+            else if( ((!centerNeighbors.TL || !centerNeighbors.TR) && !centerNeighbors.T)
+              && centerNeighbors.number === 8 - (!centerNeighbors.TL + !centerNeighbors.T + !centerNeighbors.TR)){
+              didChangeTile = true;
+              console.log("9");
+              worker.updateTwoDMap(x,y, "M_S1", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_S1", tileLabelMap);
+            }
+            else if( ((!centerNeighbors.BL || !centerNeighbors.BR) && !centerNeighbors.B)
+              && centerNeighbors.number === 8 - (!centerNeighbors.BL + !centerNeighbors.B + !centerNeighbors.BR)){
+              didChangeTile = true;
+              console.log("10");
+              worker.updateTwoDMap(x,y, "M_S4", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_S4", tileLabelMap);
+            }
+            else if( ((!centerNeighbors.BL || !centerNeighbors.TL) && !centerNeighbors.L)
+              && centerNeighbors.number === 8 - (!centerNeighbors.BL + !centerNeighbors.L + !centerNeighbors.TL)){
+              didChangeTile = true;
+              console.log("11");
+              worker.updateTwoDMap(x,y, "M_S2", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_S2", tileLabelMap);
+            }
+            else if( ((!centerNeighbors.BR || !centerNeighbors.TR) && !centerNeighbors.R)
+              && centerNeighbors.number === 8 - (!centerNeighbors.BR + !centerNeighbors.R + !centerNeighbors.TR)){
+              didChangeTile = true;
+              console.log("12");
+              worker.updateTwoDMap(x,y, "M_S3", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M_S3", tileLabelMap);
+            }
+            //Who the hell knows
+            else if(centerNeighbors.number < 8){
+              //didChangeTile = true;
+              console.log("13");
+              console.log("X " + x + " Y" + y);
+              worker.updateTwoDMap(x,y, "M2", centerLabelMap);
+              worker.updateTwoDMap(x,y, "M2", tileLabelMap);
+            }
+          } 
+        }
+      }
+      console.log(didChangeTile);
+      console.log("---");
+    //}
+    /*
     //Second pass: label center pieces.
     for (var x in centerLabelMap){
       for (var y in centerLabelMap[x]){
@@ -779,7 +902,7 @@ function createWorker(categoryJSON){
         } 
       }
     }
-
+  */
 
     //Draw the tiles!
     for (var x in validTileSet){
@@ -787,6 +910,105 @@ function createWorker(categoryJSON){
         worker.addDynamicImage(prefix + tileLabelMap[x][y] + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
       }
     }
+  }
+
+  worker.canShadeCenterTile = function(x, y, tileLabelMap, centerLabelMap, neighborsMap, shouldUpdate){
+    var didChangeTile = false;
+    var label = centerLabelMap[x][y];
+    var curNeigh = worker.quantifyNeighbors(x, y, neighborsMap[x][y]);
+    var centerNeighbors = worker.classifyNeighborsByCenter(x, y, tileLabelMap, centerLabelMap);
+    if(curNeigh.number === 8 && tileLabelMap[x][y] === "M"){
+
+      //check for normal corners
+      if(!centerNeighbors.T && !centerNeighbors.L && !centerNeighbors.TL && centerNeighbors.R && centerNeighbors.B && centerNeighbors.BR){
+        didChangeTile = true;
+        label = "M_C1";
+      }
+      else if(!centerNeighbors.T && !centerNeighbors.R && !centerNeighbors.TR && centerNeighbors.L && centerNeighbors.B && centerNeighbors.BL){
+        didChangeTile = true;
+        label = "M_C2";
+      }
+      else if(!centerNeighbors.B && !centerNeighbors.L && !centerNeighbors.BL && centerNeighbors.R && centerNeighbors.T && centerNeighbors.TR){
+        didChangeTile = true;
+        label = "M_C3";
+      }
+      else if(!centerNeighbors.B && !centerNeighbors.R && !centerNeighbors.BR && centerNeighbors.L && centerNeighbors.T && centerNeighbors.TL){
+        didChangeTile = true;
+        label = "M_C4";
+      }
+      //Check for inverse corners
+      else if(!centerNeighbors.TL && centerNeighbors.number === 7){
+        didChangeTile = true;
+        label = "M_iC4";
+      }
+      else if(!centerNeighbors.TR && centerNeighbors.number === 7){
+        didChangeTile = true;
+        label = "M_iC3";
+      }
+      else if(!centerNeighbors.BL && centerNeighbors.number === 7){
+        didChangeTile = true;
+        label = "M_iC2";
+      }
+      else if(!centerNeighbors.BR && centerNeighbors.number === 7){
+        didChangeTile = true;
+        label = "M_iC1";
+      }
+      //check for edges
+      else if( ((!centerNeighbors.TL || !centerNeighbors.TR) && !centerNeighbors.T)
+        && centerNeighbors.number === 8 - (!centerNeighbors.TL + !centerNeighbors.T + !centerNeighbors.TR)){
+        didChangeTile = true;
+        label = "M_S1";
+      }
+      else if( ((!centerNeighbors.BL || !centerNeighbors.BR) && !centerNeighbors.B)
+        && centerNeighbors.number === 8 - (!centerNeighbors.BL + !centerNeighbors.B + !centerNeighbors.BR)){
+        didChangeTile = true;
+        label = "M_S4";
+      }
+      else if( ((!centerNeighbors.BL || !centerNeighbors.TL) && !centerNeighbors.L)
+        && centerNeighbors.number === 8 - (!centerNeighbors.BL + !centerNeighbors.L + !centerNeighbors.TL)){
+        didChangeTile = true;
+        label = "M_S2";
+      }
+      else if( ((!centerNeighbors.BR || !centerNeighbors.TR) && !centerNeighbors.R)
+        && centerNeighbors.number === 8 - (!centerNeighbors.BR + !centerNeighbors.R + !centerNeighbors.TR)){
+        didChangeTile = true;
+        label = "M_S3";
+      }
+      else if(centerNeighbors.number === 8){
+        label = "M";
+        didChangeTile = true;
+      }
+      else if(centerNeighbors.number < 8){
+        label = "M2";
+      }
+    }
+    if(shouldUpdate){
+      worker.updateTwoDMap(x,y, label, centerLabelMap);
+      worker.updateTwoDMap(x,y, label, tileLabelMap);
+    }
+    return didChangeTile;
+    
+  }
+
+  worker.classifyNeighborsByCenter = function(x, y, tileLabelMap, centerMap){
+    x = Number(x);
+    y = Number(y);
+    var output = {
+      'TL' : worker.containsTwoDMap(x - worker.tileWidth, y - worker.tileHeight, centerMap) && tileLabelMap[x - worker.tileWidth][y - worker.tileHeight]!="M2",
+      'T' : worker.containsTwoDMap(x, y - worker.tileHeight, centerMap) && tileLabelMap[x][y - worker.tileHeight]!="M2",
+      'TR': worker.containsTwoDMap(x + worker.tileWidth, y - worker.tileHeight, centerMap) && tileLabelMap[x + worker.tileWidth][y - worker.tileHeight]!="M2",
+      'R' : worker.containsTwoDMap(x + worker.tileWidth, y, centerMap) && tileLabelMap[x + worker.tileWidth][y]!="M2",
+      'L' : worker.containsTwoDMap(x - worker.tileWidth, y, centerMap) && tileLabelMap[x - worker.tileWidth][y]!="M2",
+      'BL': worker.containsTwoDMap(x - worker.tileWidth, y + worker.tileHeight, centerMap) && tileLabelMap[x - worker.tileWidth][y + worker.tileHeight]!="M2",
+      'B' : worker.containsTwoDMap(x, y + worker.tileHeight, centerMap) && tileLabelMap[x][y + worker.tileHeight]!="M2",
+      'BR': worker.containsTwoDMap(x + worker.tileWidth, y + worker.tileHeight, centerMap) && tileLabelMap[x + worker.tileWidth][y + worker.tileHeight]!="M2"
+    };
+    var numNeighbors = 0;
+    for (var i in output){
+      numNeighbors = output[i] ? numNeighbors+1 : numNeighbors;
+    }
+    output["number"] = numNeighbors;
+    return output;
   }
 
   worker.quantifyNeighbors = function(x, y, neighborsMap){
