@@ -674,240 +674,219 @@ function createWorker(categoryJSON){
   }
 
   worker.drawDynamicTiles = function(validTileSet){
-    console.log("starting to draw");
     var neighbors = worker.generateTileNeighbors(validTileSet);
-    console.log(neighbors);
     var tileLabelMap = {}; // A map from tile locations to their respective labels
     var edgeLabelMap = {};
     var centerLabelMap = {};
     var prefix = "textures/EnvironmentTiles/Rocky_Shadow/";
     var suffix = ".png";
     var tileClass = "EnvironmentTiles";
-    for (var x in validTileSet){
-      for (var y in validTileSet[x]){
-        var label = "M";
-        var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
-        var sides = [curNeigh.T, curNeigh.R, curNeigh.L, curNeigh.B].filter(function(val){return val;});
-        var corners = [curNeigh.TL, curNeigh.TR, curNeigh.BL, curNeigh.BR].filter(function(val){return val;});
-        /*console.log("----");
-        console.log(curNeigh);
-        console.log(neighbors);
-        console.log(sides);
-        console.log(corners);
-        console.log(curNeigh.number);*/
-        //Check if it's a corner piece
-        //Must have exactly 3 neighbors, 2 of which are sides, one of which is a corner
-
-
-        //THIS LOGIC IS WRONG--FIX ME!!
-
-
-        if(curNeigh.number >= 3 && curNeigh.number <=6 && sides.length == 2 && corners.length >= 1){
-          //We know it's a corner. Which corner is it?
-          //We'll just check the sides
-          if (curNeigh.T && curNeigh.L){
-            label = "C4";
-          }
-          else if(curNeigh.T && curNeigh.R){
-            label = "C3";
-          }
-          else if(curNeigh.L && curNeigh.B){
-            label = "C2";
-          }
-          else if(curNeigh.R && curNeigh.B){
-            label = "C1";
-          }
-        }
-        //Check if we have an edge piece
-        else if (curNeigh.number < 8 && sides.length == 3 && corners.length >= 2){
-          /*console.log(neighbors[x][y]);
-          console.log(curNeigh);
-          console.log("--");*/
-          //We have an edge piece, but which one?
-          //We'll check the sides for simplicity
-          if(!curNeigh.T){
-            label = "S1";
-          }
-          else if(!curNeigh.B){
-            label = "S3";
-          }
-          else if(!curNeigh.R){
-            label = "S2";
-          }
-          else{
-            label = "S4";
-          }
-        }
-        //Check if we have an inverse neighbor
-        else if (curNeigh.number == 7 && sides.length == 4 && corners.length == 3){
-          //We have an inverse corner, but which one?
-          //Check the corners for simplicity
-          if (!curNeigh.TL){
-            label = "iC4";
-          }
-          else if(!curNeigh.TR){
-            label = "iC3";
-          }
-          else if(!curNeigh.BL){
-            label = "iC2";
-          }
-          else{
-            label = "iC1";
-          }
-        }
-        if(label === "M"){
-          worker.updateTwoDMap(x,y, label, centerLabelMap);
-        }
-        else{
-          worker.updateTwoDMap(x, y, label, edgeLabelMap);
-        }
-        worker.updateTwoDMap(x, y, label, tileLabelMap);
-        //worker.addDynamicImage(prefix + label + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
-      }
-    }
-
-    //Select all "bad tiles". Force them to be "M2"
-    var madeChange = true;
-    while(madeChange){
-      madeChange = false;
-      for (var x in centerLabelMap){
-        for (var y in centerLabelMap[x]){
-          if(centerLabelMap[x][y] === "M" && !worker.canShadeCenterTile(x, y, tileLabelMap, centerLabelMap, neighbors, false)){
-            madeChange = true;
-            worker.updateTwoDMap(x, y, "M2", tileLabelMap);
-            worker.updateTwoDMap(x, y, "M2", centerLabelMap);
-          }
+    if (worker.hoverImage){
+      for (var x in validTileSet){
+        for (var y in validTileSet[x]){
+          worker.addDynamicImage(worker.hoverImage.src, worker.hoverImage.type, Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
         }
       }
     }
+    else{
+
+      for (var x in validTileSet){
+        for (var y in validTileSet[x]){
+          var label = "M";
+          var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
+          var sides = [curNeigh.T, curNeigh.R, curNeigh.L, curNeigh.B].filter(function(val){return val;});
+          var corners = [curNeigh.TL, curNeigh.TR, curNeigh.BL, curNeigh.BR].filter(function(val){return val;});
+          //Check if it's a corner piece
+          //Must have exactly 3 neighbors, 2 of which are sides, one of which is a corner
+
+
+          //THIS LOGIC IS WRONG--FIX ME!!
+
+
+          if(curNeigh.number >= 3 && curNeigh.number <=6 && sides.length == 2 && corners.length >= 1){
+            //We know it's a corner. Which corner is it?
+            //We'll just check the sides
+            if (curNeigh.T && curNeigh.L){
+              label = "C4";
+            }
+            else if(curNeigh.T && curNeigh.R){
+              label = "C3";
+            }
+            else if(curNeigh.L && curNeigh.B){
+              label = "C2";
+            }
+            else if(curNeigh.R && curNeigh.B){
+              label = "C1";
+            }
+          }
+          //Check if we have an edge piece
+          else if (curNeigh.number < 8 && sides.length == 3 && corners.length >= 2){
+            //We have an edge piece, but which one?
+            //We'll check the sides for simplicity
+            if(!curNeigh.T){
+              label = "S1";
+            }
+            else if(!curNeigh.B){
+              label = "S3";
+            }
+            else if(!curNeigh.R){
+              label = "S2";
+            }
+            else{
+              label = "S4";
+            }
+          }
+          //Check if we have an inverse neighbor
+          else if (curNeigh.number == 7 && sides.length == 4 && corners.length == 3){
+            //We have an inverse corner, but which one?
+            //Check the corners for simplicity
+            if (!curNeigh.TL){
+              label = "iC4";
+            }
+            else if(!curNeigh.TR){
+              label = "iC3";
+            }
+            else if(!curNeigh.BL){
+              label = "iC2";
+            }
+            else{
+              label = "iC1";
+            }
+          }
+          if(label === "M"){
+            worker.updateTwoDMap(x,y, label, centerLabelMap);
+          }
+          else{
+            worker.updateTwoDMap(x, y, label, edgeLabelMap);
+          }
+          worker.updateTwoDMap(x, y, label, tileLabelMap);
+          //worker.addDynamicImage(prefix + label + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
+        }
+      }
+
+      //Select all "bad tiles". Force them to be "M2"
+      var madeChange = true;
+      while(madeChange){
+        madeChange = false;
+        for (var x in centerLabelMap){
+          for (var y in centerLabelMap[x]){
+            if(centerLabelMap[x][y] === "M" && !worker.canShadeCenterTile(x, y, tileLabelMap, centerLabelMap, neighbors, false)){
+              madeChange = true;
+              worker.updateTwoDMap(x, y, "M2", tileLabelMap);
+              worker.updateTwoDMap(x, y, "M2", centerLabelMap);
+            }
+          }
+        }
+      }
 
 
 
-    var didChangeTile = true;
-    //while(didChangeTile){
-      console.log(didChangeTile);
-      didChangeTile = false;
-      console.log(didChangeTile);
-      //Iterate through all of the center pieces until there are none left that we need to change.
+      var didChangeTile = true;
+      //while(didChangeTile){
+        didChangeTile = false;        //Iterate through all of the center pieces until there are none left that we need to change.
+        for (var x in centerLabelMap){
+          for (var y in centerLabelMap[x]){
+            var label = centerLabelMap[x][y];
+            var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
+            var centerNeighbors = worker.classifyNeighborsByCenter(x, y, tileLabelMap, centerLabelMap);
+            if(curNeigh.number === 8 && tileLabelMap[x][y] === "M"){
+
+              //check for normal corners
+              if(!centerNeighbors.T && !centerNeighbors.L && !centerNeighbors.TL && centerNeighbors.R && centerNeighbors.B && centerNeighbors.BR){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_C1", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_C1", tileLabelMap);
+              }
+              else if(!centerNeighbors.T && !centerNeighbors.R && !centerNeighbors.TR && centerNeighbors.L && centerNeighbors.B && centerNeighbors.BL){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_C2", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_C2", tileLabelMap);
+              }
+              else if(!centerNeighbors.B && !centerNeighbors.L && !centerNeighbors.BL && centerNeighbors.R && centerNeighbors.T && centerNeighbors.TR){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_C3", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_C3", tileLabelMap);
+              }
+              else if(!centerNeighbors.B && !centerNeighbors.R && !centerNeighbors.BR && centerNeighbors.L && centerNeighbors.T && centerNeighbors.TL){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_C4", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_C4", tileLabelMap);
+              }
+              //Check for inverse corners
+              else if(!centerNeighbors.TL && centerNeighbors.number === 7){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_iC4", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_iC4", tileLabelMap);
+              }
+              else if(!centerNeighbors.TR && centerNeighbors.number === 7){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_iC3", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_iC3", tileLabelMap);
+              }
+              else if(!centerNeighbors.BL && centerNeighbors.number === 7){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_iC2", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_iC2", tileLabelMap);
+              }
+              else if(!centerNeighbors.BR && centerNeighbors.number === 7){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_iC1", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_iC1", tileLabelMap);
+              }
+              //check for edges
+              else if( ((!centerNeighbors.TL || !centerNeighbors.TR) && !centerNeighbors.T)
+                && centerNeighbors.number === 8 - (!centerNeighbors.TL + !centerNeighbors.T + !centerNeighbors.TR)){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_S1", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_S1", tileLabelMap);
+              }
+              else if( ((!centerNeighbors.BL || !centerNeighbors.BR) && !centerNeighbors.B)
+                && centerNeighbors.number === 8 - (!centerNeighbors.BL + !centerNeighbors.B + !centerNeighbors.BR)){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_S4", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_S4", tileLabelMap);
+              }
+              else if( ((!centerNeighbors.BL || !centerNeighbors.TL) && !centerNeighbors.L)
+                && centerNeighbors.number === 8 - (!centerNeighbors.BL + !centerNeighbors.L + !centerNeighbors.TL)){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_S2", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_S2", tileLabelMap);
+              }
+              else if( ((!centerNeighbors.BR || !centerNeighbors.TR) && !centerNeighbors.R)
+                && centerNeighbors.number === 8 - (!centerNeighbors.BR + !centerNeighbors.R + !centerNeighbors.TR)){
+                didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M_S3", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M_S3", tileLabelMap);
+              }
+              //Who the hell knows
+              else if(centerNeighbors.number < 8){
+                //didChangeTile = true;
+                worker.updateTwoDMap(x,y, "M2", centerLabelMap);
+                worker.updateTwoDMap(x,y, "M2", tileLabelMap);
+              }
+            } 
+          }
+        }
+      //}
+      /*
+      //Second pass: label center pieces.
       for (var x in centerLabelMap){
         for (var y in centerLabelMap[x]){
           var label = centerLabelMap[x][y];
           var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
-          var centerNeighbors = worker.classifyNeighborsByCenter(x, y, tileLabelMap, centerLabelMap);
-          console.log(centerNeighbors);
-          if(curNeigh.number === 8 && tileLabelMap[x][y] === "M"){
+          if(curNeigh.number < 8){
+            //We might have an odd corner. Let's check:
 
-            //check for normal corners
-            if(!centerNeighbors.T && !centerNeighbors.L && !centerNeighbors.TL && centerNeighbors.R && centerNeighbors.B && centerNeighbors.BR){
-              didChangeTile = true;
-              console.log("1");
-              worker.updateTwoDMap(x,y, "M_C1", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_C1", tileLabelMap);
-            }
-            else if(!centerNeighbors.T && !centerNeighbors.R && !centerNeighbors.TR && centerNeighbors.L && centerNeighbors.B && centerNeighbors.BL){
-              didChangeTile = true;
-              console.log("2");
-              worker.updateTwoDMap(x,y, "M_C2", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_C2", tileLabelMap);
-            }
-            else if(!centerNeighbors.B && !centerNeighbors.L && !centerNeighbors.BL && centerNeighbors.R && centerNeighbors.T && centerNeighbors.TR){
-              didChangeTile = true;
-              console.log("3");
-              worker.updateTwoDMap(x,y, "M_C3", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_C3", tileLabelMap);
-            }
-            else if(!centerNeighbors.B && !centerNeighbors.R && !centerNeighbors.BR && centerNeighbors.L && centerNeighbors.T && centerNeighbors.TL){
-              didChangeTile = true;
-              console.log("4");
-              worker.updateTwoDMap(x,y, "M_C4", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_C4", tileLabelMap);
-            }
-            //Check for inverse corners
-            else if(!centerNeighbors.TL && centerNeighbors.number === 7){
-              didChangeTile = true;
-              console.log("5");
-              worker.updateTwoDMap(x,y, "M_iC4", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_iC4", tileLabelMap);
-            }
-            else if(!centerNeighbors.TR && centerNeighbors.number === 7){
-              didChangeTile = true;
-              console.log("6");
-              worker.updateTwoDMap(x,y, "M_iC3", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_iC3", tileLabelMap);
-            }
-            else if(!centerNeighbors.BL && centerNeighbors.number === 7){
-              didChangeTile = true;
-              console.log("7");
-              worker.updateTwoDMap(x,y, "M_iC2", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_iC2", tileLabelMap);
-            }
-            else if(!centerNeighbors.BR && centerNeighbors.number === 7){
-              didChangeTile = true;
-              console.log("8");
-              worker.updateTwoDMap(x,y, "M_iC1", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_iC1", tileLabelMap);
-            }
-            //check for edges
-            else if( ((!centerNeighbors.TL || !centerNeighbors.TR) && !centerNeighbors.T)
-              && centerNeighbors.number === 8 - (!centerNeighbors.TL + !centerNeighbors.T + !centerNeighbors.TR)){
-              didChangeTile = true;
-              console.log("9");
-              worker.updateTwoDMap(x,y, "M_S1", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_S1", tileLabelMap);
-            }
-            else if( ((!centerNeighbors.BL || !centerNeighbors.BR) && !centerNeighbors.B)
-              && centerNeighbors.number === 8 - (!centerNeighbors.BL + !centerNeighbors.B + !centerNeighbors.BR)){
-              didChangeTile = true;
-              console.log("10");
-              worker.updateTwoDMap(x,y, "M_S4", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_S4", tileLabelMap);
-            }
-            else if( ((!centerNeighbors.BL || !centerNeighbors.TL) && !centerNeighbors.L)
-              && centerNeighbors.number === 8 - (!centerNeighbors.BL + !centerNeighbors.L + !centerNeighbors.TL)){
-              didChangeTile = true;
-              console.log("11");
-              worker.updateTwoDMap(x,y, "M_S2", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_S2", tileLabelMap);
-            }
-            else if( ((!centerNeighbors.BR || !centerNeighbors.TR) && !centerNeighbors.R)
-              && centerNeighbors.number === 8 - (!centerNeighbors.BR + !centerNeighbors.R + !centerNeighbors.TR)){
-              didChangeTile = true;
-              console.log("12");
-              worker.updateTwoDMap(x,y, "M_S3", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M_S3", tileLabelMap);
-            }
-            //Who the hell knows
-            else if(centerNeighbors.number < 8){
-              //didChangeTile = true;
-              console.log("13");
-              console.log("X " + x + " Y" + y);
-              worker.updateTwoDMap(x,y, "M2", centerLabelMap);
-              worker.updateTwoDMap(x,y, "M2", tileLabelMap);
-            }
           } 
         }
       }
-      console.log(didChangeTile);
-      console.log("---");
-    //}
-    /*
-    //Second pass: label center pieces.
-    for (var x in centerLabelMap){
-      for (var y in centerLabelMap[x]){
-        var label = centerLabelMap[x][y];
-        var curNeigh = worker.quantifyNeighbors(x, y, neighbors[x][y]);
-        if(curNeigh.number < 8){
-          //We might have an odd corner. Let's check:
+    */
 
-        } 
-      }
-    }
-  */
-
-    //Draw the tiles!
-    for (var x in validTileSet){
-      for (var y in validTileSet[x]){
-        worker.addDynamicImage(prefix + tileLabelMap[x][y] + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
+      //Draw the tiles!
+      for (var x in validTileSet){
+        for (var y in validTileSet[x]){
+          worker.addDynamicImage(prefix + tileLabelMap[x][y] + suffix, "EnvironmentTiles", Number(x) - (worker.tileWidth/2), Number(y) - (worker.tileHeight/2));
+        }
       }
     }
   }
