@@ -767,14 +767,35 @@ function createWorker(categoryJSON){
       //Select all "bad tiles". Force them to be "M2"
       var madeChange = true;
       while(madeChange){
+        var edgeCountMap = {};
+        var mostBadEdges = 0;
         madeChange = false;
         for (var x in centerLabelMap){
           for (var y in centerLabelMap[x]){
             if(centerLabelMap[x][y] === "M" && !worker.canShadeCenterTile(x, y, tileLabelMap, centerLabelMap, neighbors, false)){
+              var numBadNeighbors = 0;
+              for(var Nx in neighbors[x][y]){
+                for (var Ny in neighbors[x][y][Nx]){
+                  numBadNeighbors = tileLabelMap[Nx][Ny] != "M" ? numBadNeighbors + 1 : numBadNeighbors;
+                }
+              }
+              mostBadEdges = Math.max(mostBadEdges, numBadNeighbors);
+              if(!edgeCountMap.hasOwnProperty(numBadNeighbors)){
+                edgeCountMap[numBadNeighbors] = [];
+              }
+              edgeCountMap[numBadNeighbors].push(worker.makePoint(x,y));
               madeChange = true;
-              worker.updateTwoDMap(x, y, "M2", tileLabelMap);
-              worker.updateTwoDMap(x, y, "M2", centerLabelMap);
+              
             }
+          }
+        }
+        if(madeChange){
+          console.log(mostBadEdges);
+          for (var ind = 0; ind < edgeCountMap[mostBadEdges].length; ind++){
+            var x = edgeCountMap[mostBadEdges][ind].x;
+            var y = edgeCountMap[mostBadEdges][ind].y;
+            worker.updateTwoDMap(x, y, "M2", tileLabelMap);
+            worker.updateTwoDMap(x, y, "M2", centerLabelMap);
           }
         }
       }
