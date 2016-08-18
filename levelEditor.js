@@ -790,7 +790,6 @@ function createWorker(categoryJSON){
           }
         }
         if(madeChange){
-          console.log(mostBadEdges);
           for (var ind = 0; ind < edgeCountMap[mostBadEdges].length; ind++){
             var x = edgeCountMap[mostBadEdges][ind].x;
             var y = edgeCountMap[mostBadEdges][ind].y;
