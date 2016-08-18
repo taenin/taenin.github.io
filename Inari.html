@@ -33,14 +33,17 @@ body{
 	font-size: 40;
 	opacity:1;
 	height: 99px;
-	width: 25%;
+	width: 20%;
+	min-width: calc(0.7*(2/7)*1200px);
 	display: inline-block;
 	vertical-align: top;
+	overflow: hidden;
 }
 /* CANVAS PARAMS */
 #canvasParam {
 	display: inline-block;
-	width: 46%;
+	width: 49%;
+	min-width: calc(0.7*(5/7)*1200px);
 	height: 99px;
 	font-size: 12;
 	overflow: auto;
@@ -50,8 +53,13 @@ body{
 	.block {
 		display: inline-block;
 		*display: inline-block;
-		width: calc(100%/3.1);
+		height: 100%;
+		width: 33%;
 		vertical-align: top;
+	}
+
+	#hideTools {
+		overflow: auto;
 	}
 
 	#sliderWrapper {
@@ -68,7 +76,7 @@ body{
 /* SAVING AND LOADING STUFF */
 #fileToolbar{
 	height: 99px;
-	width: 19%;
+	width: 29%;
 	display: inline-block;
 }
 
