@@ -2,6 +2,8 @@
 <head>
 	<title>Inari Level Editor</title>
 <link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Raleway">
+
 <script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js">
@@ -13,9 +15,93 @@
 <script type="text/javascript" src = "levelEditor.js">
 </script>
 <style>
-body{
-	font-family:  "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+
+/*UNIVERSAL*/
+* {
+	font-family: "Raleway";
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
 }
+
+/*BUTTON STUFF*/
+button, input[type="button"] {
+	background-color: rgba(0,0,0,0.1);
+	-moz-border-radius:8px;
+	-webkit-border-radius:8px;
+	border-radius:2px;
+	border: 1px solid rgba(0,0,0,0.15);
+	display:inline-block;
+	cursor:pointer;
+	text-decoration:none;
+	height: 22px;
+}
+button:hover, input[type="button"]:hover {
+	background-color:#3FA9DA;
+	color: white;
+}
+
+/*CHECKBOX STUFF*/
+input[type=checkbox] {
+	-webkit-appearance: none;
+	background-color: #fafafa;
+	border: 1px solid #cacece;
+	margin: 0px 10px 0px 10px;
+	padding: 8px;
+	border-radius: 3px;
+	display: inline-block;
+	position: relative;
+}
+
+input[type=checkbox]:checked {
+	background-color: #e9ecee;
+	border: 1px solid #adb8c0;
+	color: #99a1a7;
+}
+
+input[type=checkbox]:checked:after {
+	content: '\2714';
+	font-size: 14px;
+	position: absolute;
+	top: -2px;
+	left: 3px;
+	color: #99a1a7;
+}
+
+/*SCROLLBAR STUFF*/
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-button {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.6);
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b1daec;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #b1daec;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.4);
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-track:hover {
+  background: rgba(0,0,0,0.4);
+}
+::-webkit-scrollbar-track:active {
+  background: rgba(0,0,0,0.4);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 .name{
 	color: #3FA9DA;
 }
@@ -25,74 +111,91 @@ body{
 .outputField{
 	margin: 10px;
 }
-
-/* TITLE */
-.title{
-	margin: 0 0 0 0;
-	color: #3FA9DA;
-	font-size: 40;
-	opacity:1;
+/*STUFF AT TOP*/
+.topWrapper {
 	height: 99px;
-	width: 20%;
-	min-width: calc(0.7*(2/7)*1200px);
-	display: inline-block;
-	vertical-align: top;
+	box-shadow: 0px 10px 20px rgba(0,0,0,0.2);
+	padding: 5px;
 	overflow: hidden;
 }
-/* CANVAS PARAMS */
-#canvasParam {
-	display: inline-block;
-	width: 49%;
-	min-width: calc(0.7*(5/7)*1200px);
-	height: 99px;
-	font-size: 12;
-	overflow: auto;
-	vertical-align: top;
-}
 
-	.block {
-		display: inline-block;
-		*display: inline-block;
+	/* TITLE */
+	.title{
+		margin: 0 0 0 0;
+		color: #3FA9DA;
+		font-size: 36;
+		opacity:1;
 		height: 100%;
-		width: 33%;
+		width: 20%;
+		min-width: calc(0.7*(2/7)*1200px);
+		display: inline-block;
+		vertical-align: top;
+		overflow: hidden;
+	}
+
+		#icon {
+			height: 90%;
+			float: left;
+		}
+
+	/* CANVAS PARAMS */
+	#canvasParam {
+		display: inline-block;
+		width: 49%;
+		min-width: calc(0.7*(5/7)*1200px);
+		font-size: 12;
 		vertical-align: top;
 	}
 
-	#hideTools {
-		overflow: auto;
-	}
-
-	#sliderWrapper {
-		margin: 15 0 15 0;
-	}
-
-	#slider{
-	display: inline-block;
-	*display: inline-block;
-	width: 200px;
-}
-
-
-/* SAVING AND LOADING STUFF */
-#fileToolbar{
-	height: 99px;
-	width: 29%;
-	display: inline-block;
-}
-
-	.fileToolbarBlock{
-		display:inline-block;
-		*display: inline-block;
-	}
-
-		#fileinput, #levelName {
-			width: 200px;
+		.block {
+			display: inline-block;
+			*display: inline-block;
+			height: 100%;
+			width: 33%;
+			vertical-align: top;
 		}
+
+		#canvasParam .drawingBlock div {
+			padding: 10px;
+		}
+
+		#hideTools {
+			overflow: auto;
+		}
+
+		#sliderWrapper {
+			margin: 15 0 15 0;
+		}
+
+		#slider{
+		display: inline-block;
+		*display: inline-block;
+		width: 200px;
+	}
+
+
+	/* SAVING AND LOADING STUFF */
+	#fileToolbar{
+		width: 29%;
+		display: inline-block;
+	}
+
+		.fileToolbarBlock{
+			display:inline-block;
+			*display: inline-block;
+			padding: 10px;
+		}
+
+			#fileinput, #levelName {
+				width: 200px;
+			}
 
 /*MAIN BODY*/
 .wrapper {
 	width: 100%;
 	min-width: 1200px;
+	height: calc(100% - 100px);
+	padding-top: 30px;
 	display: inline-block;
 	*display: inline-block;
 }
@@ -101,7 +204,7 @@ body{
 	#canvas {
 		min-width: 70%;
 		max-width: 70%;
-		height: calc(100% - 100px);
+		height: 100%;
 		overflow: auto;
 		text-align: left;
 		vertical-align: top;
@@ -115,6 +218,7 @@ body{
 		display: inline-block;
 		vertical-align: top;
 		width: 30%;
+		height: 100%;
 		overflow: hidden;
 	}
 
@@ -133,13 +237,16 @@ body{
 			.bartitle{
 				margin: 0 0 0 0;
 				color: #3FA9DA;
+				background-color: #eaf4f9;
 				font-size: 20;
+				font-weight: bold;
 				opacity:1;
-				margin: 10 0 10 0;
+				padding: 10 0 10 0;
+				margin: 5px 10px;
 			}
 
 			.toolPopulate, .selectPopulate {
-				height: calc((100% - 100px)/2 - 80px);
+				height: calc(100%/2 - 80px);
 				overflow: auto;
 			}
 
@@ -147,14 +254,13 @@ body{
 		.helperTool{
 			display: block;
 			vertical-align: top;
-			border-top: 1px solid black;
 			height: 80px;
 			overflow: auto;
 			font-size: 12;
 		}
 
 			.worldInput {
-				width: 40px;
+				width: 48px;
 			}
 
 			.subtitle{
@@ -216,50 +322,61 @@ body {
 </head>
 <body>
 	<!-- TOP SECTION -->
-	<div class="title"><i class="name">Inari</i> Level Editor</div>
-
-	<div id = "canvasParam">
-		<div class = "block">
-			<div>
-				Snap to Grid<input type = "checkbox" id="snapToGrid"/>
-			</div>
-			<div id = "sliderWrapper">
-				Zoom: <div id="slider"></div>
-			</div>
+	<div class="topWrapper">
+		<!-- TITLE -->
+		<div class="title">
+			<img id="icon" src="img/inari-icon-rounded.png" alt="Inari Icon">
+			<i class="name">Inari</i>
+			<br>
+			Level Editor
 		</div>
 
-		<div class ="block">
-			<div>
-				World Width (m): <input type="text" class="worldInput" id="worldWidth"/>
+		<div id="canvasParam">
+			<!-- SNAP + ZOOM -->
+			<div class = "block">
+				<div>
+					Snap to Grid<input type = "checkbox" id="snapToGrid"/>
+				</div>
+				<div id = "sliderWrapper">
+					Zoom: <div id="slider"></div>
+				</div>
+				<div>
+					World:
+					<input type="text" class="worldInput" id="worldWidth" placeholder="meters"/>
+					x
+					<input type="text" class="worldInput" id="worldHeight" placeholder="meters"/>
+				</div>
 			</div>
-			<div>
-				World Height (m): <input type="text" class="worldInput" id="worldHeight"/>
+			<!-- WORLD DIMENSIONS + DRAW MODE -->
+			<div class = "block drawingBlock">
+				<div>
+					<button id="drawing-mode" class="btn btn-info">Enter drawing mode</button>
+				</div>
+				<div id="drawing-mode-options">
+					Tile Set: <select id="drawing-mode-selector">
+					</select>
+				</div>
 			</div>
-			<div>
-				<button id="drawing-mode" class="btn btn-info">Enter drawing mode</button>
+			<!-- SHOW/HIDE ELEMENTS -->
+			<div class ="block" id="hideTools">
 			</div>
-			<div id="drawing-mode-options">
-				Tile Set: <select id="drawing-mode-selector">
-				</select>
-			</div>
+
 		</div>
 
-		<div class ="block" id="hideTools">
-		</div>
+		<!-- SAVE/LOAD FILES -->
+		<div id = "fileToolbar">
+			<div class="fileToolbarBlock">
+				<input type="file" id="fileinput"/>
+		        <input type='button' id='btnLoad' value='Load Level'>
+	    	</div>
+	    	<div class = "fileToolbarBlock">
+	        	<input type="text" id="levelName" placeholder="saveFile.json">
+	        	<input type="button" id="btnSave" value="Save Level">
+	    	</div>
+	    </div>
 
-		
-	</div>
+	  </div>
 
-	<div id = "fileToolbar">
-		<div class="fileToolbarBlock">
-			<input type="file" id="fileinput"/>
-	        <input type='button' id='btnLoad' value='Load Level'>
-    	</div>
-    	<div class = "fileToolbarBlock">
-        	<input type="text" id="levelName" placeholder="saveFile.json">
-        	<input type="button" id="btnSave" value="Save Level">
-    	</div>
-    </div>
     <!-- MAIN BODY: CANVAS + TOOLS -->
 	<div class="wrapper">
 		<!-- CANVAS -->
