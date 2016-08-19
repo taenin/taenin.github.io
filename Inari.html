@@ -311,15 +311,26 @@ input[type=checkbox]:checked:after {
 }
 .selectable{
 	display: inline-block;
-	margin: 10px;
+	margin: 5px;
+	width: 128px;
+	height: 128px;
+	vertical-align: top;
 }
-.selected{
-	outline: 2px solid #BF384F;
+
+.selectable:hover {
+	outline: 2px solid #3FA9DA;
 }
+
+.selected, .selected:hover {
+	outline: 4px solid #3FA9DA;
+}
+
+
 .image{
-	width: 100%;
-	max-width: 200px;
+	max-width: 128px;
+	max-height: 128px;
 }
+
 
 body {
 	text-align: center;
