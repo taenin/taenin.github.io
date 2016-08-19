@@ -34,6 +34,7 @@ button, input[type="button"] {
 	cursor:pointer;
 	text-decoration:none;
 	height: 22px;
+	overflow: hidden;
 }
 button:hover, input[type="button"]:hover {
 	background-color:#3FA9DA;
@@ -114,6 +115,7 @@ input[type=checkbox]:checked:after {
 /*STUFF AT TOP*/
 .topWrapper {
 	height: 99px;
+	min-width: 1280px;
 	box-shadow: 0px 10px 20px rgba(0,0,0,0.2);
 	padding: 5px;
 	overflow: hidden;
@@ -127,7 +129,7 @@ input[type=checkbox]:checked:after {
 		opacity:1;
 		height: 100%;
 		width: 20%;
-		min-width: calc(0.7*(2/7)*1200px);
+/*		min-width: calc(0.7*(2/7)*1200px);*/
 		display: inline-block;
 		vertical-align: top;
 		overflow: hidden;
@@ -142,16 +144,17 @@ input[type=checkbox]:checked:after {
 	#canvasParam {
 		display: inline-block;
 		width: 49%;
-		min-width: calc(0.7*(5/7)*1200px);
+/*		min-width: calc(0.7*(5/7)*1200px);*/
 		font-size: 12;
 		vertical-align: top;
+		float: right;
 	}
 
 		.block {
 			display: inline-block;
 			*display: inline-block;
 			height: 100%;
-			width: 33%;
+			width: 32%;
 			vertical-align: top;
 		}
 
@@ -164,13 +167,14 @@ input[type=checkbox]:checked:after {
 		}
 
 		#sliderWrapper {
-			margin: 15 0 15 0;
+			margin: 10 0;
 		}
 
 		#slider{
 		display: inline-block;
 		*display: inline-block;
-		width: 200px;
+		width: 100%;
+		max-width: 200px;
 	}
 
 
@@ -178,22 +182,25 @@ input[type=checkbox]:checked:after {
 	#fileToolbar{
 		width: 29%;
 		display: inline-block;
+		float: right;
 	}
 
 		.fileToolbarBlock{
 			display:inline-block;
 			*display: inline-block;
+			width: 100%;
 			padding: 10px;
 		}
 
 			#fileinput, #levelName {
-				width: 200px;
+				width: 50%;
+				max-width: 300px;
 			}
 
 /*MAIN BODY*/
 .wrapper {
 	width: 100%;
-	min-width: 1200px;
+	min-width: 1280px;
 	height: calc(100% - 100px);
 	padding-top: 30px;
 	display: inline-block;
@@ -331,6 +338,18 @@ body {
 			Level Editor
 		</div>
 
+		<!-- SAVE/LOAD FILES -->
+		<div id = "fileToolbar">
+			<div class="fileToolbarBlock">
+				<input type="file" id="fileinput"/>
+		        <input type='button' id='btnLoad' value='Load Level'>
+	    	</div>
+	    	<div class = "fileToolbarBlock">
+	        	<input type="text" id="levelName" placeholder="saveFile.json">
+	        	<input type="button" id="btnSave" value="Save Level">
+	    	</div>
+	    </div>
+
 		<div id="canvasParam">
 			<!-- SNAP + ZOOM -->
 			<div class = "block">
@@ -360,21 +379,7 @@ body {
 			<!-- SHOW/HIDE ELEMENTS -->
 			<div class ="block" id="hideTools">
 			</div>
-
 		</div>
-
-		<!-- SAVE/LOAD FILES -->
-		<div id = "fileToolbar">
-			<div class="fileToolbarBlock">
-				<input type="file" id="fileinput"/>
-		        <input type='button' id='btnLoad' value='Load Level'>
-	    	</div>
-	    	<div class = "fileToolbarBlock">
-	        	<input type="text" id="levelName" placeholder="saveFile.json">
-	        	<input type="button" id="btnSave" value="Save Level">
-	    	</div>
-	    </div>
-
 	  </div>
 
     <!-- MAIN BODY: CANVAS + TOOLS -->
