@@ -1637,7 +1637,10 @@ function createWorker(categoryJSON){
         var main = $(document.createElement('div')).addClass("toolPopulateCanvas");
         
         for(var ind = 0; ind<worker.tools.length; ind++){
-          latestTile = $(document.createElement('div')).addClass("selectable").append("<img class='image' src=" + worker.tools[ind]  + ">");
+          // latestTile = $(document.createElement('div')).addClass("selectable").append("<img class='image' src=" + worker.tools[ind]  + ">");
+          var pos = worker.tools[ind].toString().lastIndexOf("/");
+          var overlayText = worker.tools[ind].toString().substring(pos+1, worker.tools[ind].toString().length-4);
+          latestTile = $(document.createElement('div')).addClass("selectable").append("<img class='image' src=" + worker.tools[ind]  + ">" + "<div class='overlay'>" + overlayText + "</div>");
           tileClickHandler(latestTile);
           main.append(latestTile);
         }

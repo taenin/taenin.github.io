@@ -105,6 +105,13 @@ input[type=checkbox]:checked:after {
 
 .name{
 	color: #3FA9DA;
+	font-size: 20pt;
+	margin: 5px;
+}
+
+.smallText {
+	font-size: 14pt;
+	margin: 5px;
 }
 .zButton{
 	margin: 10px;
@@ -116,7 +123,8 @@ input[type=checkbox]:checked:after {
 .topWrapper {
 	height: 99px;
 	min-width: 1280px;
-	box-shadow: 0px 10px 20px rgba(0,0,0,0.2);
+	background-color: rgba(0,0,0,0.02);
+	box-shadow: 0px 10px 20px rgba(0,0,0,0.1);
 	padding: 5px;
 	overflow: hidden;
 }
@@ -138,6 +146,10 @@ input[type=checkbox]:checked:after {
 		#icon {
 			height: 90%;
 			float: left;
+		}
+
+		#icon:hover {
+			-webkit-filter: grayscale(0.5);
 		}
 
 	/* CANVAS PARAMS */
@@ -309,27 +321,43 @@ input[type=checkbox]:checked:after {
 	background-size: contain;
 	display: inline-block;
 }
+
+/*OBJECTS IN TOOLS SECTION*/
 .selectable{
 	display: inline-block;
 	margin: 5px;
 	width: 128px;
 	height: 128px;
 	vertical-align: top;
+	position: relative;
 }
+	.selectable:hover {
+		/*outline: 2px solid #3FA9DA;*/
+		cursor: pointer;
+	}
+	.selected, .selected:hover {
+		outline: 4px solid #3FA9DA;
+	}
 
-.selectable:hover {
-	outline: 2px solid #3FA9DA;
-}
-
-.selected, .selected:hover {
-	outline: 4px solid #3FA9DA;
-}
-
-
-.image{
-	max-width: 128px;
-	max-height: 128px;
-}
+	.image{
+		max-width: 128px;
+		max-height: 128px;
+	}
+	.selectable .overlay {
+		position: absolute;
+	    top: 75%;
+	    left: 0;
+	    width: 100%;
+	    height: 25%;
+	    display: none;
+	    color: #FFF;
+	    padding: 6px;
+	    font-size: 10pt;
+	}
+	.selectable:hover .overlay {
+		display: block;
+    	background: rgba(0, 0, 0, .6);
+	}
 
 
 body {
@@ -343,10 +371,15 @@ body {
 	<div class="topWrapper">
 		<!-- TITLE -->
 		<div class="title">
-			<img id="icon" src="img/inari-icon-rounded.png" alt="Inari Icon">
-			<i class="name">Inari</i>
-			<br>
-			Level Editor
+			<a href="https://drive.google.com/open?id=1cmZAu6dNqE9ho9_6Xd1FLCAPrhpu1t4RRgBajCSg1SU" target="_blank">
+				<img id="icon" src="img/inari-icon-rounded.png" alt="Inari Icon" title="Need Halp? Click me."/>
+			</a>
+			<p class="name">
+				Inari Level Editor
+			</p>
+			<p class="smallText">
+				Ask Inari (left) for help!
+			</p>
 		</div>
 
 		<!-- SAVE/LOAD FILES -->
