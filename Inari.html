@@ -3,6 +3,7 @@
 	<title>Inari Level Editor</title>
 <link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="icon" href="img/inari-icon-rounded.png">
 
 <script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
 </script>
@@ -19,17 +20,18 @@
 /*UNIVERSAL*/
 * {
 	font-family: "Raleway";
+	color: rgba(0,0,0,0.8);
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 }
 
 /*BUTTON STUFF*/
 button, input[type="button"] {
-	background-color: rgba(0,0,0,0.1);
-	-moz-border-radius:8px;
-	-webkit-border-radius:8px;
-	border-radius:2px;
-	border: 1px solid rgba(0,0,0,0.15);
+	background-color: rgba(0,0,0,0.0);
+	-moz-border-radius:0px;
+	-webkit-border-radius:0px;
+	border-radius:0px;
+	border: 1px solid #cccccc;
 	display:inline-block;
 	cursor:pointer;
 	text-decoration:none;
@@ -37,7 +39,7 @@ button, input[type="button"] {
 	overflow: hidden;
 }
 button:hover, input[type="button"]:hover {
-	background-color:#3FA9DA;
+	background-color: #cccccc;
 	color: white;
 }
 
@@ -77,26 +79,26 @@ input[type=checkbox]:checked:after {
   height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.6);
+  background: rgba(0,0,0,0.2);
   border: 0px none #ffffff;
   border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #b1daec;
+  background: #3FA9DA;
 }
 ::-webkit-scrollbar-thumb:active {
-  background: #b1daec;
+  background: #3FA9DA;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.2);
   border: 0px none #ffffff;
   border-radius: 0px;
 }
 ::-webkit-scrollbar-track:hover {
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.2);
 }
 ::-webkit-scrollbar-track:active {
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.2);
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
@@ -175,18 +177,34 @@ input[type=checkbox]:checked:after {
 
 		#hideTools {
 			overflow: auto;
+			text-align: right;
 		}
 
 		#sliderWrapper {
 			margin: 10 0;
 		}
 
-		#slider{
-		display: inline-block;
-		*display: inline-block;
-		width: 100%;
-		max-width: 200px;
-	}
+			#slider {
+				display: inline-block;
+				*display: inline-block;
+				width: 100%;
+				max-width: 200px;
+			}
+
+		#drawing-mode {
+			width: 150px;
+		}
+
+			.drawing-mode-on {
+				background-color: #cccccc;
+				border-color: #cccccc;
+				color: white;
+			}
+
+			.drawing-mode-on:hover {
+				background-color: #999999;
+				border-color: #999999;
+			}
 
 
 	/* SAVING AND LOADING STUFF */
@@ -418,7 +436,7 @@ body {
 			<!-- WORLD DIMENSIONS + DRAW MODE -->
 			<div class = "block drawingBlock">
 				<div>
-					<button id="drawing-mode" class="btn btn-info">Enter drawing mode</button>
+					<button id="drawing-mode">Enter drawing mode</button>
 				</div>
 				<div id="drawing-mode-options">
 					Tile Set: <select id="drawing-mode-selector">

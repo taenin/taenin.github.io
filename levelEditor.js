@@ -97,10 +97,12 @@ function createWorker(categoryJSON){
   worker.setDrawingMode = function(state){
     worker.canvas.isDrawingMode = state;
     if(worker.canvas.isDrawingMode){
-      $("#drawing-mode").html("Cancel drawing mode");
+      $("#drawing-mode").html("Drawing Mode: ON");
+      $("#drawing-mode").addClass("drawing-mode-on");
     }
     else{
-      $("#drawing-mode").html("Enter drawing mode");
+      $("#drawing-mode").html("Drawing Mode: OFF");
+      $("#drawing-mode").removeClass("drawing-mode-on");
     }
   };
 
