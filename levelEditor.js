@@ -94,6 +94,7 @@ function createWorker(categoryJSON){
   
   //Bashes the old avatar state with the new avatar location. We assume there was no previous avatar spawn point.
 
+  // PHIL
   worker.setDrawingMode = function(state){
     worker.canvas.isDrawingMode = state;
     if(worker.canvas.isDrawingMode){
@@ -1640,6 +1641,7 @@ function createWorker(categoryJSON){
         
         for(var ind = 0; ind<worker.tools.length; ind++){
           // latestTile = $(document.createElement('div')).addClass("selectable").append("<img class='image' src=" + worker.tools[ind]  + ">");
+          // PHIL
           var pos = worker.tools[ind].toString().lastIndexOf("/");
           var overlayText = worker.tools[ind].toString().substring(pos+1, worker.tools[ind].toString().length-4);
           latestTile = $(document.createElement('div')).addClass("selectable").append("<img class='image' src=" + worker.tools[ind]  + ">" + "<div class='overlay'>" + overlayText + "</div>");
@@ -2170,6 +2172,48 @@ $(document).ready(function(){
     categoryToolUpdate();
     categorySelectUpdate();
   });
+
+  // PHIL: show/hide animations for tool menu
+  $("#toolToggler").click(function(){
+    // clear previous animations in queue
+    $(".toolWrapper").clearQueue();
+
+    if ($("#toolToggler").hasClass("minimized")) {
+      // expand
+      $("#arrow").css("border-width", "10px 0px 10px 10px");
+      $("#arrow").css("border-color", "transparent transparent transparent #999999");
+      $(".toolWrapper").animate({
+        right: "0px"
+      }, 800);
+      $("#toolToggler").removeClass("minimized");
+    } else {
+      // minimize
+      $("#arrow").css("border-width", "10px 10px 10px 0px");
+      $("#arrow").css("border-color", "transparent #999999 transparent transparent");
+      $(".toolWrapper").animate({
+        right: "-30%"
+      }, 800);
+      $("#toolToggler").addClass("minimized");
+    }
+  });
+
+  // toggler hover effects
+  $("#toolToggler").mouseover(function(){
+    if ($("#toolToggler").hasClass("minimized")) {
+      $("#arrow").css("border-color", "transparent #fafafa transparent transparent");
+    } else {
+      $("#arrow").css("border-color", "transparent transparent transparent #fafafa");
+    }
+  });
+
+  $("#toolToggler").mouseout(function(){
+    if ($("#toolToggler").hasClass("minimized")) {
+      $("#arrow").css("border-color", "transparent #999999 transparent transparent");
+    } else {
+      $("#arrow").css("border-color", "transparent transparent transparent #999999");
+    }
+  });
+
 });
 
 
