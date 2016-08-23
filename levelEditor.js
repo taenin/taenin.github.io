@@ -1291,13 +1291,22 @@ function createWorker(categoryJSON){
     var height = worker.convertMetersToPixels(worker.worldHeight);
     var width = worker.convertMetersToPixels(worker.worldWidth);
     for (var i = 0; i <= (height / worker.grid); i++) {
-      var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#000', selectable: false, opacity: 0.5 });
+      // PHIL
+      if (i % 4 == 0) { // every 4th line is darker
+        var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#000', selectable: false, opacity: 0.3 });
+      } else {
+        var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#000', selectable: false, opacity: 0.1 });
+      }
       worker.gridLines.push(line);
       worker.canvas.add(line);
       line.bringToFront();
     }
     for (var i = 0; i<= (width / worker.grid); i++){
-      var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#000', selectable: false, opacity: 0.5 });
+      if (i % 4 == 0) { // every 4th line is darker
+        var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#000', selectable: false, opacity: 0.3 });
+      } else {
+        var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#000', selectable: false, opacity: 0.1 });
+      }
       worker.gridLines.push(line);
       worker.canvas.add(line);
       line.bringToFront();
