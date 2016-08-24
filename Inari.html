@@ -488,7 +488,7 @@ body {
 		<div id="canvasParam">
 			<!-- SNAP + ZOOM -->
 			<div class = "block" id = "worldGridWrapper">
-				<div>
+				<div title = "Click Canvas + 'S' to Toggle">
 					Snap to Grid<input type = "checkbox" id="snapToGrid"/>
 				</div>
 				<div>
@@ -500,7 +500,7 @@ body {
 			</div>
 			<!-- WORLD DIMENSIONS + DRAW MODE -->
 			<div class = "block" id = "drawToolWrapper">
-				<div>
+				<div title = "Click Canvas + 'D' to Toggle">
 					<button id="drawing-mode">Enter drawing mode</button>
 				</div>
 				<div id="drawing-mode-options">
@@ -516,14 +516,14 @@ body {
 
     <!-- MAIN BODY: CANVAS + TOOLS -->
 	<div class="wrapper">
-		<div id = "zoomWrapper">
+		<div id = "zoomWrapper" title = "Scroll with Mouse Wheel">
 			<div id="zoomTitle">Zoom</div>
 			<div id = "sliderWrapper">
 				<div id="slider"></div>
 			</div>
 		</div>
 		<!-- CANVAS -->
-		<div id="canvas">
+		<div id="canvas" tabindex="1">
 			<canvas id="myCanvas" width="900" height="800" style="border:1px solid #ccc;">
 			</canvas>
 		</div>

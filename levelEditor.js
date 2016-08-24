@@ -1092,6 +1092,21 @@ function createWorker(categoryJSON){
     $("#drawing-mode").click(function(){
       worker.setDrawingMode(!worker.canvas.isDrawingMode);
     });
+
+    // PHIL: draw mode + snap hotkeys
+    $("#canvas").keyup(function(e) {
+      if (e.which == 68) { // d for draw mode
+        worker.setDrawingMode(!worker.canvas.isDrawingMode);
+      } else if (e.which == 83) { // s for snap
+        console.log("s");
+        if (worker.shouldSnapToGrid()) {
+          $("#snapToGrid").prop("checked", false);
+        } else {
+          $("#snapToGrid").prop("checked", true);
+        }
+      }
+    });
+
     $('html').keyup(function(e){
       //Check for the delete key
       var selectedObject = worker.canvas.getActiveObject();
@@ -1213,6 +1228,19 @@ function createWorker(categoryJSON){
         $("#zoomTitle").html(ui.value + " %");
       }
     });
+
+    // PHIL: zoom with mousewheel
+    $("#canvas").on("mousewheel DOMMouseScroll", function(e) {
+      // prevent scrolling
+      e.preventDefault();
+      var wheelDelta = e.originalEvent.wheelDelta / 24; // 5% increments
+      $("#slider").slider("value", $("#slider").slider("value") + wheelDelta);
+      // zoom canvas + change UI value
+      worker.canvas.setZoom($("#slider").slider("value") / 100);
+      $("#zoomTitle").html($("#slider").slider("value") + " %");
+    });
+
+   
   }
 
   worker.initializeWorldControls = function(){
