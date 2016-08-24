@@ -138,7 +138,6 @@ input[type=checkbox]:checked:after {
 		opacity:1;
 		height: 100%;
 		width: 20%;
-/*		min-width: calc(0.7*(2/7)*1200px);*/
 		display: inline-block;
 		vertical-align: top;
 		overflow: hidden;
@@ -157,7 +156,6 @@ input[type=checkbox]:checked:after {
 	#canvasParam {
 		display: inline-block;
 		width: 49%;
-/*		min-width: calc(0.7*(5/7)*1200px);*/
 		font-size: 12;
 		vertical-align: top;
 		float: right;
@@ -171,25 +169,14 @@ input[type=checkbox]:checked:after {
 			vertical-align: top;
 		}
 
-		#canvasParam .drawingBlock div {
-			padding: 10px;
+		#worldGridWrapper > div, #drawToolWrapper > div {
+			padding: 10px 0px;
 		}
 
 		#hideTools {
 			overflow: auto;
 			text-align: right;
 		}
-
-		#sliderWrapper {
-			margin: 10 0;
-		}
-
-			#slider {
-				display: inline-block;
-				*display: inline-block;
-				width: 100%;
-				max-width: 200px;
-			}
 
 		#drawing-mode {
 			width: 150px;
@@ -238,10 +225,49 @@ input[type=checkbox]:checked:after {
 	left: 0;
 	overflow: hidden;
 }
+	/*ZOOM*/
+	#zoomWrapper {
+		position: absolute;
+	    left: 0;
+	    width: 320px;
+	    height: 32px;
+	    background-color: #fafafa;
+	    border-top: 1px solid rgba(0,0,0,0.3);
+	    border-left: 1px solid rgba(0,0,0,0.3);
+	    margin-left: 8px;
+	    box-shadow: 0px 10px 20px -5px rgba(0,0,0,0.1);
+	    z-index: 1;
+	    font-size: 10pt;
+	}
+
+		#zoomTitle {
+			display: inline-block;
+			float: left;
+			width: 64px;
+			height: 100%;
+			/* line height needs to match height of div*/
+			line-height: 32px;
+			vertical-align: middle;
+		}
+
+		#sliderWrapper {
+			display: inline-block;
+			width: calc(100% - 64px);
+			height: 100%;
+			position: relative;
+		}
+
+			#slider {
+				display: inline-block;
+				width: 90%;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
 
 	/*CANVAS (LEFT) */
 	#canvas {
-/*		width: 70%;*/
 		width: 100%;
 		height: 100%;
 		overflow: auto;
@@ -255,12 +281,6 @@ input[type=checkbox]:checked:after {
 
 	/*TOOL STUFF START (RIGHT)*/
 	.toolWrapper {
-/*		display: inline-block;
-		vertical-align: top;
-		width: 30%;
-		height: 100%;
-		overflow: hidden;
-		padding: 0 8;*/
 		vertical-align: top;
 	    width: 30%;
 	    height: calc(100% - 30px);
@@ -274,7 +294,6 @@ input[type=checkbox]:checked:after {
 		.toolWrapper select {
 			width: 40%;
 		}
-
 
 		#toolToggler {
 			height: 44px;
@@ -306,7 +325,7 @@ input[type=checkbox]:checked:after {
 			    transform: translateY(-50%);
 			}
 
-		/*TILE SETS*/
+		/*OBJECT SELECTION*/
 		#tilesetWrapper, #propertiesWrapper {
 			height: 50%;
 		}
@@ -340,8 +359,7 @@ input[type=checkbox]:checked:after {
 					overflow: auto;
 				}
 
-		/*CANVAS PARAMS + OBJECT PROPERTIES*/
-
+		/*OBJECT PROPERTIES*/
 				.worldInput {
 					width: 48px;
 				}
@@ -394,17 +412,23 @@ input[type=checkbox]:checked:after {
 	height: 128px;
 	vertical-align: top;
 	position: relative;
+	float: left;
+	overflow: hidden;
 }
 	.selectable:hover {
 		cursor: pointer;
 	}
 	.selected, .selected:hover {
-		outline: 2px solid #cccccc;
+		outline: 4px solid #cccccc;
 	}
 
 	.image{
 		max-width: 128px;
 		max-height: 128px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 	.selectable .overlay {
 		position: absolute;
@@ -463,12 +487,9 @@ body {
 
 		<div id="canvasParam">
 			<!-- SNAP + ZOOM -->
-			<div class = "block">
+			<div class = "block" id = "worldGridWrapper">
 				<div>
 					Snap to Grid<input type = "checkbox" id="snapToGrid"/>
-				</div>
-				<div id = "sliderWrapper">
-					Zoom: <div id="slider"></div>
 				</div>
 				<div>
 					World:
@@ -478,7 +499,7 @@ body {
 				</div>
 			</div>
 			<!-- WORLD DIMENSIONS + DRAW MODE -->
-			<div class = "block drawingBlock">
+			<div class = "block" id = "drawToolWrapper">
 				<div>
 					<button id="drawing-mode">Enter drawing mode</button>
 				</div>
@@ -495,6 +516,12 @@ body {
 
     <!-- MAIN BODY: CANVAS + TOOLS -->
 	<div class="wrapper">
+		<div id = "zoomWrapper">
+			<div id="zoomTitle">Zoom</div>
+			<div id = "sliderWrapper">
+				<div id="slider"></div>
+			</div>
+		</div>
 		<!-- CANVAS -->
 		<div id="canvas">
 			<canvas id="myCanvas" width="900" height="800" style="border:1px solid #ccc;">
@@ -503,14 +530,13 @@ body {
 		<!-- TOOLS -->
 		<div class="toolWrapper">
 			<div id="toolToggler">
-				<!-- &gt; -->
 				<div id="arrow"></div>
 			</div>
 			<!-- TOOL 1: TILE SETS -->
 			<div id="tilesetWrapper">
 				<div class="tools">
 					<div class="bartitle">
-						Canvas Tile Sets
+						Object Selection
 					</div>
 					<div id="toolbar">
 						<select id = "categoryTool">
@@ -532,7 +558,7 @@ body {
 			<div id="propertiesWrapper">
 				<div class = "helperTool">
 					<div class="bartitle">
-						Object Properties / Selection
+						Object Properties
 					</div>
 				
 					<div id="selector">

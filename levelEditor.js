@@ -1209,6 +1209,8 @@ function createWorker(categoryJSON){
       value: 100,
       slide: function(event, ui){
         worker.canvas.setZoom(ui.value / 100);
+        // PHIL
+        $("#zoomTitle").html(ui.value + " %");
       }
     });
   }
