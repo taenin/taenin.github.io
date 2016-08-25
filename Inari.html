@@ -577,12 +577,12 @@ body {
 				<tr>
 					<td>Toggle Draw Mode</td>
 					<td>D</td>
-					<td>Active Canvas*</td>
+					<td>No Active Input Field*</td>
 				</tr>
 				<tr>
 					<td>Toggle Grid Snapping</td>
 					<td>S</td>
-					<td>Active Canvas*</td>
+					<td>No Active Input Field*</td>
 				</tr>
 				<tr>
 					<td>Zoom Canvas</td>
@@ -591,7 +591,7 @@ body {
 				</tr>
 			</table>
 			<div id="hotkeyTableAsterisk">
-				* 'Active Canvas' : You must click or tab onto  the canvas first to enable the hotkey.
+				* 'No Active Input Field' : Typing in an input field (e.g. save file name) will not trigger hotkeys.
 			</div>
 			<div id="externalHelp">
 				<a href="https://drive.google.com/open?id=1cmZAu6dNqE9ho9_6Xd1FLCAPrhpu1t4RRgBajCSg1SU" target="_blank">
@@ -663,7 +663,7 @@ body {
 			</div>
 		</div>
 		<!-- CANVAS -->
-		<div id="canvas" tabindex="1">
+		<div id="canvas">
 			<canvas id="myCanvas" width="900" height="800" style="border:1px solid #ccc;">
 			</canvas>
 		</div>

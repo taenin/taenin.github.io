@@ -1094,15 +1094,18 @@ function createWorker(categoryJSON){
     });
 
     // PHIL: draw mode + snap hotkeys
-    $("#canvas").keyup(function(e) {
-      if (e.which == 68) { // d for draw mode
-        worker.setDrawingMode(!worker.canvas.isDrawingMode);
-      } else if (e.which == 83) { // s for snap
-        console.log("s");
-        if (worker.shouldSnapToGrid()) {
-          $("#snapToGrid").prop("checked", false);
-        } else {
-          $("#snapToGrid").prop("checked", true);
+    $(document).keyup(function(e) {
+      // don't detect key presses on input fields
+      if (e.target.nodeName != 'INPUT') {
+        if (e.which == 68) { // d for draw mode
+          worker.setDrawingMode(!worker.canvas.isDrawingMode);
+        } else if (e.which == 83) { // s for snap
+          console.log("s");
+          if (worker.shouldSnapToGrid()) {
+            $("#snapToGrid").prop("checked", false);
+          } else {
+            $("#snapToGrid").prop("checked", true);
+          }
         }
       }
     });
