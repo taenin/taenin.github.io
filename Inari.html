@@ -2,7 +2,6 @@
 <head>
 	<title>Inari Level Editor</title>
 <link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="icon" href="img/inari-favicon.ico">
 
 <script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
@@ -18,8 +17,14 @@
 <style>
 
 /*UNIVERSAL*/
+@font-face {
+	font-family: "Myriad Set Pro";
+	font-style: normal;
+	src: url(fonts/myriad-set-pro_thin.ttf);
+}
+
 * {
-	font-family: "Raleway";
+	font-family: "Myriad Set Pro";
 	color: rgba(0,0,0,0.8);
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -44,10 +49,20 @@ button, input[type="button"] {
 	text-decoration:none;
 	height: 22px;
 	overflow: hidden;
+	padding: 5px;
+	font-size: 14;
+	height: 28px;
 }
 button:hover, input[type="button"]:hover {
 	background-color: #cccccc;
 	color: white;
+}
+
+/*INPUT + SELECT STUFF*/
+input[type=text], select {
+	padding: 5px;
+	font-size: 14;
+	height: 28px;
 }
 
 /*CHECKBOX STUFF*/
@@ -59,6 +74,8 @@ input[type=checkbox] {
 	padding: 8px;
 	display: inline-block;
 	position: relative;
+	top: -2px;
+	vertical-align: middle;
 }
 
 input[type=checkbox]:checked {
@@ -111,16 +128,6 @@ input[type=checkbox]:checked:after {
   background: transparent;
 }
 
-.name{
-	color: #3FA9DA;
-	font-size: 20pt;
-	margin: 5px;
-}
-
-.smallText {
-	font-size: 14pt;
-	margin: 5px;
-}
 .zButton{
 	margin: 10px;
 }
@@ -221,17 +228,18 @@ input[type=checkbox]:checked:after {
 		}
 
 /*STUFF AT TOP*/
-.topWrapper {
+#topWrapper {
 	height: 119px;
 	min-width: 1280px;
 	background-color: #fafafa;
 	box-shadow: 0px 10px 20px rgba(0,0,0,0.1);
 	padding: 10px;
 	overflow: hidden;
+	font-size: 14;
 }
 
 	/* TITLE */
-	.title{
+	.titleWrapper{
 		margin: 0 0 0 0;
 		color: #3FA9DA;
 		font-size: 36;
@@ -242,9 +250,9 @@ input[type=checkbox]:checked:after {
 		vertical-align: top;
 		overflow: hidden;
 	}
-
 		#icon {
-			height: 90%;
+			display: inline-block;
+			height: 100%;
 			float: left;
 			cursor: pointer;
 		}
@@ -253,11 +261,23 @@ input[type=checkbox]:checked:after {
 			-webkit-filter: grayscale(0.5) opacity(0.5);
 		}
 
+		.title{
+			color: #3FA9DA;
+			font-size: 20pt;
+			padding: 10px;
+			overflow: hidden;
+		}
+		.titleSmall {
+			font-size: 14pt;
+			padding: 5px 10px;
+			overflow: hidden;
+		}
+
+
 	/* CANVAS PARAMS */
 	#canvasParam {
 		display: inline-block;
 		width: 49%;
-		font-size: 12;
 		vertical-align: top;
 		float: right;
 	}
@@ -272,15 +292,27 @@ input[type=checkbox]:checked:after {
 
 		#worldGridWrapper > div, #drawToolWrapper > div {
 			padding: 10px 0px;
+			height: 48px;
 		}
+
+			#snapWrapper {
+				line-height: 28px;
+				vertical-align: middle;
+			}
 
 		#hideTools {
 			overflow: auto;
 			text-align: right;
 		}
 
+		#hideTools .toggleVisibility > div {
+			padding: 2px 0px;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+
 		#drawing-mode {
-			width: 150px;
+			width: 140px;
 		}
 
 			.drawing-mode-on {
@@ -312,6 +344,10 @@ input[type=checkbox]:checked:after {
 			#fileinput, #levelName {
 				width: 50%;
 				max-width: 300px;
+			}
+
+			#btnLoad, #btnSave {
+				width: 80px;
 			}
 
 /*MAIN BODY*/
@@ -434,7 +470,7 @@ input[type=checkbox]:checked:after {
 			.tools, .helperTool {
 				display: block;
 				overflow: auto;
-				height: 80px;
+				height: 90px;
 				background-color: #fafafa;
 				box-shadow: 0px 20px 30px -10px rgba(0,0,0,0.1);
 			}
@@ -456,7 +492,7 @@ input[type=checkbox]:checked:after {
 				}
 
 				.toolPopulate, .selectPopulate {
-					height: calc(100% - 80px);
+					height: calc(100% - 90px);
 					overflow: auto;
 				}
 
@@ -540,7 +576,7 @@ input[type=checkbox]:checked:after {
 	    display: none;
 	    color: #FFF;
 	    padding: 6px;
-	    font-size: 10pt;
+	    font-size: 14;
 	    white-space: nowrap;
 	    overflow: hidden;
 	    text-overflow: ellipsis;
@@ -601,16 +637,16 @@ body {
 		</div>
 	</div>
 	<!-- TOP SECTION -->
-	<div class="topWrapper">
+	<div id="topWrapper">
 		<!-- TITLE -->
-		<div class="title">
+		<div class="titleWrapper">
 			<img id="icon" src="img/inari-icon-rounded.png" alt="Inari Icon" title="Need Halp? Click me."/>
-			<p class="name">
+			<div class="title">
 				Inari Level Editor
-			</p>
-			<p class="smallText">
+			</div>
+			<div class="titleSmall">
 				Ask Inari (left) for help!
-			</p>
+			</div>
 		</div>
 
 		<!-- SAVE/LOAD FILES -->
@@ -628,7 +664,7 @@ body {
 		<div id="canvasParam">
 			<!-- SNAP + ZOOM -->
 			<div class = "block" id = "worldGridWrapper">
-				<div title = "Click Canvas + 'S' to Toggle">
+				<div id = "snapWrapper" title = "Click Canvas + 'S' to Toggle">
 					Snap to Grid<input type = "checkbox" id="snapToGrid"/>
 				</div>
 				<div>

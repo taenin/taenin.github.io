@@ -1701,7 +1701,7 @@ function createWorker(categoryJSON){
       for(var name in worker.state){
         if(worker.state.hasOwnProperty(name)){
           var toggleID = "hide" + name;
-          latestToggle = $(document.createElement('div')).append("Hide " + name + "<input type='checkbox' id=" + toggleID +">");
+          latestToggle = $(document.createElement('div')).append(name + "<input type='checkbox' id=" + toggleID +">");
           main.append(latestToggle);
         }
       }
