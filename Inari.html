@@ -25,6 +25,13 @@
 	-moz-box-sizing: border-box;
 }
 
+a {
+	text-decoration: none;
+}
+	a:hover {
+		font-weight: bold;
+	}
+
 /*BUTTON STUFF*/
 button, input[type="button"] {
 	background-color: rgba(0,0,0,0.0);
@@ -120,6 +127,99 @@ input[type=checkbox]:checked:after {
 .outputField{
 	margin: 10px;
 }
+
+/*INSTRUCTION OVERLAY*/
+#instructionOverlay {
+	position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.0);
+    z-index: 2;
+    overflow: hidden;
+}
+	.hidden {
+		display: none;
+	}
+
+	#instructionBox {
+		position: absolute;
+	    width: 50%;
+	    max-width: 800px;
+	    background-color: #dddddd;
+	    opacity: 0.9;
+	    z-index: 3;
+	    overflow: hidden;
+	    left: 50%;
+	    top: -20%;
+	    transform: translate(-50%, -50%);
+	    box-shadow: 0px 20px 40px 0px rgba(0,0,0,0.1);
+	    padding: 20px;
+	}
+
+		#instructionTitle, #hotkeyTable, #hotkeyTableAsterisk, #externalHelp {
+			padding: 10px 0px;
+		}
+
+		#closeInstructions {
+			position: absolute;
+			width: 32px;
+			height: 32px;
+			font-size: 16pt;
+			padding: 0;
+			/*account for padding on #instructionBox*/
+			right: 20px;
+			border: 1px solid #999999;
+			color: #999999;
+			vertical-align: middle;
+    		line-height: 26px;
+    		cursor: pointer;
+		}
+
+			#closeInstructions:hover {
+				background-color: #999999;
+				color: #eeeeee;
+			}
+
+		#instructionTitle {
+			height: 40px;
+			font-size: 16pt;
+		}
+
+		#hotkeyTable {
+			width: 100%;
+			border-spacing: 0px;
+		}
+			/* diff bg color first row*/
+			#hotkeyTable tr#hotkeyTableRow1 {
+				background-color: #aaaaaa;
+			}
+				#hotkeyTable tr#hotkeyTableRow1 td {
+					color: #eeeeee;
+				}
+			/* diff bg color every other row*/
+			#hotkeyTable tr:nth-child(odd) {
+				background-color: #cccccc;
+			}
+
+			#hotkeyTable td {
+				height: 40px;
+				padding: 5px;
+			}
+
+			#hotkeyTable td:nth-child(2) {
+				font-weight: bold;
+				color: #1278a7;
+			}
+
+		#hotkeyTableAsterisk {
+			font-size: 10pt;
+			text-align: left;
+		}
+
+		#externalHelp {
+
+		}
+
 /*STUFF AT TOP*/
 .topWrapper {
 	height: 119px;
@@ -146,10 +246,11 @@ input[type=checkbox]:checked:after {
 		#icon {
 			height: 90%;
 			float: left;
+			cursor: pointer;
 		}
 
 		#icon:hover {
-			-webkit-filter: grayscale(0.5);
+			-webkit-filter: grayscale(0.5) opacity(0.5);
 		}
 
 	/* CANVAS PARAMS */
@@ -458,13 +559,52 @@ body {
 </style>
 </head>
 <body>
+	<!-- INSTRUCTION OVERLAY -->
+	<div id="instructionOverlay" class="hidden">
+		<div id="instructionBox" class="hidden">
+			<div id="closeInstructions">
+				&#10799
+			</div>
+			<div id="instructionTitle">
+				Hotkeys
+			</div>
+			<table id="hotkeyTable">
+				<tr id="hotkeyTableRow1">
+					<td>ACTION</td>
+					<td>KEY</td>
+					<td>NOTE</td>
+				</tr>
+				<tr>
+					<td>Toggle Draw Mode</td>
+					<td>D</td>
+					<td>Active Canvas*</td>
+				</tr>
+				<tr>
+					<td>Toggle Grid Snapping</td>
+					<td>S</td>
+					<td>Active Canvas*</td>
+				</tr>
+				<tr>
+					<td>Zoom Canvas</td>
+					<td>Mouse Wheel</td>
+					<td>Mouse Over Canvas</td>
+				</tr>
+			</table>
+			<div id="hotkeyTableAsterisk">
+				* 'Active Canvas' : You must click or tab onto  the canvas first to enable the hotkey.
+			</div>
+			<div id="externalHelp">
+				<a href="https://drive.google.com/open?id=1cmZAu6dNqE9ho9_6Xd1FLCAPrhpu1t4RRgBajCSg1SU" target="_blank">
+					More Information
+				</a>
+			</div>
+		</div>
+	</div>
 	<!-- TOP SECTION -->
 	<div class="topWrapper">
 		<!-- TITLE -->
 		<div class="title">
-			<a href="https://drive.google.com/open?id=1cmZAu6dNqE9ho9_6Xd1FLCAPrhpu1t4RRgBajCSg1SU" target="_blank">
-				<img id="icon" src="img/inari-icon-rounded.png" alt="Inari Icon" title="Need Halp? Click me."/>
-			</a>
+			<img id="icon" src="img/inari-icon-rounded.png" alt="Inari Icon" title="Need Halp? Click me."/>
 			<p class="name">
 				Inari Level Editor
 			</p>

@@ -2253,6 +2253,51 @@ $(document).ready(function(){
     }
   });
 
+  // open instructions
+  $("#icon").click(function() {
+    $(document).clearQueue();
+    // show overlay - instant
+    $("#instructionOverlay").show();
+    // darken overlay
+    $("#instructionOverlay").animate(
+      {"background-color": "rgba(0,0,0,0.6)"}, 
+      {
+        duration: 500,
+        complete: function() {
+          $("#instructionBox").show();
+          $("#instructionBox").animate(
+            {top: "50%"}, 500
+          );
+        }
+      }
+    );
+  });
+
+  // close instructions
+  $("#closeInstructions").click(function() {
+    $(document).clearQueue();
+    // hide box
+    $("#instructionBox").animate(
+      {top: "-20%"}, 500
+    );
+    $("#instructionBox").hide(
+      {
+        duration: 1,
+        complete: function() {
+          $("#instructionOverlay").animate(
+            {"background-color": "rgba(0,0,0,0.0)"},
+            {
+              duration: 500,
+              complete: function() {
+                $("#instructionOverlay").hide();
+              }
+            }
+          );
+        }
+      }
+    );
+  });
+
 });
 
 
