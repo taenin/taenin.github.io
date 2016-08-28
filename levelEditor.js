@@ -1093,22 +1093,98 @@ function createWorker(categoryJSON){
       worker.setDrawingMode(!worker.canvas.isDrawingMode);
     });
 
-    // PHIL: draw mode + snap hotkeys
+    // PHIL: toggle side bar
+    toggleToolSideBar = function() {
+      // clear previous animations in queue
+      $(".toolWrapper").clearQueue();
+
+      if ($("#toolToggler").hasClass("minimized")) {
+        // expand
+        $("#arrow").css("border-width", "10px 0px 10px 10px");
+        $("#arrow").css("border-color", "transparent transparent transparent #999999");
+        $(".toolWrapper").animate({
+          right: "0px"
+        }, 800);
+        $("#toolToggler").removeClass("minimized");
+      } else {
+        // minimize
+        $("#arrow").css("border-width", "10px 10px 10px 0px");
+        $("#arrow").css("border-color", "transparent #999999 transparent transparent");
+        $(".toolWrapper").animate({
+          right: "-30%"
+        }, 800);
+        $("#toolToggler").addClass("minimized");
+      }
+    };
+
+    // on click event for toggling side bar
+    $("#toolToggler").click(toggleToolSideBar);
+
+    // PHIL: HOTKEYS
     $(document).keyup(function(e) {
       // don't detect key presses on input fields
       if (e.target.nodeName != 'INPUT') {
-        if (e.which == 68) { // d for draw mode
+        if (e.which == 69) { // e for draw mode
           worker.setDrawingMode(!worker.canvas.isDrawingMode);
-        } else if (e.which == 83) { // s for snap
-          console.log("s");
+        } else if (e.which == 81) { // q for snap to grid
           if (worker.shouldSnapToGrid()) {
             $("#snapToGrid").prop("checked", false);
           } else {
             $("#snapToGrid").prop("checked", true);
           }
+        } else if (e.which == 82) { // r for toggle sidebar
+          toggleToolSideBar();
         }
       }
     });
+
+    // simulate arrow key scroll with WASD
+    var keys = {};
+    $(document).keydown(function(e) {
+      if (e.target.nodeName != 'INPUT') {
+        keys[e.which] = true;
+      }
+    }).keyup(function(e) {
+      if (e.target.nodeName != 'INPUT') {
+        delete keys[e.which];
+      }
+    });
+
+      // $("#canvas").clearQueue();
+      // // get current scroll position
+      // var canvasPosX = $("#canvas").scrollLeft();
+      // var canvasPosY = $("#canvas").scrollTop();
+      // if (e.which == 87) { // w for pan up
+      //   $("#canvas").scrollTop(canvasPosY - 5);
+      // } else if (e.which == 83) { // s for pan down
+      //   $("#canvas").scrollTop(canvasPosY + 5);
+      // } else if (e.which == 68) { // d for pan right
+      //   $("#canvas").scrollLeft(canvasPosX + 5);
+      // } else if (e.which == 65) { // a for pan left
+      //   $("#canvas").scrollLeft(canvasPosX - 5);
+      // }
+
+      function panLoop() {
+        if (keys[87]) { // w for pan up
+          $("#canvas").animate(
+            {scrollTop: "-=20px"}, 50, "linear"
+          );
+        } else if (keys[83]) { // s for pan down
+          $("#canvas").animate(
+            {scrollTop: "+=20px"}, 50, "linear"
+          );
+        } else if (keys[68]) { // d for pan right
+          $("#canvas").animate(
+            {scrollLeft: "+=20px"}, 50, "linear"
+          );
+        } else if (keys[65]) { // a for pan left
+          $("#canvas").animate(
+            {scrollLeft: "-=20px"}, 50, "linear"
+          );
+        }
+        setTimeout(panLoop,50);
+      }
+      panLoop();
 
     $('html').keyup(function(e){
       //Check for the delete key
@@ -2213,30 +2289,9 @@ $(document).ready(function(){
     }
     categoryToolUpdate();
     categorySelectUpdate();
-  });
 
-  // PHIL: show/hide animations for tool menu
-  $("#toolToggler").click(function(){
-    // clear previous animations in queue
-    $(".toolWrapper").clearQueue();
-
-    if ($("#toolToggler").hasClass("minimized")) {
-      // expand
-      $("#arrow").css("border-width", "10px 0px 10px 10px");
-      $("#arrow").css("border-color", "transparent transparent transparent #999999");
-      $(".toolWrapper").animate({
-        right: "0px"
-      }, 800);
-      $("#toolToggler").removeClass("minimized");
-    } else {
-      // minimize
-      $("#arrow").css("border-width", "10px 10px 10px 0px");
-      $("#arrow").css("border-color", "transparent #999999 transparent transparent");
-      $(".toolWrapper").animate({
-        right: "-30%"
-      }, 800);
-      $("#toolToggler").addClass("minimized");
-    }
+    // PHIL: show overlay
+    showOverlay();
   });
 
   // toggler hover effects
@@ -2256,28 +2311,26 @@ $(document).ready(function(){
     }
   });
 
-  // open instructions
-  $("#icon").click(function() {
+  function showOverlay() {
     $(document).clearQueue();
-    // show overlay - instant
-    $("#instructionOverlay").show();
-    // darken overlay
-    $("#instructionOverlay").animate(
-      {"background-color": "rgba(0,0,0,0.6)"}, 
-      {
-        duration: 500,
-        complete: function() {
-          $("#instructionBox").show();
-          $("#instructionBox").animate(
-            {top: "50%"}, 500
-          );
+      // show overlay - instant
+      $("#instructionOverlay").show();
+      // darken overlay
+      $("#instructionOverlay").animate(
+        {"background-color": "rgba(0,0,0,0.6)"}, 
+        {
+          duration: 500,
+          complete: function() {
+            $("#instructionBox").show();
+            $("#instructionBox").animate(
+              {top: "50%"}, 500
+            );
+          }
         }
-      }
-    );
-  });
+      );
+    }
 
-  // close instructions
-  $("#closeInstructions").click(function() {
+  function hideOverlay() {
     $(document).clearQueue();
     // hide box
     $("#instructionBox").animate(
@@ -2299,6 +2352,16 @@ $(document).ready(function(){
         }
       }
     );
+  }
+
+  // open instructions
+  $("#icon").click(function() {
+    showOverlay();
+  });
+
+  // close instructions
+  $("#closeInstructions").click(function() {
+    hideOverlay();
   });
 
 });

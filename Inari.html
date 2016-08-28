@@ -30,12 +30,13 @@
 	-moz-box-sizing: border-box;
 }
 
+	*:focus {
+		outline: none;
+	}
+
 a {
 	text-decoration: none;
 }
-	a:hover {
-		font-weight: bold;
-	}
 
 /*ALL INPUTS*/
 input, select {
@@ -77,7 +78,7 @@ button, input[type="button"] {
 	text-decoration:none;
 	height: 22px;
 	overflow: hidden;
-	padding: 5px;
+	padding: 5px 15px;
 	font-size: 14;
 	height: 30px;
 }
@@ -203,16 +204,13 @@ input[type=checkbox]:checked:after {
 			padding: 0;
 			/*account for padding on #instructionBox*/
 			right: 20px;
-			border: 1px solid #999999;
 			color: #999999;
 			vertical-align: middle;
-    		line-height: 26px;
-    		cursor: pointer;
+    		line-height: 28px;
 		}
 
 			#closeInstructions:hover {
-				background-color: #999999;
-				color: #eeeeee;
+				color: #fafafa;
 			}
 
 		#instructionTitle {
@@ -236,6 +234,21 @@ input[type=checkbox]:checked:after {
 				background-color: #cccccc;
 			}
 
+			/* auto formatting for new hotkey*/
+			#hotkeyTable tr.newHotkey td:first-child:before {
+				content: "NEW";
+				color: #fafafa;
+				font-size: 12;
+				background-color: #aaaaaa;
+				padding: 4px 10px;
+				margin-right: 4px;
+				width: 100px;
+			}
+
+			#hotkeyTable tr.newHotkey.update td:first-child:before {
+				content: "UPDATED";
+			}
+
 			#hotkeyTable td {
 				height: 40px;
 				padding: 5px;
@@ -251,9 +264,14 @@ input[type=checkbox]:checked:after {
 			text-align: left;
 		}
 
-		#externalHelp {
-
+		button.instructionButton {
+			border-color: #999999;
 		}
+
+		button.instructionButton:hover {
+			background-color: #999999;
+			color: #fafafa;
+		}		
 
 /*STUFF AT TOP*/
 #topWrapper {
@@ -339,10 +357,6 @@ input[type=checkbox]:checked:after {
 			white-space: nowrap;
 		}
 
-		#drawing-mode {
-			width: 140px;
-		}
-
 			.drawing-mode-on {
 				background-color: #cccccc;
 				border-color: #cccccc;
@@ -379,9 +393,6 @@ input[type=checkbox]:checked:after {
 				max-width: 300px;
 			}
 
-			#btnLoad, #btnSave {
-				width: 80px;
-			}
 
 /*MAIN BODY*/
 .wrapper {
@@ -631,12 +642,12 @@ body {
 </style>
 </head>
 <body>
-	<!-- INSTRUCTION OVERLAY -->
+	<!-- HOTKEY OVERLAY -->
 	<div id="instructionOverlay" class="hidden">
 		<div id="instructionBox" class="hidden">
-			<div id="closeInstructions">
+			<button id="closeInstructions" class="instructionButton">
 				&#10799
-			</div>
+			</button>
 			<div id="instructionTitle">
 				Hotkeys
 			</div>
@@ -646,14 +657,24 @@ body {
 					<td>KEY</td>
 					<td>NOTE</td>
 				</tr>
-				<tr>
+				<tr class="newHotkey update">
 					<td>Toggle Draw Mode</td>
-					<td>D</td>
+					<td>E</td>
 					<td>No Active Input Field*</td>
 				</tr>
-				<tr>
+				<tr class="newHotkey update">
 					<td>Toggle Grid Snapping</td>
-					<td>S</td>
+					<td>Q</td>
+					<td>No Active Input Field*</td>
+				</tr>
+				<tr class="newHotkey">
+					<td>Toggle Side Bar</td>
+					<td>R</td>
+					<td>No Active Input Field*</td>
+				</tr>
+				<tr class="newHotkey">
+					<td>Pan Canvas</td>
+					<td>WASD</td>
 					<td>No Active Input Field*</td>
 				</tr>
 				<tr>
@@ -665,9 +686,14 @@ body {
 			<div id="hotkeyTableAsterisk">
 				* 'No Active Input Field' : Typing in an input field (e.g. save file name) will not trigger hotkeys.
 			</div>
+			<div>
+				After dismissing, show these instructions again by clicking on Inari icon.
+			</div>
 			<div id="externalHelp">
 				<a href="https://drive.google.com/open?id=1cmZAu6dNqE9ho9_6Xd1FLCAPrhpu1t4RRgBajCSg1SU" target="_blank">
-					More Information
+					<button class="instructionButton">
+						More Information
+					</button>
 				</a>
 			</div>
 		</div>
@@ -700,7 +726,7 @@ body {
 		<div id="canvasParam">
 			<!-- SNAP + ZOOM -->
 			<div class = "block" id = "worldGridWrapper">
-				<div id = "snapWrapper" title = "Click Canvas + 'S' to Toggle">
+				<div id = "snapWrapper">
 					Snap to Grid<input type = "checkbox" id="snapToGrid"/>
 				</div>
 				<div>
@@ -712,7 +738,7 @@ body {
 			</div>
 			<!-- WORLD DIMENSIONS + DRAW MODE -->
 			<div class = "block" id = "drawToolWrapper">
-				<div title = "Click Canvas + 'D' to Toggle">
+				<div>
 					<button id="drawing-mode">Enter drawing mode</button>
 				</div>
 				<div id="drawing-mode-options">
