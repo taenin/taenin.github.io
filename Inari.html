@@ -92,6 +92,8 @@ input[type=text], select {
 	padding: 5px;
 	font-size: 14;
 	height: 18px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 /*CHECKBOX STUFF*/
@@ -155,13 +157,6 @@ input[type=checkbox]:checked:after {
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
-}
-
-.zButton{
-	margin: 10px;
-}
-.outputField{
-	margin: 10px;
 }
 
 /*INSTRUCTION OVERLAY*/
@@ -539,9 +534,96 @@ input[type=checkbox]:checked:after {
 				.toolPopulate, .selectPopulate {
 					height: calc(100% - 90px);
 					overflow: auto;
+					padding: 8px;
 				}
 
+					.selectable{
+						display: inline-block;
+						margin: 5px;
+						width: 128px;
+						height: 128px;
+						vertical-align: top;
+						position: relative;
+						float: left;
+						overflow: hidden;
+					}
+						.selectable:hover {
+							cursor: pointer;
+						}
+						.selected, .selected:hover {
+							outline: 4px solid #cccccc;
+						}
+
+						.image{
+							max-width: 128px;
+							max-height: 128px;
+							position: absolute;
+							top: 50%;
+							left: 50%;
+							transform: translate(-50%, -50%);
+						}
+						.selectable .overlay {
+							position: absolute;
+						    top: 75%;
+						    left: 0;
+						    width: 100%;
+						    height: 25%;
+						    display: none;
+						    color: #FFF;
+						    padding: 6px;
+						    font-size: 14;
+						    white-space: nowrap;
+						    overflow: hidden;
+						    text-overflow: ellipsis;
+						}
+						.selectable:hover .overlay {
+							display: block;
+					    	background: rgba(0, 0, 0, .6);
+						}
+
 		/*OBJECT PROPERTIES*/
+		.editfield.small {
+			display: inline-block;
+			vertical-align: top;
+			width: 50%;
+			height: 40px;
+			float: left;
+		}
+
+			.outputFieldName {
+				display: inline-block;
+				vertical-align: middle;
+				width: 80px;
+				height: 40px;
+				line-height: 40px;
+				font-size: 14;
+				text-align: right;
+				padding-right: 10px;
+				overflow: hidden;
+			}
+
+			input.outputField {
+				display: inline-block;
+				/*vertical-align: top;*/
+				width: calc(100% - 92px);
+			}
+
+		.editfield.large {
+			width: 100%;
+			float: left;
+		}
+
+			.zButton{
+				margin: 10px;
+			}
+
+		.editfield.large .outputFieldNameBlock {
+			display: block;
+			vertical-align: middle;
+			line-height: 40px;
+			width: 100%;
+		}
+
 				.worldInput {
 					width: 40px;
 					text-align: center;
@@ -558,7 +640,6 @@ input[type=checkbox]:checked:after {
 
 .toolPopulateCanvas{
 	width: 100%;
-	min-height: 400px;
 }
 
 .testing{
@@ -587,51 +668,6 @@ input[type=checkbox]:checked:after {
 	background-size: contain;
 	display: inline-block;
 }
-
-/*OBJECTS IN TOOLS SECTION*/
-.selectable{
-	display: inline-block;
-	margin: 5px;
-	width: 128px;
-	height: 128px;
-	vertical-align: top;
-	position: relative;
-	float: left;
-	overflow: hidden;
-}
-	.selectable:hover {
-		cursor: pointer;
-	}
-	.selected, .selected:hover {
-		outline: 4px solid #cccccc;
-	}
-
-	.image{
-		max-width: 128px;
-		max-height: 128px;
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
-	.selectable .overlay {
-		position: absolute;
-	    top: 75%;
-	    left: 0;
-	    width: 100%;
-	    height: 25%;
-	    display: none;
-	    color: #FFF;
-	    padding: 6px;
-	    font-size: 14;
-	    white-space: nowrap;
-	    overflow: hidden;
-	    text-overflow: ellipsis;
-	}
-	.selectable:hover .overlay {
-		display: block;
-    	background: rgba(0, 0, 0, .6);
-	}
 
 
 body {

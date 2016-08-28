@@ -1818,17 +1818,17 @@ function createWorker(categoryJSON){
           if(outputObject.hasOwnProperty(key)){
             if(typeof(outputObject[key]) != "object"){
               var newID = "inari_" + key;
-              latestField = $(document.createElement('div')).addClass("editfield").append(key + ": <input type = 'text' class='outputField' id=" + newID + ">");
+              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + key + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
               fieldList.push([newID, outputObject[key], [key]]);
               //selectionUpdateHandlers("#"+newID, canvasObject, key);
               main.append(latestField);
             }
             else{
-              latestField = $(document.createElement('div')).addClass("editfield").append(key + ": ");
+              latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");
               for (var subkey in outputObject[key]){
                 if (outputObject[key].hasOwnProperty(subkey)){
                   var newID = "inari_" + key + "_" + subkey;
-                  latestField.append("<div>" + subkey + ": <input type = 'text' class = 'outputField' id=" + newID + "></div>");
+                  latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + subkey + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
                   fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
                   //selectionUpdateHandlers("#"+newID, canvasObject, key, subkey);
                 }
@@ -1839,8 +1839,8 @@ function createWorker(categoryJSON){
         }
         if(worker.getZLevelFromCategory(category) != 0){
             //This means we should allow the user to adjust depth on this object.
-            latestField = $(document.createElement('div')).addClass("editfield").append("<button class='Zbutton' id=" + moveZUpID +">Move up in Z level</button>")
-                                                                                .append("<button class='Zbutton' id=" + moveZDownID +">Move down in Z level</button>");
+            latestField = $(document.createElement('div')).addClass("editfield large").append("<button class='Zbutton' id=" + moveZUpID +">Increase Z level</button>")
+                                                                                .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>");
             main.append(latestField);
           }
         $(".selectPopulate").append(main);
@@ -1853,17 +1853,17 @@ function createWorker(categoryJSON){
           if(outputObject.hasOwnProperty(key)){
             if(typeof(outputObject[key]) != "object"){
               var newID = "inari_" + key;
-              latestField = $(document.createElement('div')).addClass("editfield").append(key + ": <input type = 'text' class='outputField' id=" + newID + ">");
+              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + key + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
               //selectionUpdateHandlers("#"+newID, canvasObject, key);
               fieldList.push([newID, outputObject[key], [key]]);
               main.append(latestField);
             }
             else{
-              latestField = $(document.createElement('div')).addClass("editfield").append(key + ": ");;
+              latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");;
               for (var subkey in outputObject[key]){
                 if (outputObject[key].hasOwnProperty(subkey)){
                   var newID = "inari_" + key + "_" + subkey;
-                  latestField.append("<div>" + subkey + ": <input type = 'text' 'outputField' id=" + newID + "></div>");
+                  latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + subkey + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
                   fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
                 }
               }
@@ -1873,8 +1873,8 @@ function createWorker(categoryJSON){
         }
         if(worker.getZLevelFromCategory(category) != 0){
             //This means we should allow the user to adjust depth on this object.
-            latestField = $(document.createElement('div')).addClass("editfield").append("<button class='Zbutton' id=" + moveZUpID +">Move up in Z level</button>")
-                                                                                .append("<button class='Zbutton' id=" + moveZDownID +">Move down in Z level</button>");
+            latestField = $(document.createElement('div')).addClass("editfield large").append("<button class='Zbutton' id=" + moveZUpID +">Increase Z level</button>")
+                                                                                .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>");
             main.append(latestField);
           }
         $(".selectPopulate").append(main);
