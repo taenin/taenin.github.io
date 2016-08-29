@@ -1150,41 +1150,55 @@ function createWorker(categoryJSON){
       }
     });
 
-      // $("#canvas").clearQueue();
-      // // get current scroll position
-      // var canvasPosX = $("#canvas").scrollLeft();
-      // var canvasPosY = $("#canvas").scrollTop();
-      // if (e.which == 87) { // w for pan up
-      //   $("#canvas").scrollTop(canvasPosY - 5);
-      // } else if (e.which == 83) { // s for pan down
-      //   $("#canvas").scrollTop(canvasPosY + 5);
-      // } else if (e.which == 68) { // d for pan right
-      //   $("#canvas").scrollLeft(canvasPosX + 5);
-      // } else if (e.which == 65) { // a for pan left
-      //   $("#canvas").scrollLeft(canvasPosX - 5);
-      // }
+    function panLoop() {
+      var panDuration = 50; // ms
+      var panDistance = "20px"; 
 
-      function panLoop() {
-        if (keys[87]) { // w for pan up
-          $("#canvas").animate(
-            {scrollTop: "-=20px"}, 50, "linear"
-          );
-        } else if (keys[83]) { // s for pan down
-          $("#canvas").animate(
-            {scrollTop: "+=20px"}, 50, "linear"
-          );
-        } else if (keys[68]) { // d for pan right
-          $("#canvas").animate(
-            {scrollLeft: "+=20px"}, 50, "linear"
-          );
-        } else if (keys[65]) { // a for pan left
-          $("#canvas").animate(
-            {scrollLeft: "-=20px"}, 50, "linear"
-          );
-        }
-        setTimeout(panLoop,50);
+      if (keys[87] && !keys[83] && !keys[68] && !keys[65]) { // w for pan up
+        $("#canvas").animate(
+          {scrollTop: "-=" + panDistance},
+          panDuration, "linear"
+        );
+      } else if (!keys[87] && keys[83] && !keys[68] && !keys[65]) { // s for pan down
+        $("#canvas").animate(
+          {scrollTop: "+=" + panDistance},
+          panDuration, "linear"
+        );
+      } else if (!keys[87] && !keys[83] && keys[68] && !keys[65]) { // d for pan right
+        $("#canvas").animate(
+          {scrollLeft: "+=" + panDistance},
+          panDuration, "linear"
+        );
+      } else if (!keys[87] && !keys[83] && !keys[68] && keys[65]) { // a for pan left
+        $("#canvas").animate(
+          {scrollLeft: "-=" + panDistance},
+          panDuration, "linear"
+        );
+      } else if (keys[87] && !keys[83] && keys[68] && !keys[65]) { // DIAGONAL: wd for pan up-right
+        $("#canvas").animate(
+          {scrollTop: "-=" + panDistance, scrollLeft: "+=" + panDistance},
+          panDuration, "linear"
+        );
+      } else if (keys[87] && !keys[83] && !keys[68] && keys[65]) { // DIAGONAL: wa for pan up-left
+        $("#canvas").animate(
+          {scrollTop: "-=" + panDistance, scrollLeft: "-=" + panDistance},
+          panDuration, "linear"
+        );
+      } else if (!keys[87] && keys[83] && keys[68] && !keys[65]) { // DIAGONAL: sd for pan down-right
+        $("#canvas").animate(
+          {scrollTop: "+=" + panDistance, scrollLeft: "+=" + panDistance},
+          panDuration, "linear"
+        );
+      } else if (!keys[87] && keys[83] && !keys[68] && keys[65]) { // DIAGONAL: sa for pan down-left
+        $("#canvas").animate(
+          {scrollTop: "+=" + panDistance, scrollLeft: "-=" + panDistance},
+          panDuration, "linear"
+        );
       }
-      panLoop();
+      setTimeout(panLoop,panDuration);
+    }
+
+    panLoop();
 
     $('html').keyup(function(e){
       //Check for the delete key
