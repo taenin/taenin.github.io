@@ -337,9 +337,24 @@ input[type=checkbox]:checked:after {
 			height: 48px;
 		}
 
-			#snapWrapper {
-				line-height: 28px;
-				vertical-align: middle;
+			#drawing-mode, #snapToGrid {
+				width: 150px;
+			}
+
+			.drawing-mode-on, .snapEnabled {
+				background-color: #cccccc;
+				border-color: #cccccc;
+				color: white;
+				font-weight: bold;
+			}
+
+			.drawing-mode-on:hover, .snapEnabled:hover {
+				background-color: #999999;
+				border-color: #999999;
+			}
+
+			#drawing-mode-selector {
+				margin: 0px 5px;
 			}
 
 		#hideTools {
@@ -352,22 +367,6 @@ input[type=checkbox]:checked:after {
 			overflow: hidden;
 			white-space: nowrap;
 		}
-
-			.drawing-mode-on {
-				background-color: #cccccc;
-				border-color: #cccccc;
-				color: white;
-			}
-
-			.drawing-mode-on:hover {
-				background-color: #999999;
-				border-color: #999999;
-			}
-
-		#drawing-mode-selector {
-			margin: 0px 5px;
-		}
-
 
 	/* SAVING AND LOADING STUFF */
 	#fileToolbar{
@@ -766,7 +765,8 @@ body {
 			<!-- SNAP + ZOOM -->
 			<div class = "block" id = "worldGridWrapper">
 				<div id = "snapWrapper">
-					Snap to Grid<input type = "checkbox" id="snapToGrid"/>
+					<!-- Snap to Grid<input type = "checkbox" id="snapToGrid"/> -->
+					<button id="snapToGrid">Grid Snapping: OFF</button>
 				</div>
 				<div>
 					World:
@@ -778,7 +778,7 @@ body {
 			<!-- WORLD DIMENSIONS + DRAW MODE -->
 			<div class = "block" id = "drawToolWrapper">
 				<div>
-					<button id="drawing-mode">Enter drawing mode</button>
+					<button id="drawing-mode">Drawing Mode: OFF</button>
 				</div>
 				<div id="drawing-mode-options">
 					Tile Set: <select id="drawing-mode-selector">

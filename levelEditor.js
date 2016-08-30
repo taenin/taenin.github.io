@@ -48,7 +48,8 @@ function createWorker(categoryJSON){
        "3": 0
     };
     worker.shouldSnapToGrid = function(){
-      return $("#snapToGrid").is(":checked");
+      // return $("#snapToGrid").is(":checked");
+      return $("#snapToGrid").hasClass("snapEnabled");
     }
     //["Spawners", "EnvironmentTiles"];
     worker.hoverImage = null;
@@ -100,8 +101,7 @@ function createWorker(categoryJSON){
     if(worker.canvas.isDrawingMode){
       $("#drawing-mode").html("Drawing Mode: ON");
       $("#drawing-mode").addClass("drawing-mode-on");
-    }
-    else{
+    } else {
       $("#drawing-mode").html("Drawing Mode: OFF");
       $("#drawing-mode").removeClass("drawing-mode-on");
     }
@@ -1093,6 +1093,19 @@ function createWorker(categoryJSON){
       worker.setDrawingMode(!worker.canvas.isDrawingMode);
     });
 
+    toggleSnap = function() {
+      $("#snapToGrid").toggleClass("snapEnabled");
+      if ($("#snapToGrid").hasClass("snapEnabled")) {
+        $("#snapToGrid").html("Grid Snapping: ON");
+      } else {
+        $("#snapToGrid").html("Grid Snapping: OFF");
+      }
+    }
+
+    $("#snapToGrid").click(function(){
+      toggleSnap();
+    });
+
     // PHIL: toggle side bar
     toggleToolSideBar = function() {
       // clear previous animations in queue
@@ -1127,11 +1140,7 @@ function createWorker(categoryJSON){
         if (e.which == 69) { // e for draw mode
           worker.setDrawingMode(!worker.canvas.isDrawingMode);
         } else if (e.which == 81) { // q for snap to grid
-          if (worker.shouldSnapToGrid()) {
-            $("#snapToGrid").prop("checked", false);
-          } else {
-            $("#snapToGrid").prop("checked", true);
-          }
+          toggleSnap();
         } else if (e.which == 82) { // r for toggle sidebar
           toggleToolSideBar();
         }
