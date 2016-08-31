@@ -730,13 +730,13 @@ function createWorker(categoryJSON){
               label = "S1";
             }
             else if(!curNeigh.B){
-              label = "S3";
+              label = "S4";
             }
             else if(!curNeigh.R){
-              label = "S2";
+              label = "S3";
             }
             else{
-              label = "S4";
+              label = "S2";
             }
           }
           //Check if we have an inverse neighbor
