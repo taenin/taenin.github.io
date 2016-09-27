@@ -37,6 +37,20 @@ function createWorker(categoryJSON){
       "Portals": 1, 
     };
 
+    //Initialize the map for handling deprecated attributes
+    //This object maps from the attribute name (string) to a function that takes in the target object and the attribute name
+    //The function modifies the object in place
+    worker.deprecatedAttributes = {
+      "Location": function(targetObj, category, attr){
+        var zLevel = worker.getZLevelFromCategory(category);
+        targetObj.Position = {
+          "X": zLevel != 0 ? worker.convertPixelsToMeters(targetObj.Location.X) : targetObj.Location.X,
+          "Y": zLevel != 0 ? worker.convertPixelsToMeters(targetObj.Location.Y) : targetObj.Location.Y
+        };
+        delete targetObj[attr];
+      },
+    };
+
     worker.defaultSelectPrompt = "Select an Object";
     worker.imageCount = {}; //Create a mapping from image names to the occurance of their names. Used for tool selection.
     worker.zCounts = {
@@ -119,14 +133,8 @@ function createWorker(categoryJSON){
       fakeCanvasObject.height = canvasObject.height;
       fakeCanvasObject.left = left;
       fakeCanvasObject.top = top;
-      if(zLevel != 0){
-        //Leave them as raw pixel values
-        canvasObject.outputObject.Location = worker.getPixelLocationFromCanvasObject(fakeCanvasObject);
-      }
-      else{
-        //convert to meters
-        canvasObject.outputObject.Location = worker.getMeterLocationFromCanvasObject(fakeCanvasObject);
-      }
+      //convert to meters
+      canvasObject.outputObject.Position = worker.getMeterLocationFromCanvasObject(fakeCanvasObject);
     }
     else{
       if(worker.shouldSnapToGrid()){
@@ -137,17 +145,11 @@ function createWorker(categoryJSON){
         canvasObject.setCoords();
         worker.canvas.renderAll();
       }
-      if(zLevel != 0){
-        //Leave them as raw pixel values
-        canvasObject.outputObject.Location = worker.getPixelLocationFromCanvasObject(canvasObject);
-      }
-      else{
-        //convert to meters
-        canvasObject.outputObject.Location = worker.getMeterLocationFromCanvasObject(canvasObject);
-      }
+      //convert to meters
+      canvasObject.outputObject.Position = worker.getMeterLocationFromCanvasObject(canvasObject);
       if(worker.canvas.getActiveObject() == canvasObject){
-        $("#inari_Location_X").val(canvasObject.outputObject.Location.X);
-        $("#inari_Location_Y").val(canvasObject.outputObject.Location.Y);
+        $("#inari_Position_X").val(canvasObject.outputObject.Position.X);
+        $("#inari_Position_Y").val(canvasObject.outputObject.Position.Y);
       }
     }
   }
@@ -157,13 +159,13 @@ function createWorker(categoryJSON){
     var zLevel = worker.getZLevel(canvasObject);
     if(zLevel != 0){
       //We're translating from pixel values
-      newLocation = worker.getCanvasLocationFromPixelLocation(canvasObject.outputObject.Location, canvasObject);
+      newLocation = worker.getCanvasLocationFromPixelLocation(canvasObject.outputObject.Position, canvasObject);
       canvasObject.left = newLocation.left;
       canvasObject.top  = newLocation.top;
     }
     else{
       //We're translating from meters
-      newLocation = worker.getCanvasLocationFromMeterLocation(canvasObject.outputObject.Location, canvasObject);
+      newLocation = worker.getCanvasLocationFromMeterLocation(canvasObject.outputObject.Position, canvasObject);
       canvasObject.left = newLocation.left;
       canvasObject.top  = newLocation.top;
     }
@@ -1368,12 +1370,7 @@ function createWorker(categoryJSON){
           }
           worker.hoverImage.canvasElement.setCoords();
           if(worker.hoverImage.canvasElement.outputObject){
-            if(worker.getZLevel(worker.hoverImage.canvasElement) !=0){
-              worker.hoverImage.canvasElement.outputObject.Location = worker.getPixelLocationFromCanvasObject(worker.hoverImage.canvasElement);
-            }
-            else{
-              worker.hoverImage.canvasElement.outputObject.Location = worker.getMeterLocationFromCanvasObject(worker.hoverImage.canvasElement);
-            }
+            worker.hoverImage.canvasElement.outputObject.Position = worker.getMeterLocationFromCanvasObject(worker.hoverImage.canvasElement);
           }
           
           worker.canvas.renderAll();
@@ -1492,7 +1489,7 @@ function createWorker(categoryJSON){
                   "Width": canvasObject.width,
                   "Height": canvasObject.height,
                   "PNGSource": canvasObject.imgSource,
-                  "Location" : worker.getMeterLocationFromCanvasObject(canvasObject)
+                  "Position" : worker.getMeterLocationFromCanvasObject(canvasObject)
                   };
     return avatar;
   };
@@ -1503,7 +1500,7 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "GoalLocation": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "ShowCheckmark": true,
                 "Radius": 0.0,
@@ -1520,7 +1517,7 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "DrawDepth" : 1,
     };
     return detail;
@@ -1531,7 +1528,7 @@ function createWorker(categoryJSON){
                   "Width": canvasObject.width,
                   "Height" : canvasObject.height,
                   "PNGSource" : canvasObject.imgSource,
-                  "Location" : worker.getPixelLocationFromCanvasObject(canvasObject),
+                  "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
                   "DrawDepth" : 1,
                   "LevelTarget" : "levels/leveName.json"
                  };
@@ -1544,7 +1541,7 @@ function createWorker(categoryJSON){
                     "Width" : canvasObject.width,
                     "Height" : canvasObject.height,
                     "PNGSource" : canvasObject.imgSource,
-                    "Location" : worker.getMeterLocationFromCanvasObject(canvasObject),
+                    "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
                     "drawDepth" : 0,
                     "targetChild" : {},
                     "active" : false //Active means the wall is down
@@ -1571,7 +1568,7 @@ function createWorker(categoryJSON){
                   "PNGSource": canvasObject.imgSource,
                   "Width": canvasObject.width,
                   "Height": canvasObject.height,
-                  "Location": worker.getMeterLocationFromCanvasObject(canvasObject)
+                  "Position": worker.getMeterLocationFromCanvasObject(canvasObject)
                   };
     return goal;
   }
@@ -1582,7 +1579,7 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
     };
     return detail;
   }
@@ -1593,7 +1590,7 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
     };
     return detail;
   }
@@ -1605,7 +1602,7 @@ function createWorker(categoryJSON){
                 "Type": worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "Boundable": false,
                 "Collidable": true,
                 "ObeysPhysics": true,
@@ -1629,7 +1626,7 @@ function createWorker(categoryJSON){
                 "Type": worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "ProjectileSpeed": 5,
                 "Delay": 0,
                 "TimeBetweenShots": 60,
@@ -1644,7 +1641,7 @@ function createWorker(categoryJSON){
                 "Type":  worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "Boundable": false,
                 "Collidable": true,
                 "ObeysPhysics": true,
@@ -1666,7 +1663,7 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "ParallaxRates": {
                   "X": 0.0,
                   "Y": 0.0}
@@ -1680,7 +1677,7 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getPixelLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "ParallaxRates": {
                   "X": 0.0,
                   "Y": 0.0}
@@ -1695,7 +1692,7 @@ function createWorker(categoryJSON){
       "Type" : worker.getTypeFromCanvasObject(canvasObject),
       "Width": canvasObject.width,
       "Height": canvasObject.height,
-      "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+      "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
       "Boundable": false,
       "ObeysPhysics": true
     }
@@ -1708,7 +1705,7 @@ function createWorker(categoryJSON){
                 "Type":  worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "Boundable": true,
                 "Collidable": false,
                 "ObeysPhysics": false,
@@ -1734,7 +1731,7 @@ function createWorker(categoryJSON){
                 "PlistSource": worker.imgToPlist(canvasObject.imgSource),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
-                "Location": worker.getMeterLocationFromCanvasObject(canvasObject),
+                "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "Breakable": false
     };
     return newTile;
@@ -1963,7 +1960,30 @@ function createWorker(categoryJSON){
     return count;
   }
 
+  worker.handleDeprecatedFields = function(newState){
+    for(var category in newState){
+      if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Array]" && newState[category].length > 0){
+        for(var i=0; i < newState[category].length; i++){
+          for(var attr in newState[category][i]){
+            if(worker.deprecatedAttributes.hasOwnProperty(attr)){
+              worker.deprecatedAttributes[attr](newState[category][i], category, attr);
+            }
+          }
+        }
+      }
+      else if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Object]" && newState[category]){
+        for (var attr in newState[category]){
+          if(worker.deprecatedAttributes.hasOwnProperty(attr)){
+              worker.deprecatedAttributes[attr](newState[category], category, attr);
+          }
+        }
+      }
+    }
+  }
+
   worker.populate = function(newState) {
+    //Handle deprecated fields
+    worker.handleDeprecatedFields(newState);
     worker.desiredState = {};
     var desiredState = worker.desiredState;
     var total = worker.countFields(newState);
@@ -2504,7 +2524,7 @@ function selectionUpdateHandlers(selection,canvasObject, key, subkey){
       var typedReturn = typeFunctions(canvasObject.outputObject[key][subkey], $(selection).val());
       $(selection).val(typedReturn);
       canvasObject.outputObject[key][subkey] = typedReturn;
-      if(key==="Location"){
+      if(key==="Position"){
         worker.updateLocation(canvasObject);
       }
     }
@@ -2529,7 +2549,7 @@ function selectionUpdateHandlers(selection,canvasObject, key, subkey){
         var typedReturn = typeFunctions(canvasObject.outputObject[key][subkey], $(selection).val());
         $(selection).val(typedReturn);
         canvasObject.outputObject[key][subkey] = typedReturn;
-        if(key==="Location"){
+        if(key==="Position"){
           worker.updateLocation(canvasObject);
         }
       }
