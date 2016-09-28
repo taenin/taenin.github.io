@@ -157,18 +157,10 @@ function createWorker(categoryJSON){
   //Use this function to update the drawing on the canvas
   worker.updateLocation = function(canvasObject){
     var zLevel = worker.getZLevel(canvasObject);
-    if(zLevel != 0){
-      //We're translating from pixel values
-      newLocation = worker.getCanvasLocationFromPixelLocation(canvasObject.outputObject.Position, canvasObject);
-      canvasObject.left = newLocation.left;
-      canvasObject.top  = newLocation.top;
-    }
-    else{
-      //We're translating from meters
-      newLocation = worker.getCanvasLocationFromMeterLocation(canvasObject.outputObject.Position, canvasObject);
-      canvasObject.left = newLocation.left;
-      canvasObject.top  = newLocation.top;
-    }
+    //We're translating from meters
+    newLocation = worker.getCanvasLocationFromMeterLocation(canvasObject.outputObject.Position, canvasObject);
+    canvasObject.left = newLocation.left;
+    canvasObject.top  = newLocation.top;
     if(worker.shouldSnapToGrid()){
       //Update the text boxes
       worker.setLocation(canvasObject);
