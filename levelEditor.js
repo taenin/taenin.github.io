@@ -1480,6 +1480,8 @@ function createWorker(categoryJSON){
     var avatar = {
                   "Width": canvasObject.width,
                   "Height": canvasObject.height,
+                  "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                  "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                   "PNGSource": canvasObject.imgSource,
                   "Position" : worker.getMeterLocationFromCanvasObject(canvasObject)
                   };
@@ -1492,6 +1494,8 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "GoalLocation": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "ShowCheckmark": true,
@@ -1509,6 +1513,8 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "DrawDepth" : 1,
     };
@@ -1519,6 +1525,8 @@ function createWorker(categoryJSON){
     var portal = {
                   "Width": canvasObject.width,
                   "Height" : canvasObject.height,
+                  "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                  "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                   "PNGSource" : canvasObject.imgSource,
                   "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
                   "DrawDepth" : 1,
@@ -1532,6 +1540,8 @@ function createWorker(categoryJSON){
     var receptacle = {
                     "Width" : canvasObject.width,
                     "Height" : canvasObject.height,
+                    "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                    "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                     "PNGSource" : canvasObject.imgSource,
                     "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
                     "drawDepth" : 0,
@@ -1560,6 +1570,8 @@ function createWorker(categoryJSON){
                   "PNGSource": canvasObject.imgSource,
                   "Width": canvasObject.width,
                   "Height": canvasObject.height,
+                  "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                  "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                   "Position": worker.getMeterLocationFromCanvasObject(canvasObject)
                   };
     return goal;
@@ -1571,6 +1583,8 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
     };
     return detail;
@@ -1582,6 +1596,8 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
     };
     return detail;
@@ -1594,6 +1610,8 @@ function createWorker(categoryJSON){
                 "Type": worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "Boundable": false,
                 "Collidable": true,
@@ -1618,6 +1636,8 @@ function createWorker(categoryJSON){
                 "Type": worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "ProjectileSpeed": 5,
                 "Delay": 0,
@@ -1633,6 +1653,8 @@ function createWorker(categoryJSON){
                 "Type":  worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "Boundable": false,
                 "Collidable": true,
@@ -1655,6 +1677,8 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "ParallaxRates": {
                   "X": 0.0,
@@ -1669,6 +1693,8 @@ function createWorker(categoryJSON){
                 "PNGSource": canvasObject.imgSource,
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "ParallaxRates": {
                   "X": 0.0,
@@ -1684,6 +1710,8 @@ function createWorker(categoryJSON){
       "Type" : worker.getTypeFromCanvasObject(canvasObject),
       "Width": canvasObject.width,
       "Height": canvasObject.height,
+      "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+      "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
       "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
       "Boundable": false,
       "ObeysPhysics": true
@@ -1697,6 +1725,8 @@ function createWorker(categoryJSON){
                 "Type":  worker.getTypeFromCanvasObject(canvasObject),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "Boundable": true,
                 "Collidable": false,
@@ -1723,6 +1753,8 @@ function createWorker(categoryJSON){
                 "PlistSource": worker.imgToPlist(canvasObject.imgSource),
                 "Width": canvasObject.width,
                 "Height": canvasObject.height,
+                "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
                 "Breakable": false
     };
