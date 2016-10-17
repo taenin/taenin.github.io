@@ -23,9 +23,9 @@ function createWorker(categoryJSON){
     worker.groupContents = [];
     worker.mousePosition = { "pageX": 0,
                              "pageY": 0};
-    worker.grid = 32; //size of a meter in pixels
-    worker.tileWidth = 128; //width of a tile in pixels
-    worker.tileHeight = 128; // height of a tile in pixels
+    worker.grid = 16; //size of a meter in pixels
+    worker.tileWidth = 64; //width of a tile in pixels
+    worker.tileHeight = 64; // height of a tile in pixels
     worker.gridLines = []; //grid lines
     worker.worldWidth = 64; //width of the world in meters
     worker.worldHeight = 48; //height of the world in meters
