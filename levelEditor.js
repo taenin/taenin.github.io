@@ -1756,7 +1756,8 @@ function createWorker(categoryJSON){
                 "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
                 "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                 "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
-                "Breakable": false
+                "Breakable": false,
+                "ObeysPhysics": false,
     };
     return newTile;
   };
