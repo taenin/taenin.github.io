@@ -266,6 +266,9 @@ var createCSEditor = function(){
 		worker.timeline.setGroups(worker.groups);
 		worker.timeline.setItems(worker.items);		
 		worker.addHandlers();
+		worker.refresh();
+		worker.groups.add({"content": "Main Timeline", "id": "Main Timeline", "value": 1, className:'openwheel'});
+		worker.currentGroup = "Main Timeline";
 	}
 
 	worker.addToDropDown = function(dropDownID, newValue){
