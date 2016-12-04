@@ -26,6 +26,57 @@
         z-index: 9999;
     }
     
+    /*OBJECT PROPERTIES*/
+		.editfield.small {
+			display: inline-block;
+			vertical-align: top;
+			width: 50%;
+			height: 40px;
+			float: left;
+		}
+
+			.outputFieldName {
+				display: inline-block;
+				vertical-align: middle;
+				width: 150px;
+				height: 40px;
+				line-height: 40px;
+				font-size: 14;
+				text-align: right;
+				padding-right: 10px;
+				overflow: hidden;
+			}
+
+			input.outputField {
+				display: inline-block;
+				/*vertical-align: top;*/
+				width: calc(50% - 92px);
+			}
+
+		.editfield.large {
+			border:;
+			width: 100%;
+			float:left;
+		}
+
+		.editfield.large {
+			outline-style: dotted;
+			outline-color: #EFE6E4;
+			display: block;
+			vertical-align: middle;
+			line-height: 40px;
+			width: 100%;
+		}
+
+		.outputFieldNameBlock {
+			text-align: center;
+			display: inline-block;
+			vertical-align: middle;
+			line-height: 40px;
+			width: 100%;
+		}
+
+
     .vis-item.openwheel  { background-color: #B0E2FF; }
     .vis-item.rally      { background-color: #EAEAEA; }
     .vis-item.motorcycle { background-color: #FA8072; }
@@ -35,6 +86,8 @@
 
   <script src="vis.js"></script>
   <script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
+</script>
+<script type="text/javascript" src="cutscenes.js">
 </script>
   <link href="vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
 <!--   <script src="../../googleAnalytics.js"></script> -->
@@ -49,255 +102,17 @@
     </div>
 </div>
 <div id="selectbar">
+<h3>Action Type: 
 	<select id = "actionTypeSelect">
 		<option>Loading</option>
 	</select>
 	<select id = "subactionTypeSelect">
 		<option>Loading</option>
 	</select>
+	</h3>
 </div>
-<script>
-var createCSEditor = function(){
-	var worker = {};
-	worker.refresh = function(){
-		//used for unique action ID creation
-		worker.actionsCreated = 0;
-		worker.items.clear();
-		worker.groups.clear();
-		worker.defaultActionDuration = 3000;
-		worker.CutSceneTypeEnum = {
-			StartCutSceneAction: 0,
-			CameraAction: 1,
-			AvatarAction: 2,
-		};
-
-		worker.CutSceneSubTypes = {
-			StartCutSceneAction: {},
-			CameraAction: {
-				MoveCamera: 0
-			},
-			AvatarAction: {}
-		};
-		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
-		worker.CutSceneMapNumberToSubType = worker.getLayeredReverseEnum(worker.CutSceneMapNumberToType, worker.CutSceneSubTypes);
-		worker.CutSceneTypeReverseEnum
-		worker.cutSceneID = "New Cut Scene";
-		worker.rootAction = {id: worker.cutSceneID, end: 0, childActions: [], ActionType: worker.CutSceneTypeEnum.StartCutSceneAction};
-		worker.currentActionId = null;
-		worker.currentGroup = null;
-		worker.currentAction = null;
-		worker.defaultActionType = worker.CutSceneTypeEnum.CameraAction;
-		worker.defaultSubType = worker.CutSceneSubTypes.CameraAction.MoveCamera;
-		worker.actionTypeSelectRedraw();
-	}
-
-	worker.getReverseEnum = function(enumMap){
-		output = {};
-		for (var key in enumMap){
-			output[enumMap[key]] = key;
-		}
-		return output;
-	}
-
-	worker.getLayeredReverseEnum = function(enumKeys, mapToReverse){
-		output = {}
-		for(var key in enumKeys){
-			output[key] = worker.getReverseEnum(mapToReverse[enumKeys[key]]);
-		}
-		return output;
-	}
-
-	worker.getUniqueActionId = function(){
-		var actionId = "Action" + worker.actionsCreated;
-		worker.actionsCreated++;
-		return actionId;
-	}
-	worker.getItem = function(itemId){
-		return itemId === worker.cutSceneID ? worker.rootAction : worker.items.get(itemId);
-	}
-	worker.addActionItem = function(actionId, parentId, group, start, duration){
-		if(!worker.items.get(actionId)){
-			parent = worker.getItem(parentId);
-			worker.items.add({
-				id: actionId,
-				group: group,
-				content: actionId,
-				start: start,
-				end: start + duration,
-				parentAction: parentId,
-				childActions: [],
-				ActionType: worker.defaultActionType,
-				ActionSubtype: worker.defaultSubType,
-			});
-			if(parent){
-				parent.childActions.push(actionId);
-				if(parentId !== worker.cutSceneID){
-					worker.items.update(parent);
-				}
-			}
-		}
-	};
-
-	worker.removeActionItem = function(removedAction){
-		if(removedAction && removedAction.parentAction && removedAction.childActions && removedAction.id){
-			parentObject = worker.getItem(removedAction.parentAction);
-			newChildren = [];
-			parentObject.childActions = parentObject.childActions.filter((childId) =>childId !== removedAction.id);
-			//Don't fire an update if we're touching the root node
-			actionsToUpdate = removedAction.parentAction === worker.cutSceneID ? [] : [parentObject];
-			removedAction.childActions.forEach((childId) => {
-				childObject = worker.items.get(childId);
-				childObject.parentAction = removedAction.parentAction;
-				parentObject.childActions.push(childId);
-				actionsToUpdate.push(childObject);
-			});
-			worker.items.update(actionsToUpdate);
-		}
-	}
-
-	worker.setCurrentAction = function(actionId){
-		worker.currentActionId = actionId;
-		worker.currentAction = actionId ? worker.getItem(actionId) : null;
-		worker.actionTypeSelectRedraw();
-	}
-
-	worker.addHandlers = function(){
-		//Handle action removal
-		worker.items.on("remove", function(e, removedObjectWrapper){
-			removedObjectWrapper.oldData.forEach( function(oldData){
-				worker.removeActionItem(oldData);
-			});
-			worker.currentAction = null;
-			worker.currentActionId = null;
-		});
-
-		$("#newAction").click(function(event){
-			var actionId = worker.getUniqueActionId();
-			var parentObject = worker.currentActionId ? worker.items.get(worker.currentActionId) : worker.rootAction;
-			worker.addActionItem(actionId, parentObject.id, worker.currentGroup, parentObject.end, worker.defaultActionDuration);
-		});
-
-		worker.timeline.on("select", function(result){
-			if(result && result.items && result.items.length > 0){
-				worker.setCurrentAction(result.items[0]);
-			}
-			else{
-				//Set our root as the current action
-				worker.setCurrentAction(null);
-			}
-		});
-
-		worker.addChangeHandler("#actionTypeSelect", function(){
-			var selection = $("#actionTypeSelect").val();
-			if(worker.currentAction && (worker.currentAction.ActionType !== worker.CutSceneTypeEnum[selection])){
-				worker.currentAction.ActionType = worker.CutSceneTypeEnum[selection];
-				worker.items.update(worker.currentAction);
-			}
-			worker.subactionTypeSelectRedraw();
-		});
-
-		worker.addChangeHandler("#subactionTypeSelect", function(){
-			var parentSelection = $("#actionTypeSelect").val();
-			var selection = $("#subactionTypeSelect").val();
-			if(worker.currentAction && (worker.currentAction.ActionSubtype !== worker.CutSceneSubTypes[parentSelection][selection])){
-				worker.currentAction.ActionSubtype = worker.CutSceneSubTypes[parentSelection][selection];
-				worker.items.update(worker.currentAction);
-			}
-		});
-	}
-
-	worker.actionTypeSelectRedraw = function(){
-		worker.removeAllOptions("#actionTypeSelect");
-		for(var actionType in worker.CutSceneTypeEnum){
-			worker.addToDropDown("#actionTypeSelect", actionType);
-		}
-		if(worker.currentAction){
-			$("#actionTypeSelect").val(worker.CutSceneMapNumberToType[worker.currentAction.ActionType]);
-		}
-		$("#actionTypeSelect").change();
-	}
-
-	worker.subactionTypeSelectRedraw = function(){
-		worker.removeAllOptions("#subactionTypeSelect");
-		if(worker.currentAction){
-			var parentSelection = worker.CutSceneMapNumberToType[worker.currentAction.ActionType];
-			for(var subactionType in worker.CutSceneSubTypes[parentSelection]){
-				worker.addToDropDown("#subactionTypeSelect", subactionType);
-			}
-			if(worker.CutSceneMapNumberToSubType[worker.currentAction.ActionType] && worker.CutSceneMapNumberToSubType[worker.currentAction.ActionType][worker.currentAction.ActionSubtype]){
-				$("#subactionTypeSelect").val(worker.CutSceneMapNumberToSubType[worker.currentAction.ActionType][worker.currentAction.ActionSubtype]);
-			}
-		}
-		$("#subactionTypeSelect").change();
-	}
-
-	worker.init = function(){
-		worker.groups = new vis.DataSet([
-		{"content": "Main Timeline", "id": "Main Timeline", "value": 1, className:'openwheel'}
-		]);
-		worker.items = new vis.DataSet([
-			{start: 0, end: 5000, group:"Main Timeline", className:"openwheel", content:"Argentina",id:"531@motocal.net"},
-			{start: 1, end: 3000, group:"Main Timeline", className:"rally", content:"Rallye Monte-Carlo",id:"591@motocal.net"},
-			]);
-		worker.container = document.getElementById('visualization');
-		worker.options = {
-		    // option groupOrder can be a property name or a sort function
-		    // the sort function must compare two groups and return a value
-		    //     > 0 when a > b
-		    //     < 0 when a < b
-		    //       0 when a == b
-		    groupOrder: function (a, b) {
-		      return a.value - b.value;
-		    },
-		    groupOrderSwap: function (a, b, groups) {
-		    	var v = a.value;
-		    	a.value = b.value;
-		    	b.value = v;
-		    },
-		    orientation: 'both',
-		    editable: true,
-		    groupEditable: true,
-		    showMajorLabels: false,
-		    min: 0,
-		    max: 80000,
-		    start: 0,
-		    end: 80000
-		};
-
-		worker.timeline = new vis.Timeline(worker.container);
-		worker.timeline.setOptions(worker.options);
-		worker.timeline.setGroups(worker.groups);
-		worker.timeline.setItems(worker.items);		
-		worker.addHandlers();
-		worker.refresh();
-		worker.groups.add({"content": "Main Timeline", "id": "Main Timeline", "value": 1, className:'openwheel'});
-		worker.currentGroup = "Main Timeline";
-	}
-
-	worker.addToDropDown = function(dropDownID, newValue){
-	    $(dropDownID).append('<option value="' + newValue +'">' + newValue + '</option>');
-	};
-
-	worker.removeFromDropDown = function(dropDownID, oldValue){
-		$(dropDownID + " option[value='" + oldValue + "']").remove();
-	};
-
-	worker.removeAllOptions = function(dropDownID){
-		$(dropDownID)
-		.find('option')
-		.remove()
-	};
-
-	worker.addChangeHandler = function(targetID, closure){
-		$(targetID).change(closure);
-	};
-
-	return worker;
-}
- 
-var csEditor = createCSEditor();
-csEditor.init();
-
-</script>
+<h3>Selection Properties</h3>
+<div class="selectPopulate">
+</div>
 </body>
 </html>
