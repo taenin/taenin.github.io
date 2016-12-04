@@ -54,6 +54,7 @@ var createCSEditor = function(){
   			WaitForAnimation: true,
   			WaitForPhysical: true,
   			Delay: 0,
+  			content: "ActionName",
   		};
   	};
 
@@ -200,7 +201,8 @@ var createCSEditor = function(){
 	          if(outputObject.hasOwnProperty(key)){
 	            if(typeof(outputObject[key]) != "object"){
 	              var newID = "inari_" + key;
-	              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + key + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
+	              var displayName = key === "content" ? "Action Name" : key;
+	              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + displayName + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
 	              fieldList.push([newID, outputObject[key], [key]]);
 	              main.append(latestField);
 	            }
