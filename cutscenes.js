@@ -19,6 +19,19 @@ var createCSEditor = function(){
 			},
 			AvatarAction: {}
 		};
+
+		//A mapping from raw field name to its display name in the editor. The display name should be specific enough such that a user knows exactly what your field does
+		worker.fieldNameMapping = {
+			content: "Action Name",
+			WaitForAnimation: "Wait for parent animation",
+			WaitForPhysical: "Wait for parent physical",
+			Delay: "Delay (in seconds)",
+			RequireX: "Must reach X coordinate",
+			RequireY: "Must reach Y coordinate",
+			TravelTime: "Travel Time (in seconds)",
+			TargetLocation: "Target Location",
+		}
+
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
 		worker.CutSceneMapNumberToSubType = worker.getLayeredReverseEnum(worker.CutSceneMapNumberToType, worker.CutSceneSubTypes);
 		worker.cutSceneID = "New Cut Scene";
@@ -201,17 +214,19 @@ var createCSEditor = function(){
 	          if(outputObject.hasOwnProperty(key)){
 	            if(typeof(outputObject[key]) != "object"){
 	              var newID = "inari_" + key;
-	              var displayName = key === "content" ? "Action Name" : key;
+	              var displayName = worker.fieldNameMapping[key] || key;
 	              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + displayName + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
 	              fieldList.push([newID, outputObject[key], [key]]);
 	              main.append(latestField);
 	            }
 	            else{
-	              latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");;
+	            var displayName = worker.fieldNameMapping[key] || key;
+	              latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + displayName + ":" + "</div>");;
 	              for (var subkey in outputObject[key]){
 	                if (outputObject[key].hasOwnProperty(subkey)){
+	                	displayName = worker.fieldNameMapping[subkey] || subkey;
 	                  var newID = "inari_" + key + "_" + subkey;
-	                  latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + subkey + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
+	                  latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + displayName + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
 	                  fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
 	                }
 	              }
