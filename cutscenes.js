@@ -150,6 +150,14 @@ var createCSEditor = function(){
 		worker.actionTypeSelectRedraw();
 	}
 
+	worker.getItemStartTime = function(actionObject){
+		return typeof(actionObject.start) === "object" ? actionObject.start.getTime() : actionObject.start;
+	}
+
+	worker.getItemEndTime = function(actionObject){
+		return typeof(actionObject.end) === "object" ? actionObject.end.getTime() : actionObject.end;
+	}
+
 	worker.addHandlers = function(){
 		//Handle action removal
 		worker.items.on("remove", function(e, removedObjectWrapper){
@@ -164,7 +172,8 @@ var createCSEditor = function(){
 		$("#newAction").click(function(event){
 			var actionId = worker.getUniqueActionId();
 			var parentObject = worker.currentActionId ? worker.items.get(worker.currentActionId) : worker.rootAction;
-			worker.addActionItem(actionId, parentObject.id, worker.currentGroup, parentObject.end, worker.defaultActionDuration);
+			var start = worker.getItemEndTime(parentObject);
+			worker.addActionItem(actionId, parentObject.id, worker.currentGroup, start, worker.defaultActionDuration);
 		});
 
 		worker.timeline.on("select", function(result){
