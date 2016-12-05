@@ -48,8 +48,8 @@ var createCSEditor = function(){
 
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
 		worker.CutSceneMapNumberToSubType = worker.getLayeredReverseEnum(worker.CutSceneMapNumberToType, worker.CutSceneSubTypes);
-		worker.cutSceneID = "New Cut Scene";
-		worker.rootAction = {id: worker.cutSceneID, end: 0, childActions: [], ActionType: worker.CutSceneTypeEnum.StartCutSceneAction};
+		worker.cutSceneID = null;
+		worker.rootAction = null;
 		worker.currentActionId = null;
 		worker.currentGroup = null;
 		worker.currentAction = null;
@@ -230,10 +230,19 @@ var createCSEditor = function(){
 		worker.addChangeHandler("#cutSceneSelect", function(){
 			var selection = $("#cutSceneSelect").val();
 			if(worker.outputState[selection]){
-				worker.saveCurrentCutScene();
+				worker.saveCurrentCutScene(selection);
 				worker.loadCutSceneById(selection);
 			}
 		});
+
+		$("#btnNewCutSceneName").click(function(event){
+			var newRootId = $("#newCutSceneName").val();
+			//Save our current cutscene
+			worker.saveCurrentCutScene();
+			//Create a new one
+			worker.createNewCutScene(newRootId);
+			worker.drawCutSceneNameField(newRootId);
+		})
 	}
 
 
@@ -285,6 +294,15 @@ var createCSEditor = function(){
 	      }
 	}
 
+	worker.drawCutSceneNameField = function(cutSceneId){
+		$(".cutSceneNameHook").remove();
+		var main = $(document.createElement('div')).addClass("cutSceneNameHook");
+		var nameControl = main.append("<h3>Cut Scene Name: <input type='text' id ='cutSceneNameControl' class = 'outputField'></h3>");
+		$("#cutSceneName").append(main);
+		$("#cutSceneNameControl").val(cutSceneId);
+		worker.rootNodeIdUpdateHandlers("#cutSceneNameControl");
+	}
+
 	worker.actionTypeSelectRedraw = function(){
 		worker.removeAllOptions("#actionTypeSelect");
 		for(var actionType in worker.CutSceneTypeEnum){
@@ -294,6 +312,13 @@ var createCSEditor = function(){
 			$("#actionTypeSelect").val(worker.CutSceneMapNumberToType[worker.currentAction.ActionType]);
 		}
 		$("#actionTypeSelect").change();
+	}
+
+	worker.cutSceneSelectRedraw = function(){
+		worker.removeAllOptions("#cutSceneSelect");
+		for(var cutSceneName in worker.outputState){
+			worker.addToDropDown("#cutSceneSelect", cutSceneName);
+		}
 	}
 
 	worker.subactionTypeSelectRedraw = function(){
@@ -406,6 +431,32 @@ var createCSEditor = function(){
 	  });
 	}
 
+	worker.rootNodeIdUpdateHandlers = function(selection){
+		$(selection).blur(function(){
+	      var typedReturn = worker.typeFunctions(worker.rootAction.id, $(selection).val());
+	      $(selection).val(typedReturn);
+	      worker.updateRootNodeId(typedReturn);
+	  });
+
+	  $(selection).keyup(function(event){
+	    if(event.keyCode == 13){
+	      var typedReturn = worker.typeFunctions(worker.rootAction.id, $(selection).val());
+	      $(selection).val(typedReturn);
+	      worker.updateRootNodeId(typedReturn);
+	    }
+	  });
+	}
+
+	worker.updateRootNodeId = function(newId){
+		worker.rootAction.id = newId;
+		worker.cutSceneID = newId;
+		worker.rootAction.childActions.forEach( (childId) =>{
+	      	var childObject = worker.getItem(childId);
+	      	childObject.parentAction = worker.rootAction.id;
+	      	worker.items.update(childObject);
+	    });
+	}
+
 	worker.typeFunctions = function(target, input){
 	  type = typeof(target);
 	  if (type ==="boolean"){
@@ -447,9 +498,15 @@ var createCSEditor = function(){
 		download(filename, JSON.stringify(worker.outputState));
 	}
 
-	worker.saveCurrentCutScene = function(){
+	worker.saveCurrentCutScene = function(preservedSelection){
 		worker.outputState = worker.outputState || {};
-		worker.outputState[worker.rootAction.id] = worker.createCutSceneGraph(worker.rootAction);
+		if(worker.cutSceneID){
+			worker.outputState[worker.rootAction.id] = worker.createCutSceneGraph(worker.rootAction);
+			worker.cutSceneSelectRedraw();
+			if(preservedSelection){
+				$("#cutSceneSelect").val(preservedSelection);
+			}
+		}
 	}
 
 	worker.handleChildrenCutSceneGraph = function(actionObject){
@@ -472,8 +529,26 @@ var createCSEditor = function(){
 
 	worker.loadCutSceneById = function(cutSceneId){
 		worker.refresh();
+		worker.cutSceneID = cutSceneId;
+		worker.drawCutSceneNameField(cutSceneId);
 		worker.parseCutScene(worker.outputState[cutSceneId], true);
 	};
+
+	worker.createNewCutScene = function(cutSceneId){
+		worker.outputState = worker.outputState || {};
+		if(worker.outputState[cutSceneId]){
+			alert("A Cutscene with name '" + cutSceneId + "' already exists. Please try another name.");
+		}
+		else{
+			worker.refresh();
+			worker.groups.add({id: "Main Timeline", content: "Main Timeline"});
+			worker.cutSceneID = cutSceneId;
+			worker.rootAction = {id: cutSceneId, end: 0, childActions: [], ActionType: worker.CutSceneTypeEnum.StartCutSceneAction};
+			worker.saveCurrentCutScene(cutSceneId);
+			worker.currentGroup = "Main Timeline";
+			worker.cutSceneSelectRedraw();
+		}
+	}
 
 	worker.parseCutScene = function(cutSceneJSONObject, isRoot){
 		var loadedObject = {};
@@ -518,7 +593,12 @@ var createCSEditor = function(){
 	worker.receivedFile = function() {           
 		worker.refresh();
 		worker.outputState = JSON.parse(fr.result);
-		worker.removeAllOptions("#cutSceneSelect");
+		worker.cutSceneSelectRedraw();
+		var firstToDisplay = $("#cutSceneSelect").val();
+		if(firstToDisplay){
+			worker.loadCutSceneById(firstToDisplay);
+		}
+		
 		//worker.populate(newState);
   	}
 	worker.initializeDownloader = function(){

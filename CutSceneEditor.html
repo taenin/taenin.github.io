@@ -114,22 +114,29 @@
 <div id = "fileToolbar">
 	<div class="fileToolbarBlock">
 		<input type="file" id="fileinput"/>
-        <input type='button' id='btnLoad' value='Load Level'>
+        <input type='button' id='btnLoad' value='Load Cutscene JSON'>
 	</div>
 	<div class = "fileToolbarBlock">
     	<input type="text" id="levelName" placeholder="saveFile.json">
-    	<input type="button" id="btnSave" value="Save Level">
+    	<input type="button" id="btnSave" value="Save Cutscene JSON">
+	</div>
+	<div class="fileToolbarBlock">
+		<input type="text" id="newCutSceneName" placeholder="Cutscene Name">
+		<input type="button" id="btnNewCutSceneName" value="Create New Cutscene">
 	</div>
 	<div class = "fileToolbarBlock">
 		<select id = "cutSceneSelect">
 			<option>Loading</option>
 		</select>
+		<input type="button" id="btnDeleteCurrentCutscene" value = "Delete Current Cutscene">
 	</div>
 </div>
 <div id="visualization">
 	<div class="menu">
         <input type="button" id="newAction" value="New Action"/>
     </div>
+</div>
+<div id = "cutSceneName">
 </div>
 <div id="selectbar">
 <h3>Action Type: 
