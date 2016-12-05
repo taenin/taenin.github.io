@@ -76,6 +76,24 @@
 			width: 100%;
 		}
 
+	#fileToolbar{
+		width: 29%;
+		display: inline-block;
+		float: right;
+	}
+
+		.fileToolbarBlock{
+			display:inline-block;
+			*display: inline-block;
+			width: 100%;
+			padding: 10px;
+		}
+
+			#fileinput, #levelName {
+				width: 50%;
+				max-width: 300px;
+			}
+
 
     .vis-item.openwheel  { background-color: #B0E2FF; }
     .vis-item.rally      { background-color: #EAEAEA; }
@@ -93,9 +111,21 @@
 <!--   <script src="../../googleAnalytics.js"></script> -->
 </head>
 <body>
-<p>
-  This example demonstrates editable groups (for now only reordering).
-</p>
+<div id = "fileToolbar">
+	<div class="fileToolbarBlock">
+		<input type="file" id="fileinput"/>
+        <input type='button' id='btnLoad' value='Load Level'>
+	</div>
+	<div class = "fileToolbarBlock">
+    	<input type="text" id="levelName" placeholder="saveFile.json">
+    	<input type="button" id="btnSave" value="Save Level">
+	</div>
+	<div class = "fileToolbarBlock">
+		<select id = "cutSceneSelect">
+			<option>Loading</option>
+		</select>
+	</div>
+</div>
 <div id="visualization">
 	<div class="menu">
         <input type="button" id="newAction" value="New Action"/>

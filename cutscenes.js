@@ -32,6 +32,20 @@ var createCSEditor = function(){
 			TargetLocation: "Target Location",
 		}
 
+		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
+		//That is, each function must be of the form function(actionObject) -> field value
+		worker.saveFieldMapping = {
+			start: worker.getItemStartTime,
+			end: worker.getItemEndTime,
+			childActions: worker.handleChildrenCutSceneGraph,
+		}
+		//A mapping used when loading values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
+		//That is, each function must be of the form function(actionObject) -> field value 
+		worker.loadFieldMapping = {
+			childActions: worker.handleLoadChildren,
+			group: worker.handleLoadGroup,
+		}
+
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
 		worker.CutSceneMapNumberToSubType = worker.getLayeredReverseEnum(worker.CutSceneMapNumberToType, worker.CutSceneSubTypes);
 		worker.cutSceneID = "New Cut Scene";
@@ -99,46 +113,51 @@ var createCSEditor = function(){
 	worker.getUniqueActionId = function(){
 		var actionId = "Action" + worker.actionsCreated;
 		worker.actionsCreated++;
+		while(worker.getItem(actionId)){
+			actionId = "Action" + worker.actionsCreated;
+			worker.actionsCreated++;
+		}
 		return actionId;
 	}
 	worker.getItem = function(itemId){
 		return itemId === worker.cutSceneID ? worker.rootAction : worker.items.get(itemId);
 	}
-	worker.addActionItem = function(actionId, parentId, group, start, duration){
-		if(!worker.items.get(actionId)){
-			parent = worker.getItem(parentId);
-			worker.items.add({
-				id: actionId,
-				group: group,
-				content: actionId,
-				start: start,
-				end: start + duration,
-				parentAction: parentId,
-				childActions: [],
-				ActionType: worker.defaultActionType,
-				ActionSubtype: worker.defaultSubType,
-			});
-			if(parent){
-				parent.childActions.push(actionId);
-				if(parentId !== worker.cutSceneID){
-					worker.items.update(parent);
-				}
+	worker.addActionItem = function(parentId, group, start, duration){
+		var actionId = worker.getUniqueActionId();
+		parent = worker.getItem(parentId);
+		worker.items.add({
+			id: actionId,
+			group: group,
+			content: actionId,
+			start: start,
+			end: start + duration,
+			parentAction: parentId,
+			childActions: [],
+			ActionType: worker.defaultActionType,
+			ActionSubtype: worker.defaultSubType,
+		});
+		if(parent){
+			parent.childActions.push(actionId);
+			if(parentId !== worker.cutSceneID){
+				worker.items.update(parent);
 			}
 		}
 	};
 
 	worker.removeActionItem = function(removedAction){
-		if(removedAction && removedAction.parentAction && removedAction.childActions && removedAction.id){
-			parentObject = worker.getItem(removedAction.parentAction);
+		var parentObject = worker.getItem(removedAction.parentAction);
+		if(removedAction && removedAction.parentAction && removedAction.childActions && removedAction.id && parentObject){
 			newChildren = [];
 			parentObject.childActions = parentObject.childActions.filter((childId) =>childId !== removedAction.id);
 			//Don't fire an update if we're touching the root node
 			actionsToUpdate = removedAction.parentAction === worker.cutSceneID ? [] : [parentObject];
 			removedAction.childActions.forEach((childId) => {
 				childObject = worker.items.get(childId);
-				childObject.parentAction = removedAction.parentAction;
-				parentObject.childActions.push(childId);
-				actionsToUpdate.push(childObject);
+				if(childObject){
+					childObject.parentAction = removedAction.parentAction;
+					parentObject.childActions.push(childId);
+					actionsToUpdate.push(childObject);
+				}
 			});
 			worker.items.update(actionsToUpdate);
 		}
@@ -147,6 +166,7 @@ var createCSEditor = function(){
 	worker.setCurrentAction = function(actionId){
 		worker.currentActionId = actionId;
 		worker.currentAction = actionId ? worker.getItem(actionId) : null;
+		worker.currentGroup = worker.currentAction ? worker.currentAction.group : worker.currentGroup;
 		worker.actionTypeSelectRedraw();
 	}
 
@@ -170,10 +190,9 @@ var createCSEditor = function(){
 		});
 
 		$("#newAction").click(function(event){
-			var actionId = worker.getUniqueActionId();
 			var parentObject = worker.currentActionId ? worker.items.get(worker.currentActionId) : worker.rootAction;
 			var start = worker.getItemEndTime(parentObject);
-			worker.addActionItem(actionId, parentObject.id, worker.currentGroup, start, worker.defaultActionDuration);
+			worker.addActionItem(parentObject.id, worker.currentGroup, start, worker.defaultActionDuration);
 		});
 
 		worker.timeline.on("select", function(result){
@@ -206,6 +225,14 @@ var createCSEditor = function(){
 				worker.items.update(worker.currentAction);
 			}
 			worker.drawSelection();
+		});
+
+		worker.addChangeHandler("#cutSceneSelect", function(){
+			var selection = $("#cutSceneSelect").val();
+			if(worker.outputState[selection]){
+				worker.saveCurrentCutScene();
+				worker.loadCutSceneById(selection);
+			}
 		});
 	}
 
@@ -322,6 +349,7 @@ var createCSEditor = function(){
 		worker.timeline.setGroups(worker.groups);
 		worker.timeline.setItems(worker.items);		
 		worker.addHandlers();
+		worker.initializeDownloader();
 		worker.refresh();
 		worker.groups.add({"content": "Main Timeline", "id": "Main Timeline", "value": 1, className:'openwheel'});
 		worker.currentGroup = "Main Timeline";
@@ -391,10 +419,133 @@ var createCSEditor = function(){
 	  }
 	}
 
+	worker.handleFileSelect = function(){
+	    if (window.File && window.FileReader && window.FileList && window.Blob) {
+	    } else {
+	        alert('The File APIs are not fully supported in this browser.');
+	        return;
+	    }   
+
+	    input = document.getElementById('fileinput');
+	    if (!input.files) {
+	       alert("This browser doesn't seem to support the `files` property of file inputs.");
+	    }
+	    else if (!input.files[0]) {
+	       alert("Please select a file before clicking 'Load'");               
+	    }
+	    else {
+	       file = input.files[0];
+	       fr = new FileReader();
+	       fr.onload = worker.receivedFile;
+	       fr.readAsText(file);
+	    }
+	}
+	worker.handleDownload = function(){
+		worker.saveCurrentCutScene();
+		output = worker.outputState;
+		filename = $("#levelName").val();
+		download(filename, JSON.stringify(worker.outputState));
+	}
+
+	worker.saveCurrentCutScene = function(){
+		worker.outputState = worker.outputState || {};
+		worker.outputState[worker.rootAction.id] = worker.createCutSceneGraph(worker.rootAction);
+	}
+
+	worker.handleChildrenCutSceneGraph = function(actionObject){
+		var children = [];
+		if(actionObject.childActions){
+			actionObject.childActions.forEach( (childObjectId) =>{
+				children.push(worker.createCutSceneGraph(worker.getItem(childObjectId)));
+			});
+		}
+		return children; 
+	}
+
+	worker.createCutSceneGraph = function(actionObject){
+		var output = {};
+		for (var key in actionObject){
+			output[key] = worker.saveFieldMapping[key] ? worker.saveFieldMapping[key](actionObject): actionObject[key];
+		}
+		return output;
+	}
+
+	worker.loadCutSceneById = function(cutSceneId){
+		worker.refresh();
+		worker.parseCutScene(worker.outputState[cutSceneId], true);
+	};
+
+	worker.parseCutScene = function(cutSceneJSONObject, isRoot){
+		var loadedObject = {};
+		for(var field in cutSceneJSONObject){
+			loadedObject[field] = worker.loadFieldMapping[field] ? worker.loadFieldMapping[field](cutSceneJSONObject) : cutSceneJSONObject[field];
+		}
+		if(isRoot){
+			worker.rootAction = loadedObject;
+		}
+		else{
+			worker.items.add(loadedObject);
+			worker.actionsCreated++;
+		}
+		if(cutSceneJSONObject.childActions){
+			cutSceneJSONObject.childActions.forEach((childObject) => {
+				worker.parseCutScene(childObject);
+			});
+		}
+	}
+
+	worker.handleLoadChildren = function(actionObject){
+		var output = [];
+		if(actionObject.childActions){
+			output = actionObject.childActions.map( (childObject) => {
+				return childObject.id;
+			});
+		}
+		return output;
+	}
+
+	worker.handleLoadGroup = function(actionObject){
+		//append the group to our current selection of groups
+		if(!worker.groups.get(actionObject.group) && actionObject.group){
+			worker.groups.add({content: actionObject.group, id: actionObject.group});
+			if(!worker.currentGroup){
+				worker.currentGroup = actionObject.group;
+			}
+		}
+		return actionObject.group;
+	}
+
+	worker.receivedFile = function() {           
+		worker.refresh();
+		worker.outputState = JSON.parse(fr.result);
+		worker.removeAllOptions("#cutSceneSelect");
+		//worker.populate(newState);
+  	}
+	worker.initializeDownloader = function(){
+		$("#btnLoad").click(worker.handleFileSelect);
+		$("#btnSave").click(worker.handleDownload);
+		//Make sure we don't delete anything by accident
+		$("#levelName").focus(function(){
+		$("#categorySelect").change();
+		});
+	}
+
 	return worker;
 }
 
 
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
 
 
  //-----------------------------------------Initialize Page---------------------------------------
