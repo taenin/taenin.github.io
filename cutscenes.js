@@ -58,6 +58,17 @@ var createCSEditor = function(){
 		worker.defaultSubType = worker.CutSceneSubTypes.CameraAction.MoveCamera;
 		worker.actionTypeSelectRedraw();
 	}
+	worker.toggleCreateAction = function(disabled){
+		$("#newAction").prop("disabled", disabled);
+	};
+	worker.toggleCreateGroup = function(disabled) {
+		$("#newGroup").prop("disabled", disabled);
+		$("#newGroupValue").prop("disabled", disabled);
+	}
+	worker.toggleTimeLineControls = function(disabled){
+		worker.toggleCreateAction(disabled);
+		worker.toggleCreateGroup(disabled);
+	}
 
 	worker.generateDefaultObject = function(actionTypeEnum, actionSubtypeEnum){
 	    var output = {}
@@ -195,6 +206,18 @@ var createCSEditor = function(){
 			worker.addActionItem(parentObject.id, worker.currentGroup, start, worker.defaultActionDuration);
 		});
 
+		$("#newGroup").click(function(event){
+			var groupName = $("#newGroupValue").val();
+			if(!worker.groups.get(groupName)){
+				worker.groups.add({content: groupName, id: groupName});
+				worker.currentGroup = groupName;
+				worker.toggleCreateAction(false);
+			}
+			else{
+				alert("Group with name: '" + groupName + "' already exists. Please choose another name.");
+			}
+		});
+
 		worker.timeline.on("select", function(result){
 			if(result && result.items && result.items.length > 0){
 				worker.setCurrentAction(result.items[0]);
@@ -242,7 +265,9 @@ var createCSEditor = function(){
 			//Create a new one
 			worker.createNewCutScene(newRootId);
 			worker.drawCutSceneNameField(newRootId);
-		})
+			worker.toggleTimeLineControls(false);
+		});
+
 	}
 
 
@@ -297,7 +322,7 @@ var createCSEditor = function(){
 	worker.drawCutSceneNameField = function(cutSceneId){
 		$(".cutSceneNameHook").remove();
 		var main = $(document.createElement('div')).addClass("cutSceneNameHook");
-		var nameControl = main.append("<h3>Cut Scene Name: <input type='text' id ='cutSceneNameControl' class = 'outputField'></h3>");
+		var nameControl = main.append("<h3>Cutscene Name: <input type='text' id ='cutSceneNameControl' class = 'outputField'></h3>");
 		$("#cutSceneName").append(main);
 		$("#cutSceneNameControl").val(cutSceneId);
 		worker.rootNodeIdUpdateHandlers("#cutSceneNameControl");
@@ -336,14 +361,10 @@ var createCSEditor = function(){
 	}
 
 	worker.init = function(){
+		worker.outputState = {}; //The output state for saving JSONs
 		worker.initializeTypeGenerators();
-		worker.groups = new vis.DataSet([
-		{"content": "Main Timeline", "id": "Main Timeline", "value": 1, className:'openwheel'}
-		]);
-		worker.items = new vis.DataSet([
-			{start: 0, end: 5000, group:"Main Timeline", className:"openwheel", content:"Argentina",id:"531@motocal.net"},
-			{start: 1, end: 3000, group:"Main Timeline", className:"rally", content:"Rallye Monte-Carlo",id:"591@motocal.net"},
-			]);
+		worker.groups = new vis.DataSet();
+		worker.items = new vis.DataSet();
 		worker.container = document.getElementById('visualization');
 		worker.options = {
 		    // option groupOrder can be a property name or a sort function
@@ -359,6 +380,8 @@ var createCSEditor = function(){
 		    	a.value = b.value;
 		    	b.value = v;
 		    },
+		    minHeight: 150,
+		    maxHeight: 500,
 		    orientation: 'both',
 		    editable: true,
 		    groupEditable: true,
@@ -376,9 +399,8 @@ var createCSEditor = function(){
 		worker.addHandlers();
 		worker.initializeDownloader();
 		worker.refresh();
-		worker.groups.add({"content": "Main Timeline", "id": "Main Timeline", "value": 1, className:'openwheel'});
-		worker.currentGroup = "Main Timeline";
-
+		worker.cutSceneSelectRedraw();
+		worker.toggleTimeLineControls(true);
 	}
 
 	worker.addToDropDown = function(dropDownID, newValue){
@@ -501,7 +523,7 @@ var createCSEditor = function(){
 	worker.saveCurrentCutScene = function(preservedSelection){
 		worker.outputState = worker.outputState || {};
 		if(worker.cutSceneID){
-			worker.outputState[worker.rootAction.id] = worker.createCutSceneGraph(worker.rootAction);
+			worker.outputState[worker.cutSceneID] = worker.createCutSceneGraph(worker.rootAction);
 			worker.cutSceneSelectRedraw();
 			if(preservedSelection){
 				$("#cutSceneSelect").val(preservedSelection);
@@ -529,9 +551,13 @@ var createCSEditor = function(){
 
 	worker.loadCutSceneById = function(cutSceneId){
 		worker.refresh();
+		worker.toggleCreateAction(true);
 		worker.cutSceneID = cutSceneId;
 		worker.drawCutSceneNameField(cutSceneId);
 		worker.parseCutScene(worker.outputState[cutSceneId], true);
+		if(worker.currentGroup){
+		worker.toggleCreateAction(false);
+		}
 	};
 
 	worker.createNewCutScene = function(cutSceneId){
@@ -546,7 +572,6 @@ var createCSEditor = function(){
 			worker.rootAction = {id: cutSceneId, end: 0, childActions: [], ActionType: worker.CutSceneTypeEnum.StartCutSceneAction};
 			worker.saveCurrentCutScene(cutSceneId);
 			worker.currentGroup = "Main Timeline";
-			worker.cutSceneSelectRedraw();
 		}
 	}
 
@@ -592,6 +617,7 @@ var createCSEditor = function(){
 
 	worker.receivedFile = function() {           
 		worker.refresh();
+		worker.toggleTimeLineControls(true);
 		worker.outputState = JSON.parse(fr.result);
 		worker.cutSceneSelectRedraw();
 		var firstToDisplay = $("#cutSceneSelect").val();
