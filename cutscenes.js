@@ -30,6 +30,7 @@ var createCSEditor = function(){
 			RequireY: "Must reach Y coordinate",
 			TravelTime: "Travel Time (in seconds)",
 			TargetLocation: "Target Location",
+			Duration: "Length of action (in seconds)"
 		}
 
 		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
@@ -86,12 +87,32 @@ var createCSEditor = function(){
         };
   	}
 
+  	worker.initializeSpecialSelectionHandlers = function() {
+  		worker.specialSelectionHandlers = {
+  			"Delay": worker.updateDelay,
+  			"Duration": worker.updateDuration,
+  		};
+  	}
+
+  	worker.updateDelay = function(actionObject){
+  		var newDelay = actionObject.Delay * 1000;
+  		var parentObject = worker.getItem(actionObject.parentAction);
+  		actionObject.start = worker.getItemEndTime(parentObject) + (newDelay);
+  		actionObject.end = actionObject.start + (actionObject.Duration * 1000);
+  	}
+
+  	worker.updateDuration = function(actionObject){
+  		var newDuration = actionObject.Duration * 1000;
+  		actionObject.end = actionObject.start + newDuration;
+  	}
+
   	//The fields required, regardless of action type
   	worker.actionRequiredFields = function(){
   		return {
   			WaitForAnimation: true,
   			WaitForPhysical: true,
   			Delay: 0,
+  			Duration: 3,
   			content: "ActionName",
   		};
   	};
@@ -199,6 +220,31 @@ var createCSEditor = function(){
 			worker.currentActionId = null;
 			worker.drawSelection();
 		});
+
+		worker.items.on("update", function(e, updatedObjectWrapper){
+			updatedObjectWrapper.data.forEach( function(newData, ind) {
+				//Handle movement
+				//Assume that the start and end fields are correct. Update Duration and Delay
+				if(newData.start != updatedObjectWrapper.oldData[ind].start || newData.end != updatedObjectWrapper.oldData[ind].end){
+					var parentAction = worker.getItem(newData.parentAction);
+					newData.Duration = (newData.end - newData.start) / 1000;
+					newData.Delay = (newData.start - parentAction.end) / 1000;
+					$("#inari_Delay").val(newData.Delay);
+					$("#inari_Duration").val(newData.Duration);
+					var itemsToUpdate = [newData]
+					newData.childActions.forEach((childId) => {
+						var childAction = worker.getItem(childId);
+						//update the new delay field
+						childAction.Delay = (childAction.start - newData.end) / 1000;
+						itemsToUpdate.push(childAction);
+					})
+					worker.items.update(itemsToUpdate);
+
+				}
+				
+
+			})
+		})
 
 		$("#newAction").click(function(event){
 			var parentObject = worker.currentActionId ? worker.items.get(worker.currentActionId) : worker.rootAction;
@@ -363,6 +409,7 @@ var createCSEditor = function(){
 	worker.init = function(){
 		worker.outputState = {}; //The output state for saving JSONs
 		worker.initializeTypeGenerators();
+		worker.initializeSpecialSelectionHandlers();
 		worker.groups = new vis.DataSet();
 		worker.items = new vis.DataSet();
 		worker.container = document.getElementById('visualization');
@@ -432,6 +479,9 @@ var createCSEditor = function(){
 	      var typedReturn = worker.typeFunctions(actionObject[key], $(selection).val());
 	      $(selection).val(typedReturn);
 	      actionObject[key] = typedReturn;
+	      if(worker.specialSelectionHandlers[key]){
+	      	worker.specialSelectionHandlers[key](actionObject);
+	      }
 	    }
 	    worker.items.update(actionObject);
 	  });
@@ -447,6 +497,9 @@ var createCSEditor = function(){
 	        var typedReturn = worker.typeFunctions(actionObject[key], $(selection).val());
 	        $(selection).val(typedReturn);
 	        actionObject[key] = typedReturn;
+	        if(worker.specialSelectionHandlers[key]){
+	      	worker.specialSelectionHandlers[key](actionObject);
+	      	}
 	      }
 	      worker.items.update(actionObject);
 	    }
