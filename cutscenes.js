@@ -227,6 +227,8 @@ var createCSEditor = function(){
 				//Assume that the start and end fields are correct. Update Duration and Delay
 				if(newData.start != updatedObjectWrapper.oldData[ind].start || newData.end != updatedObjectWrapper.oldData[ind].end){
 					var parentAction = worker.getItem(newData.parentAction);
+					newData.start = worker.getItemStartTime(newData);
+					newData.end = worker.getItemEndTime(newData);
 					newData.Duration = (newData.end - newData.start) / 1000;
 					newData.Delay = (newData.start - parentAction.end) / 1000;
 					$("#inari_Delay").val(newData.Delay);
