@@ -187,6 +187,7 @@ var createCSEditor = function(){
 				childObject = worker.items.get(childId);
 				if(childObject){
 					childObject.parentAction = removedAction.parentAction;
+					childObject.Delay += removedAction.Delay + removedAction.Duration;
 					parentObject.childActions.push(childId);
 					actionsToUpdate.push(childObject);
 				}
@@ -315,6 +316,19 @@ var createCSEditor = function(){
 			worker.drawCutSceneNameField(newRootId);
 			worker.toggleTimeLineControls(false);
 		});
+
+		$("#btnDeleteCurrentCutscene").click(function(event){
+			var targetCutScene = $("#cutSceneSelect").val();
+			if(targetCutScene && confirm("Are you sure you want to delete cutscene: '"+ targetCutScene + "'?")){
+				if(worker.outputState){
+					delete worker.outputState[targetCutScene];
+				}
+				worker.toggleTimeLineControls(true);
+				worker.refresh();
+				worker.cutSceneSelectRedraw();
+				$("#cutSceneSelect").change();
+			}	
+		})
 
 	}
 
