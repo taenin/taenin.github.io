@@ -6,12 +6,15 @@ var createCSEditor = function(){
 		worker.items.clear();
 		worker.groups.clear();
 		worker.defaultActionDuration = 3000;
+
+		//The primary cut scene action enum
 		worker.CutSceneTypeEnum = {
 			StartCutSceneAction: 0,
 			CameraAction: 1,
 			AvatarAction: 2,
 		};
 
+		//The enums for each cut scene action sub tpe
 		worker.CutSceneSubTypes = {
 			StartCutSceneAction: {},
 			CameraAction: {
@@ -80,12 +83,6 @@ var createCSEditor = function(){
 	    return Object.assign(worker.actionRequiredFields(), output);
 	}
 
-	//A mapping from specific action sub types to a function that generates an object with the default fields required for the specified sub type
-	worker.initializeTypeGenerators = function(){
-    	worker.objectTypeGenerators = {
-                    "MoveCamera": worker.createMoveCamera,
-        };
-  	}
 
   	worker.initializeSpecialSelectionHandlers = function() {
   		worker.specialSelectionHandlers = {
@@ -104,6 +101,13 @@ var createCSEditor = function(){
   	worker.updateDuration = function(actionObject){
   		var newDuration = actionObject.Duration * 1000;
   		actionObject.end = actionObject.start + newDuration;
+  	}
+
+  	//A mapping from specific action sub types to a function that generates an object with the default fields required for the specified sub type
+	worker.initializeTypeGenerators = function(){
+    	worker.objectTypeGenerators = {
+                    "MoveCamera": worker.createMoveCamera,
+        };
   	}
 
   	//The fields required, regardless of action type
