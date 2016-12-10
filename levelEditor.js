@@ -1503,7 +1503,10 @@ function createWorker(categoryJSON){
                 "UseRadius": false,
                 "InvertRadius": false,
                 "LoopAfterCompletion": false,
-                "TriggerOnRight": true
+                "TriggerOnRight": true,
+                "Text": "",
+                "TextFont": "",
+                "TextSize": 64
     };
     return detail;
   }
