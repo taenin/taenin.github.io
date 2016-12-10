@@ -93,7 +93,8 @@ function createWorker(categoryJSON){
                       "Goal": null,
                       "Hazards": [],
                       "Portals": [],
-                      "CheckPoints": []
+                      "CheckPoints": [],
+                      "CutsceneTriggers": [],
                    };
 
 
@@ -1538,6 +1539,20 @@ function createWorker(categoryJSON){
    return portal;
   };
 
+  worker.createCutsceneTrigger = function(canvasObject) {
+    var trigger = {
+      "Width": canvasObject.width,
+      "Height" : canvasObject.height,
+      "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+      "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
+      "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
+      "DrawDepth": 1,
+      "CutsceneTarget" : "cutscene name",
+      "disableIfLevelCompleted": true
+    };
+    return trigger;
+  }
+
 
   worker.createReceptacle = function(canvasObject){
     var receptacle = {
@@ -2279,7 +2294,8 @@ worker.asyncLoop = function (iterations, func, callback) {
                     "Hazards": worker.createHazard,
                     "Portals": worker.createPortal,
                     "CheckPoints": worker.createCheckPoint,
-                    "Receptacles" : worker.createReceptacle
+                    "Receptacles" : worker.createReceptacle,
+                    "CutsceneTriggers": worker.createCutsceneTrigger
                  };
   }
 
