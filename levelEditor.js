@@ -1547,8 +1547,8 @@ function createWorker(categoryJSON){
       "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
       "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
       "DrawDepth": 1,
-      "CutsceneTarget" : "cutscene name",
-      "disableIfLevelCompleted": true
+      "Cutscene" : "cutscene name",
+      "ShowOnce": true
     };
     return trigger;
   }
