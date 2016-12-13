@@ -20,7 +20,10 @@ var createCSEditor = function(){
 			CameraAction: {
 				MoveCamera: 0
 			},
-			AvatarAction: {}
+			AvatarAction: {
+				MoveAvatar: 0,
+				JumpAvatar: 1,
+			}
 		};
 
 		//A mapping from raw field name to its display name in the editor. The display name should be specific enough such that a user knows exactly what your field does
@@ -107,6 +110,8 @@ var createCSEditor = function(){
 	worker.initializeTypeGenerators = function(){
     	worker.objectTypeGenerators = {
                     "MoveCamera": worker.createMoveCamera,
+                    "MoveAvatar": worker.createMoveAvatar,
+                    "JumpAvatar": worker.createJumpAvatar,
         };
   	}
 
@@ -128,6 +133,16 @@ var createCSEditor = function(){
   			RequireX: true,
   			RequireY: true,
   		};
+  	};
+
+  	worker.createMoveAvatar = function(){
+  		return {
+  			TargetLocation: {X: 0, Y: 0},
+  		};
+  	};
+
+  	worker.createJumpAvatar = function(){
+  		return {};
   	};
 
 	worker.getReverseEnum = function(enumMap){
@@ -589,9 +604,12 @@ var createCSEditor = function(){
 	}
 	worker.handleDownload = function(){
 		worker.saveCurrentCutScene();
-		output = worker.outputState;
+		output = {CutScenes: []};
+		for (var cutscene in worker.outputState){
+			output.CutScenes.push(worker.outputState[cutscene]);
+		}
 		filename = $("#levelName").val();
-		download(filename, JSON.stringify(worker.outputState));
+		download(filename, JSON.stringify(output));
 	}
 
 	worker.saveCurrentCutScene = function(preservedSelection){
@@ -692,7 +710,11 @@ var createCSEditor = function(){
 	worker.receivedFile = function() {           
 		worker.refresh();
 		worker.toggleTimeLineControls(true);
-		worker.outputState = JSON.parse(fr.result);
+		var parsed = JSON.parse(fr.result);
+		worker.outputState = {}
+		parsed.CutScenes.forEach((cutscene) => {
+			worker.outputState[cutscene.id] = cutscene;
+		});
 		worker.cutSceneSelectRedraw();
 		var firstToDisplay = $("#cutSceneSelect").val();
 		if(firstToDisplay){

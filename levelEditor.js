@@ -1548,7 +1548,9 @@ function createWorker(categoryJSON){
       "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
       "DrawDepth": 1,
       "Cutscene" : "cutscene name",
-      "ShowOnce": true
+      "Radius": 5,
+      "ShowOnce": true,
+      "PNGSource" : canvasObject.imgSource,
     };
     return trigger;
   }
