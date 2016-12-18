@@ -7,6 +7,9 @@ var createCSEditor = function(){
 		worker.groups.clear();
 		worker.defaultActionDuration = 3000;
 
+		//The types of objects we allow the users to select
+		worker.selectableTypes = ["Turret", "Barrier", "Tile", "Node"];
+
 		//The primary cut scene action enum
 		worker.CutSceneTypeEnum = {
 			StartCutSceneAction: 0,
@@ -23,6 +26,8 @@ var createCSEditor = function(){
 			AvatarAction: {
 				MoveAvatar: 0,
 				JumpAvatar: 1,
+				BoundAvatarObject: 2,
+				BoundAvatarLocation: 3,
 			}
 		};
 
@@ -36,7 +41,10 @@ var createCSEditor = function(){
 			RequireY: "Must reach Y coordinate",
 			TravelTime: "Travel Time (in seconds)",
 			TargetLocation: "Target Location",
-			Duration: "Length of action (in seconds)"
+			Duration: "Length of action (in seconds)",
+			TargetObject: "Target Object",
+			TargetObjectIndex: "Target Object #",
+			Angle: "Angle (degrees)"
 		}
 
 		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
@@ -51,6 +59,13 @@ var createCSEditor = function(){
 		worker.loadFieldMapping = {
 			childActions: worker.handleLoadChildren,
 			group: worker.handleLoadGroup,
+		}
+
+		//A mapping used for loading custom controls for data callbacks
+		//Typically action attributes are specified by text boxes. This mapping allows you to create a DOM element and a callback
+		//Each function must be of the form function(key, actionObject) -> DOM element
+		worker.displayFieldMapping = {
+			TargetObject: worker.createObjectSelectControl,
 		}
 
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
@@ -75,6 +90,28 @@ var createCSEditor = function(){
 	worker.toggleTimeLineControls = function(disabled){
 		worker.toggleCreateAction(disabled);
 		worker.toggleCreateGroup(disabled);
+	}
+
+	worker.createObjectSelectControl = function(key, actionObject, id){
+		var output = $(document.createElement('div')).addClass("editfield small");
+		var displayName = worker.fieldNameMapping[key] || key;
+		output.append("<div class='outputFieldName'>" + displayName + ":" + "</div>");
+		var select = document.createElement("select");
+		select.setAttribute("id", id);
+		var dropDown = $(select);
+		dropDown.change(() => {
+			var val = $("#" + id).val();
+			actionObject[key] = val;
+			worker.items.update(actionObject);
+		});
+		worker.selectableTypes.forEach((selectedType) => {
+			dropDown.append('<option value="' + selectedType +'">' + selectedType + '</option>');
+		})
+		if(actionObject[key]){
+			dropDown.val(actionObject[key]);
+		}
+		return output.append(dropDown);
+
 	}
 
 	worker.generateDefaultObject = function(actionTypeEnum, actionSubtypeEnum){
@@ -112,6 +149,8 @@ var createCSEditor = function(){
                     "MoveCamera": worker.createMoveCamera,
                     "MoveAvatar": worker.createMoveAvatar,
                     "JumpAvatar": worker.createJumpAvatar,
+                    "BoundAvatarObject": worker.createBoundAvatarObject,
+                    "BoundAvatarLocation": worker.createBoundAvatarLocation,
         };
   	}
 
@@ -143,6 +182,21 @@ var createCSEditor = function(){
 
   	worker.createJumpAvatar = function(){
   		return {};
+  	};
+
+  	worker.createBoundAvatarObject = function(){
+  		return {
+  			TargetObject: "Turret",
+  			TargetObjectIndex: 0,
+  			Angle: 0,
+  		};
+  	};
+
+  	worker.createBoundAvatarLocation = function(){
+  		return {
+  			TargetLocation: {X: 0, Y: 0},
+  			Angle: 0,
+  		};
   	};
 
 	worker.getReverseEnum = function(enumMap){
@@ -366,10 +420,16 @@ var createCSEditor = function(){
 	          if(outputObject.hasOwnProperty(key)){
 	            if(typeof(outputObject[key]) != "object"){
 	              var newID = "inari_" + key;
-	              var displayName = worker.fieldNameMapping[key] || key;
-	              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + displayName + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
-	              fieldList.push([newID, outputObject[key], [key]]);
-	              main.append(latestField);
+	              if(worker.displayFieldMapping[key]){
+	              	main.append(worker.displayFieldMapping[key](key, worker.currentAction, newID));
+	              }
+	              else{
+	              	  var displayName = worker.fieldNameMapping[key] || key;
+		              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + displayName + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
+		              fieldList.push([newID, outputObject[key], [key]]);
+		              main.append(latestField);
+	              }
+	              
 	            }
 	            else{
 	            var displayName = worker.fieldNameMapping[key] || key;
