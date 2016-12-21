@@ -180,11 +180,14 @@ function createWorker(categoryJSON){
     return output;
   }
 
-  worker.generateDropDownID = function(imgString){
+  worker.generateDropDownID = function(imgString, index){
     //Assume the file extension is always .*** = 4 characters
     key = imgString.slice(0, -4)
     if(!worker.imageCount.hasOwnProperty(key)){
       worker.imageCount[key] = 0;
+    }
+    if(index != undefined){
+      return key + index;
     }
     return key + worker.imageCount[key];
   }
@@ -195,7 +198,7 @@ function createWorker(categoryJSON){
       worker.imageCount[key] += 1;
     }
     else{
-      worker.imageCount[key] = 0;
+      worker.imageCount[key] = 1;
     }
   }
 
@@ -2043,7 +2046,7 @@ function createWorker(categoryJSON){
             desiredState[category] = [];
           }
           for(var i =0; i < newState[category].length; i++){
-            worker.populateImage(newState[category][i], category, i, desiredState);
+            worker.populateImage(newState[category][i], category, i, desiredState, i);
           }
         }
         else if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Object]" && newState[category]){
@@ -2102,7 +2105,6 @@ function createWorker(categoryJSON){
             oImg = desiredState[category][i];
             worker.canvas.add(oImg);
             worker.addObject(oImg);
-            worker.updateDropDownID(oImg.imgSource);
             $("#categorySelect").change();
           }
         }
@@ -2110,7 +2112,6 @@ function createWorker(categoryJSON){
           oImg = desiredState[category];
             worker.canvas.add(oImg);
             worker.addObject(oImg);
-            worker.updateDropDownID(oImg.imgSource);
             $("#categorySelect").change(); 
         }
       }
@@ -2161,11 +2162,11 @@ worker.asyncLoop = function (iterations, func, callback) {
     return loop;
 }
 
-  worker.populateImage  = function(outputObject, category, drawOrder, desiredState){
+  worker.populateImage  = function(outputObject, category, drawOrder, desiredState, index){
     fabric.Image.fromURL(outputObject.PNGSource, function(oImg){
               console.log("loaded");
               worker.updateDropDownID(outputObject.PNGSource);
-              oImg.dropDownID = worker.generateDropDownID(outputObject.PNGSource);
+              oImg.dropDownID = worker.generateDropDownID(outputObject.PNGSource, index);
               oImg.imgSource = outputObject.PNGSource;
               oImg.categoryType = category;
               oImg.lockScalingX = true; //make it so we cannot resize the images

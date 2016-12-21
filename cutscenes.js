@@ -8,7 +8,7 @@ var createCSEditor = function(){
 		worker.defaultActionDuration = 3000;
 
 		//The types of objects we allow the users to select
-		worker.selectableTypes = ["Turret", "Barrier", "Tile", "Node"];
+		worker.selectableTypes = ["Turret", "Node"];
 
 		//The primary cut scene action enum
 		worker.CutSceneTypeEnum = {
