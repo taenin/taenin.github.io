@@ -15,6 +15,7 @@ var createCSEditor = function(){
 			StartCutSceneAction: 0,
 			CameraAction: 1,
 			AvatarAction: 2,
+			DialogAction: 3,
 		};
 
 		//The enums for each cut scene action sub tpe
@@ -28,6 +29,9 @@ var createCSEditor = function(){
 				JumpAvatar: 1,
 				BoundAvatarObject: 2,
 				BoundAvatarLocation: 3,
+			},
+			DialogAction: {
+				DisplayText: 0
 			}
 		};
 
@@ -151,6 +155,7 @@ var createCSEditor = function(){
                     "JumpAvatar": worker.createJumpAvatar,
                     "BoundAvatarObject": worker.createBoundAvatarObject,
                     "BoundAvatarLocation": worker.createBoundAvatarLocation,
+                    "DisplayText": worker.createDisplayTextAction,
         };
   	}
 
@@ -164,6 +169,12 @@ var createCSEditor = function(){
   			content: "ActionName",
   		};
   	};
+
+  	worker.createDisplayTextAction = function(){
+  		return {
+  			Dialog: "",
+  		};
+  	}
 
   	worker.createMoveCamera = function(){
   		return {
