@@ -37,6 +37,14 @@ function createWorker(categoryJSON){
       "Portals": 1, 
     };
 
+    worker.levelTypes = {
+      0: "Sub Level",
+      1: "Hub Level",
+      2: "Level Select",
+    };
+    //Reset level fields
+    $("#leftLevel").val("");
+    $("#rightLevel").val("");
     //Initialize the map for handling deprecated attributes
     //This object maps from the attribute name (string) to a function that takes in the target object and the attribute name
     //The function modifies the object in place
@@ -1343,6 +1351,17 @@ function createWorker(categoryJSON){
    
   }
 
+  worker.initializeLevelTypeDropDown = function(){
+    worker.removeAllOptions("#levelTypeSelect");
+    for( levelCategoryEnum in worker.levelTypes){
+      worker.addToDropDown("#levelTypeSelect", worker.levelTypes[levelCategoryEnum]);
+    }
+  };
+
+  worker.updateLevelType = function(val){
+    $("#levelTypeSelect").val(val);
+  }
+
   worker.initializeWorldControls = function(){
     $("#worldWidth").keyup(function(event){
       if(event.keyCode == 13 && !isNaN(Number($(this).val()))){
@@ -2032,6 +2051,8 @@ function createWorker(categoryJSON){
   worker.populate = function(newState) {
     //Handle deprecated fields
     worker.handleDeprecatedFields(newState);
+    //Reset the level type handler
+    worker.updateLevelType(worker.levelTypes[0]);
     worker.desiredState = {};
     var desiredState = worker.desiredState;
     var total = worker.countFields(newState);
@@ -2040,6 +2061,11 @@ function createWorker(categoryJSON){
         if(category==="World"){
           worker.updateWorldWidth(newState.World.Width);
           worker.updateWorldHeight(newState.World.Height, true);
+        }
+        else if(category==="Properties"){
+          worker.updateLevelType(worker.levelTypes[newState.Properties.Type]);
+          $("#leftLevel").val(newState.Properties.LeftLevel);
+          $("#rightLevel").val(newState.Properties.RightLevel);
         }
         else if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Array]" && newState[category].length > 0){
           if(!desiredState.hasOwnProperty(category)){
@@ -2221,11 +2247,25 @@ worker.asyncLoop = function (iterations, func, callback) {
     worker.canvas.renderAll();
   }
 
+  worker.getLevelTypeEnum = function(val){
+    for (levelEnum in worker.levelTypes){
+      if(worker.levelTypes[levelEnum] === val){
+        return levelEnum;
+      }
+    }
+    return 0;
+  }
+
   worker.handleDownload = function(){
     output = {};
     output.World = {
       "Width": worker.worldWidth,
       "Height": worker.worldHeight
+    };
+    output.Properties = {
+      "Type": worker.getLevelTypeEnum($("#levelTypeSelect").val()),
+      "LeftLevel": $("#leftLevel").val(),
+      "RightLevel": $("#rightLevel").val(),
     };
     filename = $("#levelName").val();
     for(var key in worker.state){
@@ -2320,6 +2360,7 @@ worker.asyncLoop = function (iterations, func, callback) {
   }
   worker.init = function(){
     worker.refresh();
+    worker.initializeLevelTypeDropDown();
     worker.initializeTypeGenerators();
     worker.initializeCanvasHandlers();
     worker.initializeWorldControls();

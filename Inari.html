@@ -330,6 +330,7 @@ input[type=checkbox]:checked:after {
 			height: 100%;
 			width: 32%;
 			vertical-align: top;
+			overflow: auto;
 		}
 
 		#worldGridWrapper > div, #drawToolWrapper > div {
@@ -773,6 +774,15 @@ body {
 					<input type="text" class="worldInput" id="worldWidth" placeholder="meters"/>
 					x
 					<input type="text" class="worldInput" id="worldHeight" placeholder="meters"/>
+				</div>
+				<div>
+					Level Type:
+					<select id="levelTypeSelect">
+					</select>
+				</div>
+				<div> Left Level: <input type="text" id="leftLevel" placeholder="previousLevel.json" />
+				</div>
+				<div> Right Level: <input type="text" id="rightLevel" placeholder="nextLevel.json" />
 				</div>
 			</div>
 			<!-- WORLD DIMENSIONS + DRAW MODE -->
