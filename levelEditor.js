@@ -2008,7 +2008,7 @@ function createWorker(categoryJSON){
     count = 0;
     for(var category in state) {
       if(state.hasOwnProperty(category)){
-        if(category==="World"){
+        if(category==="World" || category==="Properties"){
         }
         else if(state.hasOwnProperty(category) && Object.prototype.toString.call( state[category] ) === "[object Array]" && state[category].length > 0){
           for(var i =0; i < state[category].length; i++){
