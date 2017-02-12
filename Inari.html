@@ -317,11 +317,15 @@ input[type=checkbox]:checked:after {
 
 
 	/* CANVAS PARAMS */
-	#canvasParam {
+	.canvasParam {
 		display: inline-block;
 		width: 49%;
 		vertical-align: top;
 		float: right;
+	}
+
+	#canvasParamB, #canvasParamC {
+		display: none;
 	}
 
 		.block {
@@ -331,9 +335,10 @@ input[type=checkbox]:checked:after {
 			width: 32%;
 			vertical-align: top;
 			overflow: auto;
+			float: left;
 		}
 
-		#worldGridWrapper > div, #drawToolWrapper > div {
+		.block > div {
 			padding: 10px 0px;
 			height: 48px;
 		}
@@ -360,10 +365,12 @@ input[type=checkbox]:checked:after {
 
 		#hideTools {
 			overflow: auto;
-			text-align: right;
+			text-align: left;
 		}
 
 		#hideTools .toggleVisibility > div {
+			display: inline-block;
+			width: 25%;
 			padding: 2px 0px;
 			overflow: hidden;
 			white-space: nowrap;
@@ -406,7 +413,7 @@ input[type=checkbox]:checked:after {
 	#zoomWrapper {
 		position: absolute;
 	    left: 0;
-	    width: 320px;
+	    width: 512px;
 	    height: 32px;
 	    background-color: #fafafa;
 /*	    border-top: 1px solid rgba(0,0,0,0.3);
@@ -415,6 +422,9 @@ input[type=checkbox]:checked:after {
 	    box-shadow: 0px 10px 40px -5px rgba(0,0,0,0.1);
 	    z-index: 1;
 	    font-size: 10pt;
+    	/* line height needs to match height of div*/
+		line-height: 32px;
+		vertical-align: middle;
 	}
 
 		#zoomTitle {
@@ -422,26 +432,62 @@ input[type=checkbox]:checked:after {
 			float: left;
 			width: 64px;
 			height: 100%;
-			/* line height needs to match height of div*/
-			line-height: 32px;
-			vertical-align: middle;
 		}
 
 		#sliderWrapper {
 			display: inline-block;
-			width: calc(100% - 64px);
+			float: left;
+			width: calc(100% - 64px - 192px);
 			height: 100%;
 			position: relative;
+			border-right: 1px solid #ccc;
+			padding: 0px 10px;
 		}
 
 			#slider {
 				display: inline-block;
-				width: 90%;
+				width: 80%;
 				position: absolute;
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
 			}
+
+		#tabGroup {
+			display: inline-block;
+			width: 192px;
+			height: 100%;
+		}
+
+			.tab {
+				display: inline-block;
+				float: left;
+				position: relative;
+				width: 64px;
+				cursor: pointer;
+			}
+
+				.tab.active {
+					background-color: #ccc;
+					color: white;
+				}
+
+			.tab:hover {
+				background-color: #eee;
+			}
+
+				.tab.active:hover {
+					background-color: #aaa;
+				}
+
+			.tabDivider {
+				border-right: 1px solid #ccc;
+				position: absolute;
+				top: 4px;
+				bottom: 4px;
+				right: 0;
+			}
+
 
 	/*CANVAS (LEFT) */
 	#canvas {
@@ -762,13 +808,10 @@ body {
 	    	</div>
 	    </div>
 
-		<div id="canvasParam">
-			<!-- SNAP + ZOOM -->
+	    <!-- TAB A -->
+		<div id="canvasParamA" class="canvasParam">
+			<!-- LEVEL PROPS -->
 			<div class = "block" id = "worldGridWrapper">
-				<div id = "snapWrapper">
-					<!-- Snap to Grid<input type = "checkbox" id="snapToGrid"/> -->
-					<button id="snapToGrid">Grid Snapping: OFF</button>
-				</div>
 				<div>
 					World:
 					<input type="text" class="worldInput" id="worldWidth" placeholder="meters"/>
@@ -780,12 +823,24 @@ body {
 					<select id="levelTypeSelect">
 					</select>
 				</div>
+			</div>
+			<div class = "block">
 				<div> Left Level: <input type="text" id="leftLevel" placeholder="previousLevel.json" />
 				</div>
 				<div> Right Level: <input type="text" id="rightLevel" placeholder="nextLevel.json" />
 				</div>
 			</div>
-			<!-- WORLD DIMENSIONS + DRAW MODE -->
+		</div>
+
+		<!-- TAB B -->
+		<div id="canvasParamB" class="canvasParam">
+			<!-- SNAP -->
+			<div class = "block">
+				<div id = "snapWrapper">
+					<button id="snapToGrid">Grid Snapping: OFF</button>
+				</div>
+			</div>
+			<!-- DRAW MODE -->
 			<div class = "block" id = "drawToolWrapper">
 				<div>
 					<button id="drawing-mode">Drawing Mode: OFF</button>
@@ -795,18 +850,35 @@ body {
 					</select>
 				</div>
 			</div>
+		</div>
+
+		<!-- TAB B -->
+		<div id="canvasParamC" class="canvasParam">
 			<!-- SHOW/HIDE ELEMENTS -->
-			<div class ="block" id="hideTools">
+			<div id="hideTools">
 			</div>
 		</div>
 	  </div>
 
     <!-- MAIN BODY: CANVAS + TOOLS -->
 	<div class="wrapper">
-		<div id = "zoomWrapper" title = "Scroll with Mouse Wheel">
-			<div id="zoomTitle">Zoom</div>
-			<div id = "sliderWrapper">
+		<div id = "zoomWrapper">
+			<div id="zoomTitle" title = "Scroll with Mouse Wheel">Zoom</div>
+			<div id = "sliderWrapper" title = "Scroll with Mouse Wheel">
 				<div id="slider"></div>
+			</div>
+			<div id = "tabGroup">
+				<div id = "tabA" class = "tab active">
+					<div class= "tabDivider"></div>
+					A
+				</div>
+				<div id = "tabB" class = "tab">
+					<div class= "tabDivider"></div>
+					B
+				</div>
+				<div id = "tabC" class = "tab">
+					C
+				</div>
 			</div>
 		</div>
 		<!-- CANVAS -->

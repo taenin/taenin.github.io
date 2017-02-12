@@ -1139,6 +1139,34 @@ function createWorker(categoryJSON){
     // on click event for toggling side bar
     $("#toolToggler").click(toggleToolSideBar);
 
+    // PHIL: toggle canvas param tab
+    toggleCanvasParamTab = function() {
+      if ($(this).hasClass("active")) {
+        // do nothing
+      } else {
+        // make this tab active, deactivate others
+        $(".tab").removeClass("active");
+        $(this).addClass("active");
+
+        if ($(this).attr("id") == "tabA") {
+          $("#canvasParamA").css("display", "inline-block");
+          $("#canvasParamB").hide();
+          $("#canvasParamC").hide();
+        } else if (($(this).attr("id") == "tabB")) {
+          $("#canvasParamA").hide();
+          $("#canvasParamB").css("display", "inline-block");
+          $("#canvasParamC").hide();
+        } else if (($(this).attr("id") == "tabC")) {
+          $("#canvasParamA").hide();
+          $("#canvasParamB").hide();
+          $("#canvasParamC").css("display", "inline-block");
+        }
+      }
+    };
+
+    // on click event for toggling canvas param tab
+    $(".tab").click(toggleCanvasParamTab);
+
     // PHIL: HOTKEYS
     $(document).keyup(function(e) {
       // don't detect key presses on input fields
@@ -1864,7 +1892,7 @@ function createWorker(categoryJSON){
       for(var name in worker.state){
         if(worker.state.hasOwnProperty(name)){
           var toggleID = "hide" + name;
-          latestToggle = $(document.createElement('div')).append(name + "<input type='checkbox' id=" + toggleID +">");
+          latestToggle = $(document.createElement('div')).append("<input type='checkbox' id=" + toggleID + ">" + name);
           main.append(latestToggle);
         }
       }
