@@ -1165,6 +1165,41 @@ function createWorker(categoryJSON){
     // on click event for toggling canvas param tab
     $(".tab").click(toggleCanvasParamTab);
 
+    // // panning with right mouse click
+    // function startPan(event) {
+    //   if (event.button != 2) { // do nothing unless RMB
+    //     return;
+    //   }
+
+    //   var x0 = event.screenX,
+    //       y0 = event.screenY;
+
+    //   function continuePan(event) {
+    //     var x = event.screenX,
+    //         y = event.screenY;
+    //     worker.canvas.relativePan({ x: x - x0, y: y - y0 });
+    //     x0 = x;
+    //     y0 = y;
+    //   }
+
+    //   function stopPan(event) {
+    //     $(window).off('mousemove', continuePan);
+    //     $(window).off('mouseup', stopPan);
+    //   };
+
+    //   $(window).mousemove(continuePan);
+    //   $(window).mouseup(stopPan);
+    //   $(window).contextmenu(cancelMenu);
+    // };
+
+    // function cancelMenu() {
+    //   $(window).off('contextmenu', cancelMenu);
+    //   return false;
+    // }
+
+    // $("#canvas").mousedown(startPan);
+
+
     // PHIL: HOTKEYS
     $(document).keyup(function(e) {
       // don't detect key presses on input fields
@@ -1463,9 +1498,9 @@ function createWorker(categoryJSON){
     for (var i = 0; i <= (height / worker.grid); i++) {
       // PHIL
       if (i % 4 == 0) { // every 4th line is darker
-        var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#000', selectable: false, opacity: 0.3 });
+        var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#fff', selectable: false, opacity: 0.15 });
       } else {
-        var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#000', selectable: false, opacity: 0.1 });
+        var line = new fabric.Line([ 0, i * worker.grid, width, i * worker.grid], { stroke: '#fff', selectable: false, opacity: 0.05 });
       }
       worker.gridLines.push(line);
       worker.canvas.add(line);
@@ -1473,9 +1508,9 @@ function createWorker(categoryJSON){
     }
     for (var i = 0; i<= (width / worker.grid); i++){
       if (i % 4 == 0) { // every 4th line is darker
-        var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#000', selectable: false, opacity: 0.3 });
+        var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#fff', selectable: false, opacity: 0.15 });
       } else {
-        var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#000', selectable: false, opacity: 0.1 });
+        var line = new fabric.Line([ i * worker.grid, 0, i * worker.grid, height], { stroke: '#fff', selectable: false, opacity: 0.05 });
       }
       worker.gridLines.push(line);
       worker.canvas.add(line);

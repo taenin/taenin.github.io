@@ -3,8 +3,8 @@
 	<title>Inari Level Editor</title>
 
 	<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="styles/dark.css">
 	<link rel="icon" href="img/inari-favicon.ico">
-	<link rel="stylesheet" type="text/css" href="styles/default.css">
 
 	<script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
 	</script>
@@ -107,15 +107,16 @@
 	    <!-- CANVAS PARAM TAB CONTROLLER -->
 	    <div id = "tabGroup">
 			<div id = "tabA" class = "tab active">
-				<!-- <div class= "tabDivider"></div> -->
-				A
+				Level
+				<div class = "tabArrow"></div>
 			</div>
 			<div id = "tabB" class = "tab">
-				<!-- <div class= "tabDivider"></div> -->
-				B
+				Tools
+				<div class = "tabArrow"></div>
 			</div>
 			<div id = "tabC" class = "tab">
-				C
+				Hide
+				<div class = "tabArrow"></div>
 			</div>
 		</div>
 
@@ -124,21 +125,21 @@
 			<!-- LEVEL PROPS -->
 			<div class = "block" id = "worldGridWrapper">
 				<div>
-					World:
+					Size:
 					<input type="text" class="worldInput" id="worldWidth" placeholder="meters"/>
 					x
 					<input type="text" class="worldInput" id="worldHeight" placeholder="meters"/>
 				</div>
 				<div>
-					Level Type:
+					Type:
 					<select id="levelTypeSelect">
 					</select>
 				</div>
 			</div>
 			<div class = "block">
-				<div> Left Level: <input type="text" id="leftLevel" placeholder="previousLevel.json" />
+				<div> Before: <input type="text" id="leftLevel" placeholder="previousLevel.json" />
 				</div>
-				<div> Right Level: <input type="text" id="rightLevel" placeholder="nextLevel.json" />
+				<div> After: <input type="text" id="rightLevel" placeholder="nextLevel.json" />
 				</div>
 			</div>
 		</div>
@@ -148,7 +149,7 @@
 			<!-- DRAW MODE -->
 			<div class = "block" id = "drawToolWrapper">
 				<div>
-					<button id="drawing-mode">Drawing Mode: OFF</button>
+					<button id="drawing-mode" title="Hotkey Toggle: E">Drawing Mode: OFF</button>
 				</div>
 				<div id="drawing-mode-options">
 					Tile Set: <select id="drawing-mode-selector">
@@ -158,7 +159,7 @@
 			<!-- SNAP -->
 			<div class = "block">
 				<div id = "snapWrapper">
-					<button id="snapToGrid">Grid Snapping: OFF</button>
+					<button id="snapToGrid" title="Hotkey Toggle: Q">Grid Snapping: OFF</button>
 				</div>
 			</div>
 		</div>
