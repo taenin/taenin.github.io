@@ -1,7 +1,7 @@
 <html>
 <head>
 	<title>Inari Level Editor</title>
-	
+
 	<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
 	<link rel="icon" href="img/inari-favicon.ico">
 	<link rel="stylesheet" type="text/css" href="styles/default.css">
@@ -82,11 +82,13 @@
 		<!-- TITLE -->
 		<div class="titleWrapper">
 			<img id="icon" src="img/inari-icon-rounded.png" alt="Inari Icon" title="Need Halp? Click me."/>
-			<div class="title">
-				Inari Level Editor
-			</div>
-			<div class="titleSmall">
-				Ask Inari (left) for help!
+			<div id="titleTextWrapper">
+				<div class="title">
+					Inari Level Editor
+				</div>
+				<div class="titleSmall">
+					Ask Inari (left) for help!
+				</div>
 			</div>
 		</div>
 
@@ -101,6 +103,21 @@
 	        	<input type="button" id="btnSave" value="Save Level">
 	    	</div>
 	    </div>
+
+	    <!-- CANVAS PARAM TAB CONTROLLER -->
+	    <div id = "tabGroup">
+			<div id = "tabA" class = "tab active">
+				<!-- <div class= "tabDivider"></div> -->
+				A
+			</div>
+			<div id = "tabB" class = "tab">
+				<!-- <div class= "tabDivider"></div> -->
+				B
+			</div>
+			<div id = "tabC" class = "tab">
+				C
+			</div>
+		</div>
 
 	    <!-- TAB A -->
 		<div id="canvasParamA" class="canvasParam">
@@ -128,12 +145,6 @@
 
 		<!-- TAB B -->
 		<div id="canvasParamB" class="canvasParam">
-			<!-- SNAP -->
-			<div class = "block">
-				<div id = "snapWrapper">
-					<button id="snapToGrid">Grid Snapping: OFF</button>
-				</div>
-			</div>
 			<!-- DRAW MODE -->
 			<div class = "block" id = "drawToolWrapper">
 				<div>
@@ -144,9 +155,15 @@
 					</select>
 				</div>
 			</div>
+			<!-- SNAP -->
+			<div class = "block">
+				<div id = "snapWrapper">
+					<button id="snapToGrid">Grid Snapping: OFF</button>
+				</div>
+			</div>
 		</div>
 
-		<!-- TAB B -->
+		<!-- TAB C -->
 		<div id="canvasParamC" class="canvasParam">
 			<!-- SHOW/HIDE ELEMENTS -->
 			<div id="hideTools">
@@ -160,19 +177,6 @@
 			<div id="zoomTitle" title = "Scroll with Mouse Wheel">Zoom</div>
 			<div id = "sliderWrapper" title = "Scroll with Mouse Wheel">
 				<div id="slider"></div>
-			</div>
-			<div id = "tabGroup">
-				<div id = "tabA" class = "tab active">
-					<div class= "tabDivider"></div>
-					A
-				</div>
-				<div id = "tabB" class = "tab">
-					<div class= "tabDivider"></div>
-					B
-				</div>
-				<div id = "tabC" class = "tab">
-					C
-				</div>
 			</div>
 		</div>
 		<!-- CANVAS -->

@@ -1119,19 +1119,17 @@ function createWorker(categoryJSON){
 
       if ($("#toolToggler").hasClass("minimized")) {
         // expand
-        $("#arrow").css("border-width", "10px 0px 10px 10px");
-        $("#arrow").css("border-color", "transparent transparent transparent #999999");
         $(".toolWrapper").animate({
           right: "0px"
         }, 800);
+        $("#arrow").removeClass("flip");
         $("#toolToggler").removeClass("minimized");
       } else {
         // minimize
-        $("#arrow").css("border-width", "10px 10px 10px 0px");
-        $("#arrow").css("border-color", "transparent #999999 transparent transparent");
         $(".toolWrapper").animate({
           right: "-30%"
         }, 800);
+        $("#arrow").addClass("flip");
         $("#toolToggler").addClass("minimized");
       }
     };
@@ -2451,23 +2449,6 @@ $(document).ready(function(){
 
     // PHIL: show overlay
     showOverlay();
-  });
-
-  // toggler hover effects
-  $("#toolToggler").mouseover(function(){
-    if ($("#toolToggler").hasClass("minimized")) {
-      $("#arrow").css("border-color", "transparent #fafafa transparent transparent");
-    } else {
-      $("#arrow").css("border-color", "transparent transparent transparent #fafafa");
-    }
-  });
-
-  $("#toolToggler").mouseout(function(){
-    if ($("#toolToggler").hasClass("minimized")) {
-      $("#arrow").css("border-color", "transparent #999999 transparent transparent");
-    } else {
-      $("#arrow").css("border-color", "transparent transparent transparent #999999");
-    }
   });
 
   function showOverlay() {
