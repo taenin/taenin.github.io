@@ -115,8 +115,7 @@ input[type=checkbox]:checked:after {
   height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border: 0px none #ffffff;
+  background: #666;
   border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -126,15 +125,12 @@ input[type=checkbox]:checked:after {
   background: #42999e;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.2);
-  border: 0px none #ffffff;
+  background: rgba(255,255,2550.1);
   border-radius: 0px;
 }
 ::-webkit-scrollbar-track:hover {
-  background: rgba(0,0,0,0.2);
 }
 ::-webkit-scrollbar-track:active {
-  background: rgba(0,0,0,0.2);
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
@@ -580,11 +576,11 @@ input[type=checkbox]:checked:after {
 		}
 
 		#toolToggler {
-			height: 44px;
-			width: 44px;
+			height: 48px;
+			width: 48px;
 			position: absolute;
-			left: -44px;
-			line-height: 44px;
+			left: -48px;
+			line-height: 48px;
 			vertical-align: middle;
 			color: rgba(0,0,0,0.5);
 			font-weight: bold;
@@ -625,7 +621,7 @@ input[type=checkbox]:checked:after {
 			.tools, .helperTool {
 				display: block;
 				overflow: auto;
-				height: 90px;
+				height: 96px;
 				background-color: #333;
 				/*box-shadow: 0px 20px 30px -10px rgba(0,0,0,0.1);*/
 				border-top: 1px solid #444;
@@ -636,18 +632,19 @@ input[type=checkbox]:checked:after {
 					font-size: 20;
 					overflow: hidden;
 					white-space: nowrap;
-					height: 44px;
+					height: 48px;
 					/* subsequent 2 lines to vertically align text*/
-					line-height: 44px;
+					line-height: 48px;
 					vertical-align: middle;
 				}
 
 				#toolbar, #selector {
-					height: 36px;
+					height: 44px;
+					padding: 4px 0px;
 				}
 
 				.toolPopulate, .selectPopulate {
-					height: calc(100% - 90px);
+					height: calc(100% - 96px);
 					overflow: auto;
 					padding: 8px;
 				}
