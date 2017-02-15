@@ -1165,6 +1165,28 @@ function createWorker(categoryJSON){
     // on click event for toggling canvas param tab
     $(".tab").click(toggleCanvasParamTab);
 
+    // PHIL: toggle tool tab
+    toggleToolTab = function() {
+      if ($(this).hasClass("active")) {
+        // do nothing
+      } else {
+        // make this tab active, deactivate others
+        $(".toolTab").removeClass("active");
+        $(this).addClass("active");
+
+        if ($(this).attr("id") == "toolTabA") {
+          $("#tilesetWrapper").show();
+          $("#propertiesWrapper").hide();
+        } else if (($(this).attr("id") == "toolTabB")) {
+          $("#tilesetWrapper").hide();
+          $("#propertiesWrapper").show();
+        } 
+      }
+    };
+
+    // on click event for toggling tool tab
+    $(".toolTab").click(toggleToolTab);
+
     // // panning with right mouse click
     // function startPan(event) {
     //   if (event.button != 2) { // do nothing unless RMB
@@ -1210,6 +1232,12 @@ function createWorker(categoryJSON){
           toggleSnap();
         } else if (e.which == 82) { // r for toggle sidebar
           toggleToolSideBar();
+        } else if (e.which == 70) { // f for deselect
+          if (worker.hoverImage) { // check if selection exists
+            worker.canvas.remove(worker.hoverImage.canvasElement);
+            worker.hoverImage.canvasElement = null;
+            worker.deselect();
+          }
         }
       }
     });

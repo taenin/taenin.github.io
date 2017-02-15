@@ -386,6 +386,7 @@ input[type=checkbox]:checked:after {
 		}
 
 	/* SAVING AND LOADING STUFF */
+
 	#fileToolbar{
 		width: 30%;
 		height: 100%;
@@ -523,7 +524,7 @@ input[type=checkbox]:checked:after {
 			}
 
 			/* only show this div when its parent tab is active*/
-			.tab.active .tabArrow {
+			.tab.active .tabArrow, .toolTab.active .tabArrow {
 				visibility: visible;
 				width: 0;
 				height: 0;
@@ -534,6 +535,12 @@ input[type=checkbox]:checked:after {
 				left: 50%;
 				bottom: 0;
 				transform: translateX(-50%);
+			}
+
+			.toolTab.active .tabArrow.flip {
+				top: 0;
+				border-width: 6px 6px 0 6px;
+				border-color: #42999e transparent transparent transparent;
 			}
 
 			.tabArrow {
@@ -581,7 +588,7 @@ input[type=checkbox]:checked:after {
 		}
 
 		#toolToggler {
-			height: 48px;
+			height: 96px;
 			width: 36px;
 			position: absolute;
 			left: -36px;
@@ -619,9 +626,49 @@ input[type=checkbox]:checked:after {
         		border-color: transparent #555 transparent transparent;
 			}
 
+
+		#toolTabGroup {
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 80%;
+			height: 40px;
+			border-top: 1px solid #444;
+		}	
+
+			.toolTab {
+				display: inline-block;
+				position: relative;
+				height: 100%;
+				width: 49.4%;
+				vertical-align: middle;
+				line-height: 40px;
+				font-size: 16;
+				background-color: #2f2f2f;
+				border-left: 1px solid #444;
+				border-right: 1px solid #444;
+				border-bottom: 1px solid #444;
+				cursor: pointer;
+			}
+
+				.toolTab:hover {
+					background-color: #444;
+				}
+
+				.toolTab.active {
+					background-color: #333;
+					border: none;
+					cursor: default;
+				}
+
+
 		/*OBJECT SELECTION*/
 		#tilesetWrapper, #propertiesWrapper {
-			height: 50%;
+			height: 100%;
+		}
+
+		#propertiesWrapper {
+			display: none;
 		}
 
 			.tools, .helperTool {
@@ -650,7 +697,7 @@ input[type=checkbox]:checked:after {
 				}
 
 				.toolPopulate, .selectPopulate {
-					height: calc(100% - 96px);
+					height: calc(100% - 96px - 32px);
 					overflow: auto;
 					padding: 8px;
 				}
@@ -698,6 +745,7 @@ input[type=checkbox]:checked:after {
 							display: block;
 					    	background: rgba(22,22,22,.9);
 						}
+
 
 		/*OBJECT PROPERTIES*/
 		.editfield.small {

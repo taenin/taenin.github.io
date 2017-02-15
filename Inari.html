@@ -34,6 +34,11 @@
 					<td>KEY</td>
 					<td>NOTE</td>
 				</tr>
+				<tr class="newHotkey">
+					<td>Deselect Current Selection</td>
+					<td>F</td>
+					<td>No Active Input Field*</td>
+				</tr>
 				<tr class="">
 					<td>Toggle Draw Mode</td>
 					<td>E</td>
@@ -190,11 +195,20 @@
 			<div id="toolToggler">
 				<div id="arrow"></div>
 			</div>
+			<div id="toolTabGroup">
+				<div id="toolTabA" class="toolTab left active">
+					Objects
+					<div class = "tabArrow flip"></div>
+				</div>
+				<div id="toolTabB" class="toolTab right">
+					Properties
+					<div class = "tabArrow flip"></div>
+				</div>
+			</div>
 			<!-- TOOL 1: TILE SETS -->
 			<div id="tilesetWrapper">
 				<div class="tools">
 					<div class="bartitle">
-						Object Selection
 					</div>
 					<div id="toolbar">
 						<select id = "categoryTool">
@@ -216,7 +230,6 @@
 			<div id="propertiesWrapper">
 				<div class = "helperTool">
 					<div class="bartitle">
-						Object Properties
 					</div>
 				
 					<div id="selector">
