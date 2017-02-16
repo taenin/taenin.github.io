@@ -1187,39 +1187,39 @@ function createWorker(categoryJSON){
     // on click event for toggling tool tab
     $(".toolTab").click(toggleToolTab);
 
-    // // panning with right mouse click
-    // function startPan(event) {
-    //   if (event.button != 2) { // do nothing unless RMB
-    //     return;
-    //   }
+    // panning with right mouse click
+    function startPan(event) {
+      if (event.button != 2) { // do nothing unless RMB
+        return;
+      }
 
-    //   var x0 = event.screenX,
-    //       y0 = event.screenY;
+      var x0 = event.screenX,
+          y0 = event.screenY;
 
-    //   function continuePan(event) {
-    //     var x = event.screenX,
-    //         y = event.screenY;
-    //     worker.canvas.relativePan({ x: x - x0, y: y - y0 });
-    //     x0 = x;
-    //     y0 = y;
-    //   }
+      function continuePan(event) {
+        var x = event.screenX,
+            y = event.screenY;
+        worker.canvas.relativePan({ x: x - x0, y: y - y0 });
+        x0 = x;
+        y0 = y;
+      }
 
-    //   function stopPan(event) {
-    //     $(window).off('mousemove', continuePan);
-    //     $(window).off('mouseup', stopPan);
-    //   };
+      function stopPan(event) {
+        $(window).off('mousemove', continuePan);
+        $(window).off('mouseup', stopPan);
+      };
 
-    //   $(window).mousemove(continuePan);
-    //   $(window).mouseup(stopPan);
-    //   $(window).contextmenu(cancelMenu);
-    // };
+      $(window).mousemove(continuePan);
+      $(window).mouseup(stopPan);
+      $(window).contextmenu(cancelMenu);
+    };
 
-    // function cancelMenu() {
-    //   $(window).off('contextmenu', cancelMenu);
-    //   return false;
-    // }
+    function cancelMenu() {
+      $(window).off('contextmenu', cancelMenu);
+      return false;
+    }
 
-    // $("#canvas").mousedown(startPan);
+    $("#canvas").mousedown(startPan);
 
 
     // PHIL: HOTKEYS
@@ -1396,12 +1396,12 @@ function createWorker(categoryJSON){
       }
     });
 
-    $("#canvas").mousemove(function(e){
-      worker.mousePosition.pageX = e.pageX;
-      worker.mousePosition.pageY = e.pageY;
+    $("#canvas").mousemove(function(event){
+      // worker.mousePosition.pageX = e.pageX;
+      // worker.mousePosition.pageY = e.pageY;
       //Moving the object along with mouse cursor
-      worker.drawOnMouseMove(worker.mousePosition);
-      });
+      worker.drawOnMouseMove(event);
+    });
 
     /*$("#canvas").click(function(e){
       if(worker.hoverImage){
@@ -1464,10 +1464,21 @@ function createWorker(categoryJSON){
     });
   }
 
-  worker.drawOnMouseMove = function(e){
+  // PHIL: get mouse coords in canvas space
+  worker.getMouseCoords = function(event) {
+      var pointer = worker.canvas.getPointer(event.e);
+      var posX = pointer.x;
+      var posY = pointer.y;
+      // console.log(posX+", "+posY);
+      return {x: posX, y: posY};
+    };
+
+  worker.drawOnMouseMove = function(event){
     if (worker.hoverImage && worker.hoverImage.canvasElement) {
-          worker.hoverImage.canvasElement.left = ((e.pageX + $('#canvas').scrollLeft() - $('#canvas').offset().left)/worker.canvas.getZoom()) - worker.hoverImage.canvasElement.width /2;
-          worker.hoverImage.canvasElement.top = ((e.pageY + $('#canvas').scrollTop() - $('#canvas').offset().top)/ worker.canvas.getZoom()) - worker.hoverImage.canvasElement.height /2 ;
+          // worker.hoverImage.canvasElement.left = ((e.pageX + $('#canvas').scrollLeft() - $('#canvas').offset().left)/worker.canvas.getZoom()) - worker.hoverImage.canvasElement.width /2;
+          // worker.hoverImage.canvasElement.top = ((e.pageY + $('#canvas').scrollTop() - $('#canvas').offset().top)/worker.canvas.getZoom()) - worker.hoverImage.canvasElement.height /2;
+          worker.hoverImage.canvasElement.left = worker.getMouseCoords(event).x - worker.hoverImage.canvasElement.width /2;
+          worker.hoverImage.canvasElement.top = worker.getMouseCoords(event).y - worker.hoverImage.canvasElement.height /2;
           if(worker.shouldSnapToGrid()){
             worker.hoverImage.canvasElement.left = worker.snapToGrid(worker.hoverImage.canvasElement.left);
             worker.hoverImage.canvasElement.top = worker.snapToGrid(worker.hoverImage.canvasElement.top);
