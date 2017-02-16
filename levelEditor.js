@@ -358,7 +358,7 @@ function createWorker(categoryJSON){
             worker.updatePList(oImg.outputObject.PlistSource, oImg);
           }
           worker.canvas.add(oImg); 
-          worker.drawOnMouseMove(worker.mousePosition);
+          worker.drawOnMouseMove();
         }); 
   }
 
@@ -1397,10 +1397,10 @@ function createWorker(categoryJSON){
     });
 
     $("#canvas").mousemove(function(event){
-      // worker.mousePosition.pageX = e.pageX;
-      // worker.mousePosition.pageY = e.pageY;
+      worker.mousePosition.pageX = worker.getMouseCoords(event).x;
+      worker.mousePosition.pageY = worker.getMouseCoords(event).y;
       //Moving the object along with mouse cursor
-      worker.drawOnMouseMove(event);
+      worker.drawOnMouseMove();
     });
 
     /*$("#canvas").click(function(e){
@@ -1465,20 +1465,20 @@ function createWorker(categoryJSON){
   }
 
   // PHIL: get mouse coords in canvas space
-  worker.getMouseCoords = function(event) {
-      var pointer = worker.canvas.getPointer(event.e);
+  worker.getMouseCoords = function(e) {
+      var pointer = worker.canvas.getPointer(e);
       var posX = pointer.x;
       var posY = pointer.y;
       // console.log(posX+", "+posY);
       return {x: posX, y: posY};
     };
 
-  worker.drawOnMouseMove = function(event){
+  worker.drawOnMouseMove = function(){
     if (worker.hoverImage && worker.hoverImage.canvasElement) {
           // worker.hoverImage.canvasElement.left = ((e.pageX + $('#canvas').scrollLeft() - $('#canvas').offset().left)/worker.canvas.getZoom()) - worker.hoverImage.canvasElement.width /2;
           // worker.hoverImage.canvasElement.top = ((e.pageY + $('#canvas').scrollTop() - $('#canvas').offset().top)/worker.canvas.getZoom()) - worker.hoverImage.canvasElement.height /2;
-          worker.hoverImage.canvasElement.left = worker.getMouseCoords(event).x - worker.hoverImage.canvasElement.width /2;
-          worker.hoverImage.canvasElement.top = worker.getMouseCoords(event).y - worker.hoverImage.canvasElement.height /2;
+          worker.hoverImage.canvasElement.left = worker.mousePosition.pageX - worker.hoverImage.canvasElement.width /2;
+          worker.hoverImage.canvasElement.top = worker.mousePosition.pageY - worker.hoverImage.canvasElement.height /2;
           if(worker.shouldSnapToGrid()){
             worker.hoverImage.canvasElement.left = worker.snapToGrid(worker.hoverImage.canvasElement.left);
             worker.hoverImage.canvasElement.top = worker.snapToGrid(worker.hoverImage.canvasElement.top);
