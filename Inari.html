@@ -26,49 +26,51 @@
 				&#10799
 			</button>
 			<div id="instructionTitle">
-				Hotkeys
+				Shortcuts
 			</div>
 			<table id="hotkeyTable">
 				<tr id="hotkeyTableRow1">
 					<td>ACTION</td>
 					<td>KEY</td>
-					<td>NOTE</td>
-				</tr>
-				<tr class="newHotkey">
-					<td>Deselect Current Selection</td>
-					<td>F</td>
-					<td>No Active Input Field*</td>
-				</tr>
-				<tr class="">
-					<td>Toggle Draw Mode</td>
-					<td>E</td>
-					<td>No Active Input Field*</td>
-				</tr>
-				<tr class="">
-					<td>Toggle Grid Snapping</td>
-					<td>Q</td>
-					<td>No Active Input Field*</td>
-				</tr>
-				<tr class="">
-					<td>Toggle Side Bar</td>
-					<td>R</td>
-					<td>No Active Input Field*</td>
+					<td>CONDITION</td>
 				</tr>
 				<tr class="newHotkey update">
 					<td>Pan Canvas</td>
-					<td>WASD**</td>
-					<td>No Active Input Field*</td>
+					<td>RMB + Drag <span id="normalFontColor">or</span> WASD<sup>1</sup></td>
+					<td>Mouse Over Canvas<sup>2</sup></td>
 				</tr>
-				<tr>
+				<tr class="newHotkey update">
 					<td>Zoom Canvas</td>
 					<td>Mouse Wheel</td>
 					<td>Mouse Over Canvas</td>
 				</tr>
+				<tr class="newHotkey">
+					<td>Deselect Current Selection</td>
+					<td>F</td>
+					<td>No Active Input Field<sup>3</sup></td>
+				</tr>
+				<tr class="">
+					<td>Toggle Draw Mode</td>
+					<td>E</td>
+					<td>No Active Input Field<sup>3</sup></td>
+				</tr>
+				<tr class="">
+					<td>Toggle Grid Snapping</td>
+					<td>Q</td>
+					<td>No Active Input Field<sup>3</sup></td>
+				</tr>
+				<tr class="">
+					<td>Toggle Side Bar</td>
+					<td>R</td>
+					<td>No Active Input Field<sup>3</sup></td>
+				</tr>
 			</table>
 			<div id="hotkeyTableAsterisk">
-				* 'No Active Input Field' : Typing in an input field (e.g. save file name) will not trigger hotkeys.
+				<sup>1</sup> Combine keys for diagonal panning.
 				<br>
-				** Combine keys for diagonal panning.
+				<sup>2</sup> Zoom origin dictated by location of mouse cursor.
+				<br>
+				<sup>3</sup> Typing in an input field (e.g. save file name) will not trigger hotkeys.
 			</div>
 			<div>
 				After dismissing, show these instructions again by clicking on Inari icon.
@@ -151,6 +153,12 @@
 
 		<!-- TAB B -->
 		<div id="canvasParamB" class="canvasParam">
+			<!-- SNAP -->
+			<div class = "block">
+				<div id = "snapWrapper">
+					<button id="snapToGrid" title="Hotkey Toggle: Q">Grid Snapping: OFF</button>
+				</div>
+			</div>
 			<!-- DRAW MODE -->
 			<div class = "block" id = "drawToolWrapper">
 				<div>
@@ -159,12 +167,6 @@
 				<div id="drawing-mode-options">
 					Tile Set: <select id="drawing-mode-selector">
 					</select>
-				</div>
-			</div>
-			<!-- SNAP -->
-			<div class = "block">
-				<div id = "snapWrapper">
-					<button id="snapToGrid" title="Hotkey Toggle: Q">Grid Snapping: OFF</button>
 				</div>
 			</div>
 		</div>

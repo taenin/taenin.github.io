@@ -1430,10 +1430,19 @@ function createWorker(categoryJSON){
     $("#canvas").on("mousewheel DOMMouseScroll", function(e) {
       // prevent scrolling
       e.preventDefault();
-      var wheelDelta = e.originalEvent.wheelDelta / 24; // 5% increments
+      // 5% increments
+      var wheelDelta = e.originalEvent.wheelDelta / 24; 
       $("#slider").slider("value", $("#slider").slider("value") + wheelDelta);
-      // zoom canvas + change UI value
-      worker.canvas.setZoom($("#slider").slider("value") / 100);
+
+      // var zoomPointX = worker.mousePosition.pageX + worker.panX;
+      // var zoomPointY = worker.mousePosition.pageY + worker.panY;
+      // // zoom canvas + change UI value
+      // worker.canvas.zoomToPoint(new fabric.Point(zoomPointX, zoomPointY), ($("#slider").slider("value") / 100));
+
+      var zoomPointX = e.pageX - $(this).offset().left;
+      var zoomPointY = e.pageY - $(this).offset().top;
+      worker.canvas.zoomToPoint(new fabric.Point(zoomPointX, zoomPointY), ($("#slider").slider("value") / 100));
+
       $("#zoomTitle").html($("#slider").slider("value") + " %");
     });
 

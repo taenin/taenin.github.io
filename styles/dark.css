@@ -20,6 +20,14 @@ a {
 	text-decoration: none;
 }
 
+span.normalFontColor {
+	color: rgba(255,255,255,0.5);
+}
+
+sup {
+	font-size: 10;
+}
+
 /*ALL INPUTS*/
 input, select {
 	border-style: solid;
@@ -202,14 +210,14 @@ input[type=checkbox]:checked:after {
 		}
 			/* diff bg color first row*/
 			#hotkeyTable tr#hotkeyTableRow1 {
-				background-color: #666;
+				background-color: #555;
 			}
 				#hotkeyTable tr#hotkeyTableRow1 td {
 					color: #eee;
 				}
 			/* diff bg color every other row*/
 			#hotkeyTable tr:nth-child(odd) {
-				background-color: #444;
+				background-color: #3d3d3d;
 			}
 
 			/* auto formatting for new hotkey*/
@@ -217,7 +225,7 @@ input[type=checkbox]:checked:after {
 				content: "NEW";
 				color: #eee;
 				font-size: 12;
-				background-color: #666;
+				background-color: #555;
 				padding: 4px 10px;
 				margin-right: 4px;
 				width: 100px;
@@ -557,7 +565,9 @@ input[type=checkbox]:checked:after {
 		vertical-align: top;
 		display: inline-block;
 		*display: inline-block;
-		float: left;	}
+		float: left;
+		overflow: hidden;
+	}
 
 		/* OVERRIDE INLINE CSS FROM FABRICJS*/
 		#myCanvas {
