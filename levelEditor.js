@@ -124,10 +124,14 @@ function createWorker(categoryJSON){
     if(worker.canvas.isDrawingMode){
       $("#drawing-mode").html("Drawing Mode: ON");
       $("#drawing-mode").addClass("drawing-mode-on");
+      $("#popupMessage").html("Draw Mode ON");
+
     } else {
       $("#drawing-mode").html("Drawing Mode: OFF");
       $("#drawing-mode").removeClass("drawing-mode-on");
-    }
+      $("#popupMessage").html("Draw Mode OFF");
+    };
+    worker.animatePopup();
   };
 
   //Use this function to update the outputObject for Inari
@@ -1040,6 +1044,11 @@ function createWorker(categoryJSON){
     return output;
   }
 
+  worker.animatePopup = function() {
+      $("#popupMessage").stop().clearQueue();
+      $("#popupMessage").fadeIn(250).delay(2000).fadeOut(1000);
+  };
+
   worker.initializeCanvasHandlers = function(){
 
     worker.canvas.on('path:created', function(path) {
@@ -1103,9 +1112,12 @@ function createWorker(categoryJSON){
       $("#snapToGrid").toggleClass("snapEnabled");
       if ($("#snapToGrid").hasClass("snapEnabled")) {
         $("#snapToGrid").html("Grid Snapping: ON");
+        $("#popupMessage").html("Snap ON");
       } else {
         $("#snapToGrid").html("Grid Snapping: OFF");
+        $("#popupMessage").html("Snap OFF");
       }
+      worker.animatePopup();
     }
 
     $("#snapToGrid").click(function(){
@@ -1116,6 +1128,9 @@ function createWorker(categoryJSON){
     toggleToolSideBar = function() {
       // clear previous animations in queue
       $(".toolWrapper").clearQueue();
+
+      // center popup message
+      $("#popupMessage").toggleClass("fullCanvas");
 
       if ($("#toolToggler").hasClass("minimized")) {
         // expand
