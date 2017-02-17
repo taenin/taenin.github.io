@@ -2427,6 +2427,7 @@ worker.asyncLoop = function (iterations, func, callback) {
   worker.deselect = function(){
     worker.hoverImage = null;
     $(".selected").removeClass("selected");
+    $("#selectIndicator").removeClass("active");
   }
 
   worker.initializeTypeGenerators = function(){
@@ -2672,6 +2673,7 @@ function toggle(self){
       'canvasElement': null,
       'type' : $("#categoryTool").val()
     };
+    $("#selectIndicator").addClass("active");
   }
 }
 
