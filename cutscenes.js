@@ -27,8 +27,9 @@ var createCSEditor = function(){
 			AvatarAction: {
 				MoveAvatar: 0,
 				JumpAvatar: 1,
-				BoundAvatarObject: 2,
-				BoundAvatarLocation: 3,
+				BoundAvatarObject: 4,
+				BoundAvatarLocation: 5,
+				AvatarFaceDirection: 6,
 			},
 			DialogAction: {
 				DisplayText: 0
@@ -48,7 +49,8 @@ var createCSEditor = function(){
 			Duration: "Length of action (in seconds)",
 			TargetObject: "Target Object",
 			TargetObjectIndex: "Target Object #",
-			Angle: "Angle (degrees)"
+			Angle: "Angle (degrees)",
+			FaceRight: "Face Right?"
 		}
 
 		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
@@ -155,6 +157,7 @@ var createCSEditor = function(){
                     "JumpAvatar": worker.createJumpAvatar,
                     "BoundAvatarObject": worker.createBoundAvatarObject,
                     "BoundAvatarLocation": worker.createBoundAvatarLocation,
+                    "AvatarFaceDirection": worker.createAvatarFaceDirection,
                     "DisplayText": worker.createDisplayTextAction,
         };
   	}
@@ -202,6 +205,12 @@ var createCSEditor = function(){
   			Angle: 0,
   		};
   	};
+
+  	worker.createAvatarFaceDirection = function(){
+  		return {
+  			FaceRight: true,
+  		};
+  	}
 
   	worker.createBoundAvatarLocation = function(){
   		return {
