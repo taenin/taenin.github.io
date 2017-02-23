@@ -689,7 +689,7 @@ var createCSEditor = function(){
 			output.CutScenes.push(worker.outputState[cutscene]);
 		}
 		filename = $("#levelName").val();
-		download(filename, JSON.stringify(output));
+		download(filename, JSON.stringify(output, null, 2));
 	}
 
 	worker.saveCurrentCutScene = function(preservedSelection){
