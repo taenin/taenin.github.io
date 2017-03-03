@@ -24,6 +24,10 @@ span.normalFontColor {
 	color: rgba(255,255,255,0.5);
 }
 
+span.colorFont {
+	color: #42999e;
+}
+
 sup {
 	font-size: 10;
 }
@@ -837,6 +841,7 @@ input[type=checkbox]:checked:after {
 	border-radius: 8px;
 	white-space: nowrap;
 	overflow: hidden;
+	color: #eee;
 }
 
 	#popupMessage.fullCanvas {

@@ -124,12 +124,12 @@ function createWorker(categoryJSON){
     if(worker.canvas.isDrawingMode){
       $("#drawing-mode").html("Drawing Mode: ON");
       $("#drawing-mode").addClass("drawing-mode-on");
-      $("#popupMessage").html("Draw Mode ON");
+      $("#popupMessage").html("Draw Mode: ON");
 
     } else {
       $("#drawing-mode").html("Drawing Mode: OFF");
       $("#drawing-mode").removeClass("drawing-mode-on");
-      $("#popupMessage").html("Draw Mode OFF");
+      $("#popupMessage").html("Draw Mode: OFF");
     };
     worker.animatePopup();
   };
@@ -1045,7 +1045,7 @@ function createWorker(categoryJSON){
   }
 
   worker.animatePopup = function() {
-      $("#popupMessage").stop().clearQueue();
+      $("#popupMessage").clearQueue().stop();
       $("#popupMessage").fadeIn(250).delay(2000).fadeOut(1000);
   };
 
@@ -1112,10 +1112,10 @@ function createWorker(categoryJSON){
       $("#snapToGrid").toggleClass("snapEnabled");
       if ($("#snapToGrid").hasClass("snapEnabled")) {
         $("#snapToGrid").html("Grid Snapping: ON");
-        $("#popupMessage").html("Snap ON");
+        $("#popupMessage").html("Snap: ON");
       } else {
         $("#snapToGrid").html("Grid Snapping: OFF");
-        $("#popupMessage").html("Snap OFF");
+        $("#popupMessage").html("Snap: OFF");
       }
       worker.animatePopup();
     }
@@ -2402,7 +2402,7 @@ worker.asyncLoop = function (iterations, func, callback) {
         }
       }
     }
-    download(filename, JSON.stringify(output));
+    download(filename, JSON.stringify(output, null, 2));
   }
 
   worker.handleFileSelect = function(){
