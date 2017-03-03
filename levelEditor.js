@@ -38,9 +38,9 @@ function createWorker(categoryJSON){
     };
 
     worker.levelTypes = {
-      0: "Sub Level",
-      1: "Hub Level",
-      2: "Level Select",
+      "SubLevel": "Sub Level",
+      "HubLevel": "Hub Level",
+      "LevelSelect": "Level Select",
     };
     //Reset level fields
     $("#leftLevel").val("");
@@ -2176,7 +2176,7 @@ function createWorker(categoryJSON){
     //Handle deprecated fields
     worker.handleDeprecatedFields(newState);
     //Reset the level type handler
-    worker.updateLevelType(worker.levelTypes[0]);
+    worker.updateLevelType(worker.levelTypes["LevelSelect"]);
     worker.desiredState = {};
     var desiredState = worker.desiredState;
     var total = worker.countFields(newState);
