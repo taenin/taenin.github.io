@@ -2190,6 +2190,7 @@ function createWorker(categoryJSON){
           worker.updateLevelType(worker.levelTypes[newState.Properties.Type]);
           $("#leftLevel").val(newState.Properties.LeftLevel);
           $("#rightLevel").val(newState.Properties.RightLevel);
+          $("#dynamicLightSwitch").prop("checked", newState.Properties.UseDynamicLighting === true);
         }
         else if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Array]" && newState[category].length > 0){
           if(!desiredState.hasOwnProperty(category)){
@@ -2390,6 +2391,7 @@ worker.asyncLoop = function (iterations, func, callback) {
       "Type": worker.getLevelTypeEnum($("#levelTypeSelect").val()),
       "LeftLevel": $("#leftLevel").val(),
       "RightLevel": $("#rightLevel").val(),
+      "UseDynamicLighting": $("#dynamicLightSwitch").is(":checked"),
     };
     filename = $("#levelName").val();
     for(var key in worker.state){
