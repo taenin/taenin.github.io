@@ -1693,28 +1693,36 @@ function createWorker(categoryJSON){
       "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
       "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
       "DrawDepth": 1,
+      "PNGSource" : canvasObject.imgSource,
       "Cutscene" : "cutscene name",
       "ShowOnce": true,
-      "TriggerType":{
-        isDropDown: true,
-        currentSelection: "BoundaryLine",
-        options: {
-          Radial: {
-            Radius: 5,
-          },
-          BoundaryLine:{
-            UseX: true,
-            UseY: true,
-            AboveOrBelowX: "above",
-            LeftOrRightY: "left",
-          }
-        }
-      },
-      "PNGSource" : canvasObject.imgSource,
+      "TriggerType": worker.createGenericDropDownField(),
     };
+    //Set the drop down fields
+    trigger.TriggerType.options.Radial = {
+      TriggerRadius: 5,
+    };
+    //Set the drop down fields
+    trigger.TriggerType.options.BoundaryLine = {
+      UseX: true,
+      UseY: true,
+      LessThanX: true,
+      LessThanY: true,
+    };
+    //Set the default drop down field
+    trigger.TriggerType.currentSelection = "BoundaryLine";
     return trigger;
   }
 
+  //Returns a generic dropdown field for toggling controls. 
+  //You must populate "options" and "currentSelection" with the optional parameters, indexed by their selection ID
+  worker.createGenericDropDownField = function(){
+    return {
+      isDropDown: true,
+      currentSelection: "",
+      options:{},
+    };
+  }
 
   worker.createReceptacle = function(canvasObject){
     var receptacle = {
@@ -2134,122 +2142,6 @@ function createWorker(categoryJSON){
     if(category){
       worker.updateDynamicControls("selectPopulate", "selectPopulateCanvas", canvasObject.outputObject, [], category);
     }
-    
-    /*
-    //Check to see if this category is a list of objects
-    if(worker.state.hasOwnProperty(category) && Object.prototype.toString.call( worker.state[category] ) === "[object Array]" && worker.state[category].length > 0){
-      //it is!
-        var main = $(document.createElement('div')).attr("id", "selectPopulateCanvas");
-        var outputObject = canvasObject.outputObject;
-        for(var key in outputObject){
-          if(outputObject.hasOwnProperty(key)){
-            if(typeof(outputObject[key]) != "object"){
-              var newID = "inari_" + key;
-              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + key + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
-              fieldList.push([newID, outputObject[key], [key]]);
-              //selectionUpdateHandlers("#"+newID, canvasObject, key);
-              main.append(latestField);
-            }
-            else{
-              //Our field is an object. First check if it's a drop down
-              if(outputObject[key] && outputObject[key].isDropDown){
-                //This control is a dropdown
-                latestField = $(document.createElement('div')).addClass("editfield large");//.append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");
-                var wrapper = $(document.createElement('div')).addClass("outputFieldNameBlock").append(key + ":");
-                var menuPopulationWrapperId = "inari_" + key + "_populationwrapper";
-                var menuPopulationWrapper = $(document.createElement('div')).attr('id', menuPopulationWrapperId);
-                var dropDown = $("<select id='inari_" + key + "_dropdown' />");
-                for(var subkey in outputObject[key].options){
-                  $("<option />", {value: subkey, text: subkey}).appendTo(dropDown);
-                }
-                dropDown.val(outputObject[key].currentSelection);
-                const field = key;
-                dropDown.change( () =>{
-                  var currentValue = dropDown.val();
-                  outputObject[field].currentSelection = currentValue;
-                  controlObject = outputObject[field].options[currentValue];
-                  console.log(controlObject);
-                });
-                wrapper.append(dropDown);
-                latestField.append(wrapper);
-                //dropDown.appendTo(latestField);
-              }
-              else{
-                latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");
-                for (var subkey in outputObject[key]){
-                  if (outputObject[key].hasOwnProperty(subkey)){
-                    var newID = "inari_" + key + "_" + subkey;
-                    latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + subkey + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
-                    fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
-                    //selectionUpdateHandlers("#"+newID, canvasObject, key, subkey);
-                  }
-                }
-              }              
-              main.append(latestField);
-            }
-          }
-        }
-        if(worker.getZLevelFromCategory(category) != 0){
-            //This means we should allow the user to adjust depth on this object.
-            latestField = $(document.createElement('div')).addClass("editfield large").append("<button class='Zbutton' id=" + moveZUpID +">Increase Z level</button>")
-                                                                                .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>");
-            main.append(latestField);
-          }
-        $("#selectPopulate").append(main);
-      }
-    else if(worker.state.hasOwnProperty(category) && Object.prototype.toString.call( worker.state[category] ) === "[object Object]" && worker.state[category]){
-      //it's a stand alone object
-      var main = $(document.createElement('div')).attr("id", "selectPopulateCanvas");
-      var outputObject = canvasObject.outputObject;
-      for(var key in outputObject){
-          if(outputObject.hasOwnProperty(key)){
-            if(typeof(outputObject[key]) != "object"){
-              var newID = "inari_" + key;
-              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + key + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
-              //selectionUpdateHandlers("#"+newID, canvasObject, key);
-              fieldList.push([newID, outputObject[key], [key]]);
-              main.append(latestField);
-            }
-            else{
-              latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");;
-              for (var subkey in outputObject[key]){
-                if (outputObject[key].hasOwnProperty(subkey)){
-                  var newID = "inari_" + key + "_" + subkey;
-                  latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + subkey + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
-                  fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
-                }
-              }
-              main.append(latestField);
-            }
-          }
-        }
-        if(worker.getZLevelFromCategory(category) != 0){
-            //This means we should allow the user to adjust depth on this object.
-            latestField = $(document.createElement('div')).addClass("editfield large").append("<button class='Zbutton' id=" + moveZUpID +">Increase Z level</button>")
-                                                                                .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>");
-            main.append(latestField);
-          }
-        $("#selectPopulate").append(main);
-      }
-      //Add the button handlers if necessary
-      $("#"+ moveZUpID).click(function(){
-        worker.moveUpZLevel(canvasObject);
-      });
-      $("#"+ moveZDownID).click(function(){
-        worker.moveDownZLevel(canvasObject);
-      });
-
-      //Add other handlers
-      for (var i=0; i<fieldList.length; i++){
-        $("#"+fieldList[i][0]).val(fieldList[i][1]);
-        if(fieldList[i][2].length>1){
-        selectionUpdateHandlers("#"+fieldList[i][0], canvasObject, fieldList[i][2][0], fieldList[i][2][1]);
-        }
-        else{
-          selectionUpdateHandlers("#"+fieldList[i][0], canvasObject, fieldList[i][2][0]);
-        }
-      }
-      */
   }
 
   worker.getCanvasObjectByCategoryAndID = function(category, dropDownID){
