@@ -484,7 +484,7 @@ var createCSEditor = function(){
 	worker.drawCutSceneNameField = function(cutSceneId){
 		$(".cutSceneNameHook").remove();
 		var main = $(document.createElement('div')).addClass("cutSceneNameHook");
-		var nameControl = main.append("<h3>Cutscene Name: <input type='text' id ='cutSceneNameControl' class = 'outputField'></h3>");
+		var nameControl = main.append("<h3>Cutscene Name:</h3><input type='text' id ='cutSceneNameControl' class = 'outputField'>");
 		$("#cutSceneName").append(main);
 		$("#cutSceneNameControl").val(cutSceneId);
 		worker.rootNodeIdUpdateHandlers("#cutSceneNameControl");

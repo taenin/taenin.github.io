@@ -16,6 +16,12 @@
 		outline: none;
 	}
 
+body {
+	text-align: center;
+	margin: 0;
+	background-color: #222;
+}
+
 a {
 	text-decoration: none;
 }
@@ -879,8 +885,47 @@ input[type=checkbox]:checked:after {
 	display: inline-block;
 }
 
+/* CUTSCENE EDITOR STUFF */
+#topWrapper.cutscene {
+	border-bottom: 1px solid #444;
+}
 
-body {
-	text-align: center;
-	margin: 0;
+#cutSceneNameControl {
+	width: 240px;
+}
+
+#newCutSceneName, #cutSceneSelect {
+	width: 50%;
+	max-width: 240px;
+	margin: 0 8px 0 0;
+}
+
+#visualization {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 0px 16px 64px 16px;
+  background-color: #222;
+}
+.menu {
+	width: 288px;
+    margin: 0 16px;
+}
+	.menuItem {
+		position: relative;
+		display: block;
+		margin: 8px 0;
+		height: 32px;
+		overflow: hidden;
+	}
+		.menuItem > input {
+			float: left;
+		}
+		.menuItem > input[type=text] {
+			margin-left: 8px;
+		}
+#botWrapper {
+	max-width: 800px;
+	background-color: #333;
 }

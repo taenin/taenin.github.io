@@ -4,7 +4,7 @@
 <head>
   <title>Inari Cutscene Editor</title>
 
-  <style>
+<!--   <style>
     body, html {
       font-family: arial, sans-serif;
       font-size: 11pt;
@@ -96,62 +96,90 @@
 				width: 50%;
 				max-width: 300px;
 			}
-  </style>
+  </style> -->
 
-  <script src="vis.js"></script>
-  <script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
-</script>
-<script type="text/javascript" src="cutscenes.js">
-</script>
-  <link href="vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+	<script src="vis.js">
+	</script>
+	<script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
+	</script>
+	<script type="text/javascript" src="cutscenes.js">
+	</script>
+	<link href="styles/dark.css" rel="stylesheet" type="text/css">
+	<link rel="icon" href="img/inari-favicon.ico">
+	<link href="vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
 <!--   <script src="../../googleAnalytics.js"></script> -->
 </head>
+
 <body>
-<div id = "fileToolbar">
-	<div class="fileToolbarBlock">
-		<input type="file" id="fileinput"/>
-        <input type='button' id='btnLoad' value='Load Cutscene JSON'>
+	<!-- TOP SECTION -->
+	<div id="topWrapper" class="cutscene">
+		<!-- TITLE -->
+		<div class="titleWrapper">
+			<img id="icon" src="img/inari-icon-rounded.png" alt="Inari Icon" title="Need Halp? Click me."/>
+			<div id="titleTextWrapper">
+				<div class="title">
+					Inari Cutscene Editor
+				</div>
+				<div class="titleSmall">
+					Ask Inari (left) for help!
+				</div>
+			</div>
+		</div>
+		<div id = "fileToolbar">
+			<div class="fileToolbarBlock">
+				<input type="file" id="fileinput"/>
+		        <input type='button' id='btnLoad' value='Load Cutscene'>
+			</div>
+			<div class = "fileToolbarBlock">
+		    	<input type="text" id="levelName" placeholder="saveFile.json">
+		    	<input type="button" id="btnSave" value="Save Cutscene">
+			</div>
+		</div>
+		<div id = "fileToolbar">
+				<div class="fileToolbarBlock">
+				<input type="text" id="newCutSceneName" placeholder="Cutscene Name">
+				<input type="button" id="btnNewCutSceneName" value="Create Cutscene">
+			</div>
+			<div class = "fileToolbarBlock">
+				<select id = "cutSceneSelect">
+					<option>Loading</option>
+				</select>
+				<input type="button" id="btnDeleteCurrentCutscene" value = "Delete Cutscene">
+			</div>
+		</div>
 	</div>
-	<div class = "fileToolbarBlock">
-    	<input type="text" id="levelName" placeholder="saveFile.json">
-    	<input type="button" id="btnSave" value="Save Cutscene JSON">
+	<!-- CUTSCENE NAME -->
+    <div id = "cutSceneName">
 	</div>
-	<div class="fileToolbarBlock">
-		<input type="text" id="newCutSceneName" placeholder="Cutscene Name">
-		<input type="button" id="btnNewCutSceneName" value="Create New Cutscene">
-	</div>
-	<div class = "fileToolbarBlock">
-		<select id = "cutSceneSelect">
-			<option>Loading</option>
-		</select>
-		<input type="button" id="btnDeleteCurrentCutscene" value = "Delete Current Cutscene">
-	</div>
-</div>
-<div id="visualization">
+	<!-- ACTION COMMANDS -->
 	<div class="menu">
 		<div class="menuItem">
         <input type="button" id="newAction" value="New Action"/>
         </div>
         <div class="menuItem">
-        	<input type="button" id="newGroup" value = "New Group"/><input type="text" id="newGroupValue" placeholder="Group Name" />
+        	<input type="button" id="newGroup" value = "New Group"/>
+        	<input type="text" id="newGroupValue" placeholder="Group Name" />
         </div>
     </div>
-</div>
-<div id = "cutSceneName">
-</div>
-<div id="selectbar">
-<h3>Action Type: 
-	<select id = "actionTypeSelect">
-		<option>Loading</option>
-	</select>
-	 Action Subtype: 
-	<select id = "subactionTypeSelect">
-		<option>Loading</option>
-	</select>
-	</h3>
-</div>
-<h3>Selection Properties</h3>
-<div class="selectPopulate">
-</div>
+	<!-- MAIN TIMELINE -->
+	<div id="visualization">
+	</div>
+	<!-- DETAILS -->
+	<div id="botWrapper">
+		<div id="selectbar">
+		<h3>Action Type: 
+			<select id = "actionTypeSelect">
+				<option>Loading</option>
+			</select>
+			 Action Subtype: 
+			<select id = "subactionTypeSelect">
+				<option>Loading</option>
+			</select>
+			</h3>
+		</div>
+		<h3>Selection Properties</h3>
+		<div class="selectPopulate">
+		</div>
+	</div>
 </body>
 </html>
