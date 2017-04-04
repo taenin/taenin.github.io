@@ -1693,14 +1693,36 @@ function createWorker(categoryJSON){
       "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
       "Position" : worker.getMeterLocationFromCanvasObject(canvasObject),
       "DrawDepth": 1,
-      "Cutscene" : "cutscene name",
-      "Radius": 5,
-      "ShowOnce": true,
       "PNGSource" : canvasObject.imgSource,
+      "Cutscene" : "cutscene name",
+      "ShowOnce": true,
+      "TriggerType": worker.createGenericDropDownField(),
     };
+    //Set the drop down fields
+    trigger.TriggerType.options.Radial = {
+      TriggerRadius: 5,
+    };
+    //Set the drop down fields
+    trigger.TriggerType.options.BoundaryLine = {
+      UseX: true,
+      UseY: true,
+      LessThanX: true,
+      LessThanY: true,
+    };
+    //Set the default drop down field
+    trigger.TriggerType.currentSelection = "BoundaryLine";
     return trigger;
   }
 
+  //Returns a generic dropdown field for toggling controls. 
+  //You must populate "options" and "currentSelection" with the optional parameters, indexed by their selection ID
+  worker.createGenericDropDownField = function(){
+    return {
+      isDropDown: true,
+      currentSelection: "",
+      options:{},
+    };
+  }
 
   worker.createReceptacle = function(canvasObject){
     var receptacle = {
@@ -2007,11 +2029,108 @@ function createWorker(categoryJSON){
     worker.canvas.renderAll();
   }
 
+
+  worker.updateDynamicControls = function(parentDivId, wrapperDivId, controlObject, previousKeys, category){
+    var moveZUpID = "inari_Zup";
+    var moveZDownID = "inari_Zdown";
+    var fieldList = [];
+    var menusToUpdate = []; //This is a list of jQuery selections of menus. Call .change() on them after they are rendered.
+    var canvasObject = worker.canvas.getActiveObject();
+    var main = $(document.createElement('div')).attr("id", wrapperDivId);
+    var outputObject = canvasObject.outputObject;
+    for(var key in controlObject){
+      if(controlObject.hasOwnProperty(key)){
+        if(typeof(controlObject[key]) != "object"){
+          var newID = "inari_" + key;
+          latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + key + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
+          //selectionUpdateHandlers("#"+newID, canvasObject, key);
+          fieldList.push([newID, controlObject[key], previousKeys.concat([key])]);
+          main.append(latestField);
+        }
+        else{
+          //Our field is an object. First check if it's a drop down
+          if(controlObject[key] && controlObject[key].isDropDown){
+            //This control is a dropdown
+            latestField = $(document.createElement('div')).addClass("editfield large");//.append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");
+            var wrapperId = "inari_" + key + "_dropdown_root";
+            var wrapper = $(document.createElement('div')).addClass("outputFieldNameBlock").attr("id", wrapperId).append(key + ":");
+            var menuPopulationWrapperId = "inari_" + key + "_populationwrapper";
+            //var menuPopulationWrapper = $(document.createElement('div')).attr('id', menuPopulationWrapperId);
+            var dropDown = $("<select id='inari_" + key + "_dropdown' />");
+            menusToUpdate.push(dropDown);
+            for(var subkey in controlObject[key].options){
+              $("<option />", {value: subkey, text: subkey}).appendTo(dropDown);
+            }
+            dropDown.val(controlObject[key].currentSelection);
+            const field = key;
+            //On drop down change, rerender the child menu and populate it with new values
+            dropDown.change( () =>{
+              var currentValue = dropDown.val();
+              controlObject[field].currentSelection = currentValue;
+              var menuControlObject = controlObject[field].options[currentValue];
+              //remove the old controls and repopulated them
+              $("#" + menuPopulationWrapperId).remove();
+              worker.updateDynamicControls(wrapperId, menuPopulationWrapperId, menuControlObject, previousKeys.concat([field, "options", currentValue]));
+            });
+            wrapper.append(dropDown);
+            latestField.append(wrapper);
+            //dropDown.appendTo(latestField);
+          }
+          else{
+            latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");
+            for (var subkey in controlObject[key]){
+              if (controlObject[key].hasOwnProperty(subkey)){
+                var newID = "inari_" + key + "_" + subkey;
+                latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + subkey + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
+                fieldList.push([newID, controlObject[key][subkey], previousKeys.concat([key, subkey])]);
+                //selectionUpdateHandlers("#"+newID, canvasObject, key, subkey);
+              }
+            }
+          }              
+          main.append(latestField);
+        }
+      }
+    } 
+    if(category && worker.getZLevelFromCategory(category) != 0){
+        //This means we should allow the user to adjust depth on this object.
+        latestField = $(document.createElement('div')).addClass("editfield large").append("<button class='Zbutton' id=" + moveZUpID +">Increase Z level</button>")
+                                                                            .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>");
+        main.append(latestField);
+    }
+    $("#" + parentDivId).append(main);
+    //Now that our DOM elements are rendered, add our click handlers
+    if(category && worker.getZLevelFromCategory(category) != 0){
+        //Add the button handlers if necessary
+      $("#"+ moveZUpID).click(function(){
+        worker.moveUpZLevel(canvasObject);
+      });
+      $("#"+ moveZDownID).click(function(){
+        worker.moveDownZLevel(canvasObject);
+      });
+    }
+    //Add other handlers
+    for (var i=0; i<fieldList.length; i++){
+      $("#"+fieldList[i][0]).val(fieldList[i][1]);
+      if(fieldList[i][2].length>1){
+      selectionUpdateHandlers("#"+fieldList[i][0], canvasObject, fieldList[i][2]);
+      }
+      else{
+        selectionUpdateHandlers("#"+fieldList[i][0], canvasObject, fieldList[i][2]);
+      }
+    }
+    //Update our menus
+    for(var i=0; i<menusToUpdate.length; i++){
+      menusToUpdate[i].change();
+    }
+  }
+
   worker.drawSelection = function(){
     /*****************************
     Need to SAVE THIS DATA FIRST!!! We will assume this is done BEFORE this function is called. Thus the current selection is our new value.
     ******************************/
-    $(".selectPopulateCanvas").remove();
+    $("#selectPopulateCanvas").remove();
+    
+    
     var canvasObject = worker.canvas.getActiveObject();
     var category;
     var fieldList = [];
@@ -2020,94 +2139,9 @@ function createWorker(categoryJSON){
     if(canvasObject){
       category = canvasObject.categoryType;
     }
-    //Check to see if this category is a list of objects
-    if(worker.state.hasOwnProperty(category) && Object.prototype.toString.call( worker.state[category] ) === "[object Array]" && worker.state[category].length > 0){
-      //it is!
-        var main = $(document.createElement('div')).addClass("selectPopulateCanvas");
-        var outputObject = canvasObject.outputObject;
-        for(var key in outputObject){
-          if(outputObject.hasOwnProperty(key)){
-            if(typeof(outputObject[key]) != "object"){
-              var newID = "inari_" + key;
-              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + key + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
-              fieldList.push([newID, outputObject[key], [key]]);
-              //selectionUpdateHandlers("#"+newID, canvasObject, key);
-              main.append(latestField);
-            }
-            else{
-              latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");
-              for (var subkey in outputObject[key]){
-                if (outputObject[key].hasOwnProperty(subkey)){
-                  var newID = "inari_" + key + "_" + subkey;
-                  latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + subkey + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
-                  fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
-                  //selectionUpdateHandlers("#"+newID, canvasObject, key, subkey);
-                }
-              }
-              main.append(latestField);
-            }
-          }
-        }
-        if(worker.getZLevelFromCategory(category) != 0){
-            //This means we should allow the user to adjust depth on this object.
-            latestField = $(document.createElement('div')).addClass("editfield large").append("<button class='Zbutton' id=" + moveZUpID +">Increase Z level</button>")
-                                                                                .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>");
-            main.append(latestField);
-          }
-        $(".selectPopulate").append(main);
-      }
-    else if(worker.state.hasOwnProperty(category) && Object.prototype.toString.call( worker.state[category] ) === "[object Object]" && worker.state[category]){
-      //it's a stand alone object
-      var main = $(document.createElement('div')).addClass("selectPopulateCanvas");
-      var outputObject = canvasObject.outputObject;
-      for(var key in outputObject){
-          if(outputObject.hasOwnProperty(key)){
-            if(typeof(outputObject[key]) != "object"){
-              var newID = "inari_" + key;
-              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + key + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
-              //selectionUpdateHandlers("#"+newID, canvasObject, key);
-              fieldList.push([newID, outputObject[key], [key]]);
-              main.append(latestField);
-            }
-            else{
-              latestField = $(document.createElement('div')).addClass("editfield large").append("<div class='outputFieldNameBlock'>" + key + ":" + "</div>");;
-              for (var subkey in outputObject[key]){
-                if (outputObject[key].hasOwnProperty(subkey)){
-                  var newID = "inari_" + key + "_" + subkey;
-                  latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + subkey + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
-                  fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
-                }
-              }
-              main.append(latestField);
-            }
-          }
-        }
-        if(worker.getZLevelFromCategory(category) != 0){
-            //This means we should allow the user to adjust depth on this object.
-            latestField = $(document.createElement('div')).addClass("editfield large").append("<button class='Zbutton' id=" + moveZUpID +">Increase Z level</button>")
-                                                                                .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>");
-            main.append(latestField);
-          }
-        $(".selectPopulate").append(main);
-      }
-      //Add the button handlers if necessary
-      $("#"+ moveZUpID).click(function(){
-        worker.moveUpZLevel(canvasObject);
-      });
-      $("#"+ moveZDownID).click(function(){
-        worker.moveDownZLevel(canvasObject);
-      });
-
-      //Add other handlers
-      for (var i=0; i<fieldList.length; i++){
-        $("#"+fieldList[i][0]).val(fieldList[i][1]);
-        if(fieldList[i][2].length>1){
-        selectionUpdateHandlers("#"+fieldList[i][0], canvasObject, fieldList[i][2][0], fieldList[i][2][1]);
-        }
-        else{
-          selectionUpdateHandlers("#"+fieldList[i][0], canvasObject, fieldList[i][2][0]);
-        }
-      }
+    if(category){
+      worker.updateDynamicControls("selectPopulate", "selectPopulateCanvas", canvasObject.outputObject, [], category);
+    }
   }
 
   worker.getCanvasObjectByCategoryAndID = function(category, dropDownID){
@@ -2190,6 +2224,7 @@ function createWorker(categoryJSON){
           worker.updateLevelType(worker.levelTypes[newState.Properties.Type]);
           $("#leftLevel").val(newState.Properties.LeftLevel);
           $("#rightLevel").val(newState.Properties.RightLevel);
+          $("#dynamicLightSwitch").prop("checked", newState.Properties.UseDynamicLighting === true);
         }
         else if(newState.hasOwnProperty(category) && Object.prototype.toString.call( newState[category] ) === "[object Array]" && newState[category].length > 0){
           if(!desiredState.hasOwnProperty(category)){
@@ -2390,6 +2425,7 @@ worker.asyncLoop = function (iterations, func, callback) {
       "Type": worker.getLevelTypeEnum($("#levelTypeSelect").val()),
       "LeftLevel": $("#leftLevel").val(),
       "RightLevel": $("#rightLevel").val(),
+      "UseDynamicLighting": $("#dynamicLightSwitch").is(":checked"),
     };
     filename = $("#levelName").val();
     for(var key in worker.state){
@@ -2715,57 +2751,62 @@ function toggleChangeHandler(toggleID, stateName){
     });
 }
 
-function selectionUpdateHandlers(selection,canvasObject, key, subkey){
+function selectionUpdateHandlers(selection,canvasObject, keys){
   $(selection).blur(function(){
-    if(subkey){
-      var typedReturn = typeFunctions(canvasObject.outputObject[key][subkey], $(selection).val());
+      var typedReturn = typeFunctions(applyKeys(canvasObject.outputObject, keys), $(selection).val());
       $(selection).val(typedReturn);
-      canvasObject.outputObject[key][subkey] = typedReturn;
-      if(key==="Position"){
+      updateObjectForKeys(canvasObject.outputObject, keys, typedReturn);
+      if(keys && keys[0]==="Position"){
         worker.updateLocation(canvasObject);
       }
-    }
-    else{
-      var typedReturn = typeFunctions(canvasObject.outputObject[key], $(selection).val());
-      $(selection).val(typedReturn);
-      canvasObject.outputObject[key] = typedReturn;
-      if(key==="PlistSource"){
+      if(keys && keys[0]==="PlistSource"){
         worker.updatePList(typedReturn, canvasObject);
       }
-      if(key==="flipVertical"){
+      if(keys && keys[0]==="flipVertical"){
         worker.toggleVerticalFlip(typedReturn, canvasObject);
       }
-      if(key==="flipHorizontal"){
+      if(keys && keys[0]==="flipHorizontal"){
+        worker.toggleHorizontalFlip(typedReturn, canvasObject);
+      }
+  });
+  $(selection).keyup(function(event){
+    if(event.keyCode == 13){
+      var typedReturn = typeFunctions(applyKeys(canvasObject.outputObject, keys), $(selection).val());
+      $(selection).val(typedReturn);
+      updateObjectForKeys(canvasObject.outputObject, keys, typedReturn);
+      if(keys && keys[0]==="Position"){
+        worker.updateLocation(canvasObject);
+      }
+      if(keys && keys[0]==="PlistSource"){
+        worker.updatePList(typedReturn, canvasObject);
+      }
+      if(keys && keys[0]==="flipVertical"){
+      worker.toggleVerticalFlip(typedReturn, canvasObject);
+      }
+      if(keys && keys[0]==="flipHorizontal"){
         worker.toggleHorizontalFlip(typedReturn, canvasObject);
       }
     }
   });
-  $(selection).keyup(function(event){
-    if(event.keyCode == 13){
-      if(subkey){
-        var typedReturn = typeFunctions(canvasObject.outputObject[key][subkey], $(selection).val());
-        $(selection).val(typedReturn);
-        canvasObject.outputObject[key][subkey] = typedReturn;
-        if(key==="Position"){
-          worker.updateLocation(canvasObject);
-        }
-      }
-      else{
-        var typedReturn = typeFunctions(canvasObject.outputObject[key], $(selection).val());
-        $(selection).val(typedReturn);
-        canvasObject.outputObject[key] = typedReturn;
-        if(key==="PlistSource"){
-          worker.updatePList(typedReturn, canvasObject);
-        }
-        if(key==="flipVertical"){
-        worker.toggleVerticalFlip(typedReturn, canvasObject);
-        }
-        if(key==="flipHorizontal"){
-          worker.toggleHorizontalFlip(typedReturn, canvasObject);
-        }
-      }
-    }
-  });
+}
+
+/**
+ * Blindly applies keys to a target object for rapid indexing
+ */
+function applyKeys(targetObject, keyList){
+  var currentObject = targetObject;
+  for(var i=0; i<keyList.length; i++){
+    currentObject = currentObject[keyList[i]];
+  }
+  return currentObject;
+}
+
+function updateObjectForKeys(targetObject, keyList, newValue){
+  var currentObject = targetObject;
+  for(var i=0; i<keyList.length-1; i++){
+    currentObject = currentObject[keyList[i]];
+  }
+  currentObject[keyList[i]] = newValue;
 }
 
 function typeFunctions(target, input){
