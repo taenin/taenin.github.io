@@ -804,6 +804,27 @@ input[type=checkbox]:checked:after {
 				text-overflow: ellipsis;
 			}
 
+			.outputFieldName-cutscenes{
+				display: inline-block;
+				vertical-align: middle;
+				width: 192px;
+				height: 40px;
+				line-height: 40px;
+				font-size: 14;
+				text-align: right;
+				padding: 0px 8px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			input.outputField-cutscenes {
+				display: inline-block;
+				/*vertical-align: top;*/
+				width: calc(100% - 192px - 12px);
+				background: #292929;
+				border: 1px solid #3d3d3d;
+			}
+
 			input.outputField {
 				display: inline-block;
 				/*vertical-align: top;*/
