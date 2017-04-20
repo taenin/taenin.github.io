@@ -39,6 +39,9 @@ var createCSEditor = function(){
 				BoundAvatarObject: 4,
 				BoundAvatarLocation: 5,
 				AvatarFaceDirection: 6,
+				AvatarSpawnReflector: 7,
+				AvatarRemoveReflector: 8,
+				AvatarStopMoving: 9,
 			},
 			DialogAction: {
 				DisplayText: 0
@@ -193,6 +196,9 @@ var createCSEditor = function(){
                     "BoundAvatarObject": worker.createBoundAvatarObject,
                     "BoundAvatarLocation": worker.createBoundAvatarLocation,
                     "AvatarFaceDirection": worker.createAvatarFaceDirection,
+                    "AvatarSpawnReflector": worker.createAvatarSpawnReflector,
+                    "AvatarRemoveReflector": worker.createAvatarRemoveReflector,
+                    "AvatarStopMoving" : worker.createAvatarStopMoving,
                     "DisplayText": worker.createDisplayTextAction,
                     "MoveNPC": worker.createMoveNPC,
                     "NPCFaceDirection": worker.createNPCFaceDirection,
@@ -275,6 +281,18 @@ var createCSEditor = function(){
   		};
   	}
 
+  	worker.createAvatarSpawnReflector = function(){
+  		return {};
+  	}
+
+  	worker.createAvatarRemoveReflector = function(){
+  		return {};
+  	}
+
+  	worker.createAvatarStopMoving = function(){
+  		return {};
+  	}
+  	
   	worker.createBoundAvatarLocation = function(){
   		return {
   			TargetLocation: {X: 0, Y: 0},
