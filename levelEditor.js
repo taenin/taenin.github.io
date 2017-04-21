@@ -1895,6 +1895,8 @@ function createWorker(categoryJSON){
     newHazard = {
       "PNGSource": canvasObject.imgSource,
       "PlistSource": worker.imgToPlist(canvasObject.imgSource),
+      "JSONSource": worker.imgToJSON(worker.filterHazardNames(canvasObject.imgSource)),
+      "ATLASSource": worker.imgToAtlas(worker.filterHazardNames(canvasObject.imgSource)),
       "Type" : worker.getTypeFromCanvasObject(canvasObject),
       "Width": canvasObject.width,
       "Height": canvasObject.height,
@@ -1933,6 +1935,26 @@ function createWorker(categoryJSON){
     var newSrc = splitList[splitList.length-1];
     var dot = newSrc.indexOf('.');
     return "/plists/" + newSrc.slice(0, dot) + ".json";
+  }
+
+  worker.imgToAtlas = function(imgSrc){
+    var splitList = imgSrc.split(".");
+    var newSrc = splitList[0];
+    return newSrc + ".atlas";
+  }
+
+  worker.imgToJSON = function(imgSrc){
+    var splitList = imgSrc.split(".");
+    var newSrc = splitList[0];
+    return newSrc + ".json";
+  }
+
+  worker.filterHazardNames = function(imgSrc){
+    var directions=["-right-wall", "-left-wall", "-ceiling"];
+    directions.forEach((direction) =>{
+      imgSrc = imgSrc.replace(direction, "");
+    });
+    return imgSrc;
   }
 
   worker.createTile = function(canvasObject){
