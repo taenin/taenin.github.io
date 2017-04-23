@@ -31,7 +31,8 @@ var createCSEditor = function(){
 				SpawnNPC: 2,
 			},
 			CameraAction: {
-				MoveCamera: 0
+				MoveCamera: 0,
+				ShakeCamera:1,
 			},
 			AvatarAction: {
 				MoveAvatar: 0,
@@ -191,6 +192,7 @@ var createCSEditor = function(){
 	worker.initializeTypeGenerators = function(){
     	worker.objectTypeGenerators = {
                     "MoveCamera": worker.createMoveCamera,
+                    "ShakeCamera": worker.createShakeCamera,
                     "MoveAvatar": worker.createMoveAvatar,
                     "JumpAvatar": worker.createJumpAvatar,
                     "BoundAvatarObject": worker.createBoundAvatarObject,
@@ -231,6 +233,10 @@ var createCSEditor = function(){
   			RequireY: true,
   		};
   	};
+
+  	worker.createShakeCamera = function(){
+  		return {};
+  	}
 
   	worker.createMoveNPC = function(){
   		return {
