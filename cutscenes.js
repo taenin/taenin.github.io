@@ -10,25 +10,38 @@ var createCSEditor = function(){
 		//The types of objects we allow the users to select
 		worker.selectableTypes = ["Turret", "Node", "Spawner"];
 
+		//The types of NPCs that we can spawn / select
+		worker.npcTypes = ["inari"];
+
 		//The primary cut scene action enum
 		worker.CutSceneTypeEnum = {
 			StartCutSceneAction: 0,
 			CameraAction: 1,
 			AvatarAction: 2,
 			DialogAction: 3,
+			NPCAction: 4,
 		};
 
 		//The enums for each cut scene action sub tpe
 		worker.CutSceneSubTypes = {
 			StartCutSceneAction: {},
+			NPCAction:{
+				MoveNPC: 0,
+				NPCFaceDirection: 1,
+				SpawnNPC: 2,
+			},
 			CameraAction: {
 				MoveCamera: 0
 			},
 			AvatarAction: {
 				MoveAvatar: 0,
 				JumpAvatar: 1,
-				BoundAvatarObject: 2,
-				BoundAvatarLocation: 3,
+				BoundAvatarObject: 4,
+				BoundAvatarLocation: 5,
+				AvatarFaceDirection: 6,
+				AvatarSpawnReflector: 7,
+				AvatarRemoveReflector: 8,
+				AvatarStopMoving: 9,
 			},
 			DialogAction: {
 				DisplayText: 0
@@ -45,10 +58,16 @@ var createCSEditor = function(){
 			RequireY: "Must reach Y coordinate",
 			TravelTime: "Travel Time (in seconds)",
 			TargetLocation: "Target Location",
-			Duration: "Length of action (in seconds)",
+			Duration: "Duration (in seconds)",
 			TargetObject: "Target Object",
 			TargetObjectIndex: "Target Object #",
-			Angle: "Angle (degrees)"
+			Angle: "Angle (degrees)",
+			FaceRight: "Face Right?",
+			NPCType: "NPC Type",
+			NPCName: "NPC Name",
+			WillWander: "Will Wander?",
+			WanderLeftBound: "Wander Left Bound",
+			WanderRightBound: "Wander Right Bound",
 		}
 
 		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
@@ -70,6 +89,7 @@ var createCSEditor = function(){
 		//Each function must be of the form function(key, actionObject) -> DOM element
 		worker.displayFieldMapping = {
 			TargetObject: worker.createObjectSelectControl,
+			NPCType: worker.createNPCSelectControl,
 		}
 
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
@@ -99,7 +119,7 @@ var createCSEditor = function(){
 	worker.createObjectSelectControl = function(key, actionObject, id){
 		var output = $(document.createElement('div')).addClass("editfield small");
 		var displayName = worker.fieldNameMapping[key] || key;
-		output.append("<div class='outputFieldName'>" + displayName + ":" + "</div>");
+		output.append("<div class='outputFieldName-cutscenes'>" + displayName + ":" + "</div>");
 		var select = document.createElement("select");
 		select.setAttribute("id", id);
 		var dropDown = $(select);
@@ -115,7 +135,27 @@ var createCSEditor = function(){
 			dropDown.val(actionObject[key]);
 		}
 		return output.append(dropDown);
+	}
 
+	worker.createNPCSelectControl = function(key, actionObject, id){
+		var output = $(document.createElement('div')).addClass("editfield small");
+		var displayName = worker.fieldNameMapping[key] || key;
+		output.append("<div class='outputFieldName-cutscenes'>" + displayName + ":" + "</div>");
+		var select = document.createElement("select");
+		select.setAttribute("id", id);
+		var dropDown = $(select);
+		dropDown.change(() => {
+			var val = $("#" + id).val();
+			actionObject[key] = val;
+			worker.items.update(actionObject);
+		});
+		worker.npcTypes.forEach((selectedType) => {
+			dropDown.append('<option value="' + selectedType +'">' + selectedType + '</option>');
+		})
+		if(actionObject[key]){
+			dropDown.val(actionObject[key]);
+		}
+		return output.append(dropDown);
 	}
 
 	worker.generateDefaultObject = function(actionTypeEnum, actionSubtypeEnum){
@@ -155,7 +195,14 @@ var createCSEditor = function(){
                     "JumpAvatar": worker.createJumpAvatar,
                     "BoundAvatarObject": worker.createBoundAvatarObject,
                     "BoundAvatarLocation": worker.createBoundAvatarLocation,
+                    "AvatarFaceDirection": worker.createAvatarFaceDirection,
+                    "AvatarSpawnReflector": worker.createAvatarSpawnReflector,
+                    "AvatarRemoveReflector": worker.createAvatarRemoveReflector,
+                    "AvatarStopMoving" : worker.createAvatarStopMoving,
                     "DisplayText": worker.createDisplayTextAction,
+                    "MoveNPC": worker.createMoveNPC,
+                    "NPCFaceDirection": worker.createNPCFaceDirection,
+                    "SpawnNPC": worker.createSpawnNPC,
         };
   	}
 
@@ -185,6 +232,31 @@ var createCSEditor = function(){
   		};
   	};
 
+  	worker.createMoveNPC = function(){
+  		return {
+  			TargetLocation: {X: 0, Y: 0},
+  			NPCName: "",
+  		};
+  	}
+
+  	worker.createNPCFaceDirection = function(){
+  		return {
+  			FaceRight: true,
+  			NPCName: "",
+  		};
+  	}
+
+  	worker.createSpawnNPC = function(){
+  		return {
+  			TargetLocation: {X: 0, Y: 0},
+  			NPCType: worker.npcTypes[0],
+  			NPCName: "",
+  			WillWander: false,
+  			WanderLeftBound: 0,
+  			WanderRightBound: 0,
+  		};
+  	}
+
   	worker.createMoveAvatar = function(){
   		return {
   			TargetLocation: {X: 0, Y: 0},
@@ -203,6 +275,24 @@ var createCSEditor = function(){
   		};
   	};
 
+  	worker.createAvatarFaceDirection = function(){
+  		return {
+  			FaceRight: true,
+  		};
+  	}
+
+  	worker.createAvatarSpawnReflector = function(){
+  		return {};
+  	}
+
+  	worker.createAvatarRemoveReflector = function(){
+  		return {};
+  	}
+
+  	worker.createAvatarStopMoving = function(){
+  		return {};
+  	}
+  	
   	worker.createBoundAvatarLocation = function(){
   		return {
   			TargetLocation: {X: 0, Y: 0},
@@ -436,7 +526,7 @@ var createCSEditor = function(){
 	              }
 	              else{
 	              	  var displayName = worker.fieldNameMapping[key] || key;
-		              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName'>" + displayName + ":" + "</div>" + "<input type = 'text' class='outputField' id=" + newID + ">");
+		              latestField = $(document.createElement('div')).addClass("editfield small").append("<div class='outputFieldName-cutscenes'>" + displayName + ":" + "</div>" + "<input type = 'text' class='outputFieldcutscenes' id=" + newID + ">");
 		              fieldList.push([newID, outputObject[key], [key]]);
 		              main.append(latestField);
 	              }
@@ -449,7 +539,7 @@ var createCSEditor = function(){
 	                if (outputObject[key].hasOwnProperty(subkey)){
 	                	displayName = worker.fieldNameMapping[subkey] || subkey;
 	                  var newID = "inari_" + key + "_" + subkey;
-	                  latestField.append("<div class = 'editfield small'><div class='outputFieldName'>" + displayName + ":" + "</div>" + "<input type = 'text' class = 'outputField' id=" + newID + "></div>");
+	                  latestField.append("<div class = 'editfield small'><div class='outputFieldName-cutscenes'>" + displayName + ":" + "</div>" + "<input type = 'text' class = 'outputFieldcutscenes' id=" + newID + "></div>");
 	                  fieldList.push([newID, outputObject[key][subkey], [key, subkey]]);
 	                }
 	              }
@@ -475,7 +565,7 @@ var createCSEditor = function(){
 	worker.drawCutSceneNameField = function(cutSceneId){
 		$(".cutSceneNameHook").remove();
 		var main = $(document.createElement('div')).addClass("cutSceneNameHook");
-		var nameControl = main.append("<h3>Cutscene Name: <input type='text' id ='cutSceneNameControl' class = 'outputField'></h3>");
+		var nameControl = main.append("<h3>Cutscene Name:</h3><input type='text' id ='cutSceneNameControl' class = 'outputFieldcutscenes'>");
 		$("#cutSceneName").append(main);
 		$("#cutSceneNameControl").val(cutSceneId);
 		worker.rootNodeIdUpdateHandlers("#cutSceneNameControl");
@@ -680,7 +770,7 @@ var createCSEditor = function(){
 			output.CutScenes.push(worker.outputState[cutscene]);
 		}
 		filename = $("#levelName").val();
-		download(filename, JSON.stringify(output));
+		download(filename, JSON.stringify(output, null, 2));
 	}
 
 	worker.saveCurrentCutScene = function(preservedSelection){

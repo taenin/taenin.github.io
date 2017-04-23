@@ -16,8 +16,26 @@
 		outline: none;
 	}
 
+body {
+	text-align: center;
+	margin: 0;
+	background-color: #222;
+}
+
 a {
 	text-decoration: none;
+}
+
+span.normalFontColor {
+	color: rgba(255,255,255,0.5);
+}
+
+span.colorFont {
+	color: #42999e;
+}
+
+sup {
+	font-size: 10;
 }
 
 /*ALL INPUTS*/
@@ -202,14 +220,14 @@ input[type=checkbox]:checked:after {
 		}
 			/* diff bg color first row*/
 			#hotkeyTable tr#hotkeyTableRow1 {
-				background-color: #666;
+				background-color: #555;
 			}
 				#hotkeyTable tr#hotkeyTableRow1 td {
 					color: #eee;
 				}
 			/* diff bg color every other row*/
 			#hotkeyTable tr:nth-child(odd) {
-				background-color: #444;
+				background-color: #3d3d3d;
 			}
 
 			/* auto formatting for new hotkey*/
@@ -217,7 +235,7 @@ input[type=checkbox]:checked:after {
 				content: "NEW";
 				color: #eee;
 				font-size: 12;
-				background-color: #666;
+				background-color: #555;
 				padding: 4px 10px;
 				margin-right: 4px;
 				width: 100px;
@@ -557,7 +575,9 @@ input[type=checkbox]:checked:after {
 		vertical-align: top;
 		display: inline-block;
 		*display: inline-block;
-		float: left;	}
+		float: left;
+		overflow: hidden;
+	}
 
 		/* OVERRIDE INLINE CSS FROM FABRICJS*/
 		#myCanvas {
@@ -634,7 +654,22 @@ input[type=checkbox]:checked:after {
 			width: 80%;
 			height: 40px;
 			border-top: 1px solid #444;
-		}	
+		}
+
+			#selectIndicator {
+				position: absolute;
+				width: 12px;
+				height: 12px;
+				background-color: none;
+				border: 1px solid rgba(255,255,255,0.1);
+				left: 16px;
+				top: 50%;
+				transform: translateY(-50%) rotate(45deg);
+			}
+
+				#selectIndicator.active {
+					background-color: #42999e;
+				}
 
 			.toolTab {
 				display: inline-block;
@@ -769,6 +804,27 @@ input[type=checkbox]:checked:after {
 				text-overflow: ellipsis;
 			}
 
+			.outputFieldName-cutscenes{
+				display: inline-block;
+				vertical-align: middle;
+				width: 192px;
+				height: 40px;
+				line-height: 40px;
+				font-size: 14;
+				text-align: right;
+				padding: 0px 8px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			input.outputField-cutscenes {
+				display: inline-block;
+				/*vertical-align: top;*/
+				width: calc(100% - 192px - 12px);
+				background: #292929;
+				border: 1px solid #3d3d3d;
+			}
+
 			input.outputField {
 				display: inline-block;
 				/*vertical-align: top;*/
@@ -801,6 +857,24 @@ input[type=checkbox]:checked:after {
 					opacity:1;
 				}
 
+#popupMessage {
+	position: absolute;
+	left: 35%;
+	bottom: 64px;
+	transform: translateX(-50%);
+	background-color: #333;
+	padding: 12px 48px;
+	font-size: 16;
+	border-radius: 8px;
+	white-space: nowrap;
+	overflow: hidden;
+	color: #eee;
+}
+
+	#popupMessage.fullCanvas {
+		left: 50%;
+	}
+
 .toolPopulateCanvas{
 	width: 100%;
 }
@@ -832,8 +906,47 @@ input[type=checkbox]:checked:after {
 	display: inline-block;
 }
 
+/* CUTSCENE EDITOR STUFF */
+#topWrapper.cutscene {
+	border-bottom: 1px solid #444;
+}
 
-body {
-	text-align: center;
-	margin: 0;
+#cutSceneNameControl {
+	width: 240px;
+}
+
+#newCutSceneName, #cutSceneSelect {
+	width: 50%;
+	max-width: 240px;
+	margin: 0 8px 0 0;
+}
+
+#visualization {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 0px 16px 64px 16px;
+  background-color: #222;
+}
+.menu {
+	width: 288px;
+    margin: 0 16px;
+}
+	.menuItem {
+		position: relative;
+		display: block;
+		margin: 8px 0;
+		height: 32px;
+		overflow: hidden;
+	}
+		.menuItem > input {
+			float: left;
+		}
+		.menuItem > input[type=text] {
+			margin-left: 8px;
+		}
+#botWrapper {
+	max-width: 800px;
+	background-color: #333;
 }
