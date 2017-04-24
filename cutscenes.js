@@ -29,6 +29,7 @@ var createCSEditor = function(){
 				MoveNPC: 0,
 				NPCFaceDirection: 1,
 				SpawnNPC: 2,
+				SetInteractiveScene: 3,
 			},
 			CameraAction: {
 				MoveCamera: 0,
@@ -58,6 +59,8 @@ var createCSEditor = function(){
 			RequireX: "Must reach X coordinate",
 			RequireY: "Must reach Y coordinate",
 			TravelTime: "Travel Time (in seconds)",
+			XDamping: "X Damping",
+			YDamping: "Y Damping",
 			TargetLocation: "Target Location",
 			Duration: "Duration (in seconds)",
 			TargetObject: "Target Object",
@@ -66,6 +69,7 @@ var createCSEditor = function(){
 			FaceRight: "Face Right?",
 			NPCType: "NPC Type",
 			NPCName: "NPC Name",
+			NPCState: "Next Scene (empty = none)",
 			WillWander: "Will Wander?",
 			WanderLeftBound: "Wander Left Bound",
 			WanderRightBound: "Wander Right Bound",
@@ -205,6 +209,7 @@ var createCSEditor = function(){
                     "MoveNPC": worker.createMoveNPC,
                     "NPCFaceDirection": worker.createNPCFaceDirection,
                     "SpawnNPC": worker.createSpawnNPC,
+                    "SetInteractiveScene": worker.createSetInteractiveScene,
         };
   	}
 
@@ -235,7 +240,10 @@ var createCSEditor = function(){
   	};
 
   	worker.createShakeCamera = function(){
-  		return {};
+  		return {
+  			XDamping: 1,
+  			YDamping: 1,
+  		};
   	}
 
   	worker.createMoveNPC = function(){
@@ -260,6 +268,13 @@ var createCSEditor = function(){
   			WillWander: false,
   			WanderLeftBound: 0,
   			WanderRightBound: 0,
+  		};
+  	}
+
+  	worker.createSetInteractiveScene = function(){
+  		return {
+  			NPCName: "",
+  			NPCState: "",
   		};
   	}
 
