@@ -20,6 +20,7 @@ var createCSEditor = function(){
 			AvatarAction: 2,
 			DialogAction: 3,
 			NPCAction: 4,
+			WorldAction: 5,
 		};
 
 		//The enums for each cut scene action sub tpe
@@ -47,6 +48,10 @@ var createCSEditor = function(){
 			},
 			DialogAction: {
 				DisplayText: 0
+			},
+			WorldAction: {
+				WorldSpawnInvisibleWalls: 0,
+				WorldRemoveInvisibleWalls: 1,
 			}
 		};
 
@@ -210,6 +215,8 @@ var createCSEditor = function(){
                     "NPCFaceDirection": worker.createNPCFaceDirection,
                     "SpawnNPC": worker.createSpawnNPC,
                     "SetInteractiveScene": worker.createSetInteractiveScene,
+                    "WorldSpawnInvisibleWalls": worker.createWorldSpawnInvisibleWalls,
+                    "WorldRemoveInvisibleWalls": worker.createWorldRemoveInvisibleWalls,
         };
   	}
 
@@ -320,6 +327,17 @@ var createCSEditor = function(){
   			Angle: 0,
   		};
   	};
+
+  	worker.createWorldSpawnInvisibleWalls = function(){
+  		return {
+  			LeftWallX: 0,
+  			RightWallX: 0,
+  		};
+  	}
+
+  	worker.createWorldRemoveInvisibleWalls = function(){
+  		return {};
+  	}
 
 	worker.getReverseEnum = function(enumMap){
 		var output = {};
