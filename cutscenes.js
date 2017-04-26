@@ -52,6 +52,7 @@ var createCSEditor = function(){
 			WorldAction: {
 				WorldSpawnInvisibleWalls: 0,
 				WorldRemoveInvisibleWalls: 1,
+				TransitionLevel: 2,
 			}
 		};
 
@@ -67,6 +68,8 @@ var createCSEditor = function(){
 			XDamping: "X Damping",
 			YDamping: "Y Damping",
 			TargetLocation: "Target Location",
+			TargetLevel: "Level To Travel To",
+			SaveAsCompleted: "Save As Completed",
 			Duration: "Duration (in seconds)",
 			TargetObject: "Target Object",
 			TargetObjectIndex: "Target Object #",
@@ -217,6 +220,7 @@ var createCSEditor = function(){
                     "SetInteractiveScene": worker.createSetInteractiveScene,
                     "WorldSpawnInvisibleWalls": worker.createWorldSpawnInvisibleWalls,
                     "WorldRemoveInvisibleWalls": worker.createWorldRemoveInvisibleWalls,
+                    "TransitionLevel": worker.createTransitionLevel,
         };
   	}
 
@@ -337,6 +341,13 @@ var createCSEditor = function(){
 
   	worker.createWorldRemoveInvisibleWalls = function(){
   		return {};
+  	}
+
+  	worker.createTransitionLevel = function(){
+  		return {
+  			TargetLevel: "",
+  			SaveAsCompleted: true,
+  		};
   	}
 
 	worker.getReverseEnum = function(enumMap){
