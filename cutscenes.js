@@ -38,6 +38,8 @@ var createCSEditor = function(){
 			CameraAction: {
 				MoveCamera: 0,
 				ShakeCamera:1,
+				CustomCameraBoundsAction:2,
+				ResetCameraBoundsAction: 3,
 			},
 			AvatarAction: {
 				MoveAvatar: 0,
@@ -89,6 +91,8 @@ var createCSEditor = function(){
 			WanderRightBound: "Wander Right Bound",
 			TargetPortal: "Target Portal",
 			PortalState: "Portal State",
+			LowerLeftLocation: "Lower Left Corner",
+			UpperRightLocation: "Upper Right Corner",
 		}
 
 		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
@@ -235,6 +239,8 @@ var createCSEditor = function(){
     	worker.objectTypeGenerators = {
                     "MoveCamera": worker.createMoveCamera,
                     "ShakeCamera": worker.createShakeCamera,
+                    "CustomCameraBoundsAction": worker.createCustomCameraBoundsAction,
+                    "ResetCameraBoundsAction": worker.createResetCameraBoundsAction,
                     "MoveAvatar": worker.createMoveAvatar,
                     "JumpAvatar": worker.createJumpAvatar,
                     "BoundAvatarObject": worker.createBoundAvatarObject,
@@ -286,6 +292,17 @@ var createCSEditor = function(){
   			XDamping: 1,
   			YDamping: 1,
   		};
+  	}
+
+  	worker.createCustomCameraBoundsAction = function(){
+  		return {
+  			LowerLeftLocation: {X: 0, Y: 0},
+  			UpperRightLocation: {X: 0, Y: 0},
+  		};
+  	}
+
+  	worker.createResetCameraBoundsAction = function(){
+  		return {};
   	}
 
   	worker.createMoveNPC = function(){
