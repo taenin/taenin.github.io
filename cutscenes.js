@@ -13,6 +13,8 @@ var createCSEditor = function(){
 		//The types of NPCs that we can spawn / select
 		worker.npcTypes = ["inari"];
 
+		worker.portalTypes = ["Active","Completed","Inactive"];
+
 		//The primary cut scene action enum
 		worker.CutSceneTypeEnum = {
 			StartCutSceneAction: 0,
@@ -21,6 +23,7 @@ var createCSEditor = function(){
 			DialogAction: 3,
 			NPCAction: 4,
 			WorldAction: 5,
+			PortalAction: 6,
 		};
 
 		//The enums for each cut scene action sub tpe
@@ -53,6 +56,9 @@ var createCSEditor = function(){
 				WorldSpawnInvisibleWalls: 0,
 				WorldRemoveInvisibleWalls: 1,
 				TransitionLevel: 2,
+			},
+			PortalAction:{
+				PortalSetState: 0,
 			}
 		};
 
@@ -81,6 +87,8 @@ var createCSEditor = function(){
 			WillWander: "Will Wander?",
 			WanderLeftBound: "Wander Left Bound",
 			WanderRightBound: "Wander Right Bound",
+			TargetPortal: "Target Portal",
+			PortalState: "Portal State",
 		}
 
 		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
@@ -103,6 +111,7 @@ var createCSEditor = function(){
 		worker.displayFieldMapping = {
 			TargetObject: worker.createObjectSelectControl,
 			NPCType: worker.createNPCSelectControl,
+			PortalState: worker.createPortalStateSelectControl,
 		}
 
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
@@ -171,6 +180,27 @@ var createCSEditor = function(){
 		return output.append(dropDown);
 	}
 
+	worker.createPortalStateSelectControl = function(key, actionObject, id){
+		var output = $(document.createElement('div')).addClass("editfield small");
+		var displayName = worker.fieldNameMapping[key] || key;
+		output.append("<div class='outputFieldName-cutscenes'>" + displayName + ":" + "</div>");
+		var select = document.createElement("select");
+		select.setAttribute("id", id);
+		var dropDown = $(select);
+		dropDown.change(() => {
+			var val = $("#" + id).val();
+			actionObject[key] = val;
+			worker.items.update(actionObject);
+		});
+		worker.portalTypes.forEach((selectedType) => {
+			dropDown.append('<option value="' + selectedType +'">' + selectedType + '</option>');
+		})
+		if(actionObject[key]){
+			dropDown.val(actionObject[key]);
+		}
+		return output.append(dropDown);
+	}
+
 	worker.generateDefaultObject = function(actionTypeEnum, actionSubtypeEnum){
 	    var output = {}
 	    var actionString = worker.CutSceneMapNumberToSubType[actionTypeEnum][actionSubtypeEnum];
@@ -221,6 +251,7 @@ var createCSEditor = function(){
                     "WorldSpawnInvisibleWalls": worker.createWorldSpawnInvisibleWalls,
                     "WorldRemoveInvisibleWalls": worker.createWorldRemoveInvisibleWalls,
                     "TransitionLevel": worker.createTransitionLevel,
+                    "PortalSetState": worker.createSetPortalState,
         };
   	}
 
@@ -279,6 +310,13 @@ var createCSEditor = function(){
   			WillWander: false,
   			WanderLeftBound: 0,
   			WanderRightBound: 0,
+  		};
+  	}
+
+  	worker.createSetPortalState = function(){
+  		return {
+  			PortalState: worker.portalTypes[0],
+  			TargetPortal: "levels/levelname.json",
   		};
   	}
 
