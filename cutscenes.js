@@ -15,6 +15,9 @@ var createCSEditor = function(){
 
 		worker.portalTypes = ["Active","Completed","Inactive"];
 
+		worker.FadeTypes = ["Fade In", "Fade Out"];
+		worker.colors = ["Black", "White"];
+
 		//The primary cut scene action enum
 		worker.CutSceneTypeEnum = {
 			StartCutSceneAction: 0,
@@ -58,6 +61,7 @@ var createCSEditor = function(){
 				WorldSpawnInvisibleWalls: 0,
 				WorldRemoveInvisibleWalls: 1,
 				TransitionLevel: 2,
+				FadeInOrOut: 3,
 			},
 			PortalAction:{
 				PortalSetState: 0,
@@ -93,6 +97,7 @@ var createCSEditor = function(){
 			PortalState: "Portal State",
 			LowerLeftLocation: "Lower Left Corner",
 			UpperRightLocation: "Upper Right Corner",
+			FadeSetting: "Fade In / Out",
 		}
 
 		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
@@ -113,9 +118,11 @@ var createCSEditor = function(){
 		//Typically action attributes are specified by text boxes. This mapping allows you to create a DOM element and a callback
 		//Each function must be of the form function(key, actionObject) -> DOM element
 		worker.displayFieldMapping = {
-			TargetObject: worker.createObjectSelectControl,
-			NPCType: worker.createNPCSelectControl,
-			PortalState: worker.createPortalStateSelectControl,
+			TargetObject: worker.createGenericDropDownControl(worker.selectableTypes),
+			NPCType: worker.createGenericDropDownControl(worker.npcTypes),
+			PortalState: worker.createGenericDropDownControl(worker.portalTypes),
+			Color: worker.createGenericDropDownControl(worker.colors),
+			FadeSetting: worker.createGenericDropDownControl(worker.FadeTypes),
 		}
 
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
@@ -161,6 +168,30 @@ var createCSEditor = function(){
 			dropDown.val(actionObject[key]);
 		}
 		return output.append(dropDown);
+	}
+
+	//returns a function that creates a generic drop down control for the given list of selections
+	worker.createGenericDropDownControl = function(listOfSelections){
+		return function(key, actionObject, id){
+			var output = $(document.createElement('div')).addClass("editfield small");
+			var displayName = worker.fieldNameMapping[key] || key;
+			output.append("<div class='outputFieldName-cutscenes'>" + displayName + ":" + "</div>");
+			var select = document.createElement("select");
+			select.setAttribute("id", id);
+			var dropDown = $(select);
+			dropDown.change(() => {
+				var val = $("#" + id).val();
+				actionObject[key] = val;
+				worker.items.update(actionObject);
+			});
+			listOfSelections.forEach((selectedType) => {
+				dropDown.append('<option value="' + selectedType +'">' + selectedType + '</option>');
+			})
+			if(actionObject[key]){
+				dropDown.val(actionObject[key]);
+			}
+			return output.append(dropDown);
+		}
 	}
 
 	worker.createNPCSelectControl = function(key, actionObject, id){
@@ -257,6 +288,7 @@ var createCSEditor = function(){
                     "WorldSpawnInvisibleWalls": worker.createWorldSpawnInvisibleWalls,
                     "WorldRemoveInvisibleWalls": worker.createWorldRemoveInvisibleWalls,
                     "TransitionLevel": worker.createTransitionLevel,
+                    "FadeInOrOut": worker.createFadeInOrOut,
                     "PortalSetState": worker.createSetPortalState,
         };
   	}
@@ -403,6 +435,13 @@ var createCSEditor = function(){
   			TargetLevel: "",
   			SaveAsCompleted: true,
   		};
+  	}
+
+  	worker.createFadeInOrOut = function(){
+  		return {
+  			FadeSetting:worker.FadeTypes[0],
+  			Color: worker.colors[0],
+  		}
   	}
 
 	worker.getReverseEnum = function(enumMap){
