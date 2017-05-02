@@ -11,7 +11,7 @@ var createCSEditor = function(){
 		worker.selectableTypes = ["Turret", "Node", "Spawner"];
 
 		//The types of NPCs that we can spawn / select
-		worker.npcTypes = ["inari"];
+		worker.npcTypes = ["inari", "scout", "evil spirit"];
 
 		worker.portalTypes = ["Active","Completed","Inactive"];
 
