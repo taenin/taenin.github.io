@@ -18,6 +18,8 @@ var createCSEditor = function(){
 		worker.FadeTypes = ["Fade In", "Fade Out"];
 		worker.colors = ["Black", "White"];
 
+		worker.talkingOptions = ["scarf", "not scarf"];
+
 		//The primary cut scene action enum
 		worker.CutSceneTypeEnum = {
 			StartCutSceneAction: 0,
@@ -98,6 +100,7 @@ var createCSEditor = function(){
 			LowerLeftLocation: "Lower Left Corner",
 			UpperRightLocation: "Upper Right Corner",
 			FadeSetting: "Fade In / Out",
+			Speaker: "Who is speaking"
 		}
 
 		//A mapping used when saving values. If a field is listed below, the saved value for that field will be the result of the mapped function call on our target object.
@@ -123,6 +126,7 @@ var createCSEditor = function(){
 			PortalState: worker.createGenericDropDownControl(worker.portalTypes),
 			Color: worker.createGenericDropDownControl(worker.colors),
 			FadeSetting: worker.createGenericDropDownControl(worker.FadeTypes),
+			Speaker: worker.createGenericDropDownControl(worker.talkingOptions),
 		}
 
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
@@ -307,6 +311,7 @@ var createCSEditor = function(){
   	worker.createDisplayTextAction = function(){
   		return {
   			Dialog: "",
+  			Speaker: worker.talkingOptions[0],
   		};
   	}
 
