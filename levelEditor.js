@@ -94,6 +94,7 @@ function createWorker(categoryJSON){
                       "AnimatedDetails" : [],
                       "EnvironmentTiles": [],
                       "Avatar": null,
+                      "Keystone": null,
                       "Nodes": [],
                       "Spawners": [],
                       "Turrets": [],
@@ -1824,6 +1825,18 @@ function createWorker(categoryJSON){
     return avatar;
   };
 
+  worker.createKeystone = function(canvasObject){
+    var keystone = {
+                  "Width": canvasObject.width,
+                  "Height": canvasObject.height,
+                  "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                  "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
+                  "PNGSource": canvasObject.imgSource,
+                  "Position" : worker.getMeterLocationFromCanvasObject(canvasObject)
+                  };
+    return keystone;
+  };
+
   worker.createAnimatedDetail = function(canvasObject){
     var detail = {
                 "SpriteSheet": canvasObject.imgSource,
@@ -2701,6 +2714,7 @@ worker.asyncLoop = function (iterations, func, callback) {
                     "AnimatedDetails" : worker.createAnimatedDetail,
                     "EnvironmentTiles":  worker.createTile,
                     "Avatar":  worker.createAvatar,
+                    "Keystone": worker.createKeystone,
                     "Nodes":  worker.createNode,
                     "Spawners":  worker.createSpawner,
                     "Turrets": worker.createTurret,
