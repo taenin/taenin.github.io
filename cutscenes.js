@@ -13,6 +13,9 @@ var createCSEditor = function(){
 		//The types of NPCs that we can spawn / select
 		worker.npcTypes = ["inari", "scout", "evil spirit"];
 
+		worker.music = ["Big Bad Intro", "Big Bad Outro", "Big Bad Fight Scene Start", "sounds/Main_Menu.mp3", "sounds/Wander.mp3", "sounds/Ambience.mp3", "sounds/Puzzle.mp3", "sounds/05_Dawn.mp3"];
+		worker.sounds = ["sounds/low-swoosh.mp3"];
+
 		worker.portalTypes = ["Active","Completed","Inactive"];
 
 		worker.FadeTypes = ["Fade In", "Fade Out"];
@@ -31,6 +34,7 @@ var createCSEditor = function(){
 			PortalAction: 6,
 			KeystoneActions: 7,
 			BigBadAction: 8,
+			SoundAction: 9,
 		};
 
 		//The enums for each cut scene action sub tpe
@@ -57,6 +61,7 @@ var createCSEditor = function(){
 				AvatarSpawnReflector: 7,
 				AvatarRemoveReflector: 8,
 				AvatarStopMoving: 9,
+				AvatarPlayDead: 10,
 			},
 			DialogAction: {
 				DisplayText: 0
@@ -80,6 +85,10 @@ var createCSEditor = function(){
 				BigBadSetFighting:2,
 				BigBadSpawn: 3,
 				BigBadRemove: 4,
+			},
+			SoundAction: {
+				PlaySound: 0,
+				PlayMusic: 1,
 			}
 		};
 
@@ -140,6 +149,8 @@ var createCSEditor = function(){
 			Color: worker.createGenericDropDownControl(worker.colors),
 			FadeSetting: worker.createGenericDropDownControl(worker.FadeTypes),
 			Speaker: worker.createGenericDropDownControl(worker.talkingOptions),
+			Track: worker.createGenericDropDownControl(worker.music),
+			Sound: worker.createGenericDropDownControl(worker.sounds),
 		}
 
 		worker.CutSceneMapNumberToType = worker.getReverseEnum(worker.CutSceneTypeEnum);
@@ -312,7 +323,10 @@ var createCSEditor = function(){
                     "BigBadMove": worker.createBigBadMove,
                     "BigBadSwipe": worker.createBigBadSwipe,
                     "BigBadSetFighting": worker.createBigBadSetFighting,
-                    "BigBadSpaw": worker.createBigBadSpawn,
+                    "BigBadSpawn": worker.createBigBadSpawn,
+                    "AvatarPlayDead": worker.createAvatarPlayDead,
+                    "PlaySound": worker.createPlaySound,
+                    "PlayMusic": worker.createPlayMusic,
         };
   	}
 
@@ -326,6 +340,23 @@ var createCSEditor = function(){
   			content: "ActionName",
   		};
   	};
+
+  	worker.createPlayMusic = function(){
+  		return {
+  			Track: worker.music[0],
+  		};
+  	}
+
+  	worker.createPlaySound = function(){
+  		return {
+  			Sound: worker.sounds[0],
+  			Volume: 1.0,
+  		};
+  	}
+
+  	worker.createAvatarPlayDead = function(){
+  		return {};
+  	}
 
   	worker.createBigBadMove = function(){
   		return {
@@ -342,7 +373,9 @@ var createCSEditor = function(){
   	}
 
   	worker.createBigBadSpawn = function(){
-  		return {};
+  		return {
+  			TargetLocation: {X: 0, Y: 0},
+  		};
   	}
 
   	worker.createBreakKeystone = function(){
