@@ -29,6 +29,7 @@ var createCSEditor = function(){
 			NPCAction: 4,
 			WorldAction: 5,
 			PortalAction: 6,
+			KeystoneActions: 7,
 		};
 
 		//The enums for each cut scene action sub tpe
@@ -67,6 +68,10 @@ var createCSEditor = function(){
 			},
 			PortalAction:{
 				PortalSetState: 0,
+			},
+			KeystoneActions:{
+				BreakKeystone: 0,
+				PickUpKeystone: 1,
 			}
 		};
 
@@ -294,6 +299,8 @@ var createCSEditor = function(){
                     "TransitionLevel": worker.createTransitionLevel,
                     "FadeInOrOut": worker.createFadeInOrOut,
                     "PortalSetState": worker.createSetPortalState,
+                    "BreakKeystone": worker.createBreakKeystone,
+                    "PickUpKeystone": worker.createPickUpKeystone,
         };
   	}
 
@@ -307,6 +314,14 @@ var createCSEditor = function(){
   			content: "ActionName",
   		};
   	};
+
+  	worker.createBreakKeystone = function(){
+  		return {};
+  	}
+
+  	worker.createPickUpKeystone = function(){
+  		return {};
+  	}
 
   	worker.createDisplayTextAction = function(){
   		return {
