@@ -245,7 +245,7 @@ function createWorker(categoryJSON){
     if(positions > currentPosition && zLevel!=0){
       worker.canvas.moveTo(canvasObject, positions);
       if(worker.state.hasOwnProperty(canvasObject.categoryType)){
-        worker.arrayMove(worker.state[canvasObject.categoryType], (worker.zCounts[zLevel]) -1, (worker.zCounts[zLevel] -1 - (positions - currentPosition)));
+        worker.arrayMove(worker.state[canvasObject.categoryType], (worker.zCounts[zLevel] -1 - (positions - currentPosition)),(worker.zCounts[zLevel]) -1);
       }
     }
   }
