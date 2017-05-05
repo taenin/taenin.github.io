@@ -30,6 +30,7 @@ var createCSEditor = function(){
 			WorldAction: 5,
 			PortalAction: 6,
 			KeystoneActions: 7,
+			BigBadAction: 8,
 		};
 
 		//The enums for each cut scene action sub tpe
@@ -72,6 +73,13 @@ var createCSEditor = function(){
 			KeystoneActions:{
 				BreakKeystone: 0,
 				PickUpKeystone: 1,
+			},
+			BigBadAction:{
+				BigBadMove: 0,
+				BigBadSwipe: 1,
+				BigBadSetFighting:2,
+				BigBadSpawn: 3,
+				BigBadRemove: 4,
 			}
 		};
 
@@ -301,6 +309,10 @@ var createCSEditor = function(){
                     "PortalSetState": worker.createSetPortalState,
                     "BreakKeystone": worker.createBreakKeystone,
                     "PickUpKeystone": worker.createPickUpKeystone,
+                    "BigBadMove": worker.createBigBadMove,
+                    "BigBadSwipe": worker.createBigBadSwipe,
+                    "BigBadSetFighting": worker.createBigBadSetFighting,
+                    "BigBadSpaw": worker.createBigBadSpawn,
         };
   	}
 
@@ -314,6 +326,24 @@ var createCSEditor = function(){
   			content: "ActionName",
   		};
   	};
+
+  	worker.createBigBadMove = function(){
+  		return {
+  			TargetLocation: {X: 0, Y: 0},
+  		};
+  	}
+
+  	worker.createBigBadSwipe = function(){
+  		return {};
+  	}
+
+  	worker.createBigBadSetFighting = function(){
+  		return {};
+  	}
+
+  	worker.createBigBadSpawn = function(){
+  		return {};
+  	}
 
   	worker.createBreakKeystone = function(){
   		return {};
