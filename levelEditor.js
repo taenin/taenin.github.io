@@ -215,6 +215,41 @@ function createWorker(categoryJSON){
     }
   }
 
+  worker.sendToBackZLevel = function(canvasObject){
+    currentPosition = worker.canvas.getObjects().indexOf(canvasObject);
+    zLevel = worker.getZLevel(canvasObject);
+    positions = 0;
+    for(var key in worker.zCounts){
+      if(key < zLevel && worker.zCounts.hasOwnProperty(String(key))){
+        positions += worker.zCounts[String(key)];
+      }
+    }
+    if(positions < currentPosition && zLevel!=0){
+      worker.canvas.moveTo(canvasObject, positions);
+      if(worker.state.hasOwnProperty(canvasObject.categoryType)){
+        worker.arraySwap(worker.state[canvasObject.categoryType], currentPosition - positions, 0);
+      }
+    }
+  }
+
+  worker.bringToFrontZLevel = function(canvasObject){
+    var currentPosition = worker.canvas.getObjects().indexOf(canvasObject);
+    var zLevel = worker.getZLevel(canvasObject);
+    var positions = -1;
+    //positions += worker.gridLines.length;
+    for(var key in worker.zCounts){
+      if(key <= zLevel && worker.zCounts.hasOwnProperty(String(key))){
+        positions += worker.zCounts[String(key)];
+      }
+    }
+    if(positions > currentPosition && zLevel!=0){
+      worker.canvas.moveTo(canvasObject, positions);
+      if(worker.state.hasOwnProperty(canvasObject.categoryType)){
+        worker.arraySwap(worker.state[canvasObject.categoryType], (worker.zCounts[zLevel]) -1, (worker.zCounts[zLevel] -1 - (positions - currentPosition)));
+      }
+    }
+  }
+
   worker.moveDownZLevel = function(canvasObject){
     currentPosition = worker.canvas.getObjects().indexOf(canvasObject);
     zLevel = worker.getZLevel(canvasObject);
@@ -2257,6 +2292,8 @@ function createWorker(categoryJSON){
   worker.updateDynamicControls = function(parentDivId, wrapperDivId, controlObject, previousKeys, category){
     var moveZUpID = "inari_Zup";
     var moveZDownID = "inari_Zdown";
+    var zToFront = "inari_ZToFront";
+    var zToBack = "inari_ZToBack";
     var fieldList = [];
     var menusToUpdate = []; //This is a list of jQuery selections of menus. Call .change() on them after they are rendered.
     var canvasObject = worker.canvas.getActiveObject();
@@ -2318,7 +2355,9 @@ function createWorker(categoryJSON){
     if(category && worker.getZLevelFromCategory(category) != 0){
         //This means we should allow the user to adjust depth on this object.
         latestField = $(document.createElement('div')).addClass("editfield large").append("<button class='Zbutton' id=" + moveZUpID +">Increase Z level</button>")
-                                                                            .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>");
+                                                                            .append("<button class='Zbutton' id=" + moveZDownID +">Decrease Z level</button>")
+                                                                            .append("<button class='Zbutton' id=" + zToFront + ">Bring to Front</button>")
+                                                                            .append("<button class='Zbutton' id=" + zToBack + ">Send to Back</button>");
         main.append(latestField);
     }
     $("#" + parentDivId).append(main);
@@ -2330,6 +2369,12 @@ function createWorker(categoryJSON){
       });
       $("#"+ moveZDownID).click(function(){
         worker.moveDownZLevel(canvasObject);
+      });
+      $("#"+ zToBack).click(function(){
+        worker.sendToBackZLevel(canvasObject);
+      });
+      $("#"+ zToFront).click(function(){
+        worker.bringToFrontZLevel(canvasObject);
       });
     }
     //Add other handlers
