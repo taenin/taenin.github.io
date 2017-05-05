@@ -227,7 +227,7 @@ function createWorker(categoryJSON){
     if(positions < currentPosition && zLevel!=0){
       worker.canvas.moveTo(canvasObject, positions);
       if(worker.state.hasOwnProperty(canvasObject.categoryType)){
-        worker.arraySwap(worker.state[canvasObject.categoryType], currentPosition - positions, 0);
+        worker.arrayMove(worker.state[canvasObject.categoryType], currentPosition - positions, 0);
       }
     }
   }
@@ -245,7 +245,7 @@ function createWorker(categoryJSON){
     if(positions > currentPosition && zLevel!=0){
       worker.canvas.moveTo(canvasObject, positions);
       if(worker.state.hasOwnProperty(canvasObject.categoryType)){
-        worker.arraySwap(worker.state[canvasObject.categoryType], (worker.zCounts[zLevel]) -1, (worker.zCounts[zLevel] -1 - (positions - currentPosition)));
+        worker.arrayMove(worker.state[canvasObject.categoryType], (worker.zCounts[zLevel]) -1, (worker.zCounts[zLevel] -1 - (positions - currentPosition)));
       }
     }
   }
@@ -291,6 +291,17 @@ function createWorker(categoryJSON){
     targetArray[indA] = targetArray[indB];
     targetArray[indB] = temp;
   }
+
+  worker.arrayMove = function (targetArray, old_index, new_index) {
+    if (new_index >= targetArray.length) {
+        var k = new_index - targetArray.length;
+        while ((k--) + 1) {
+            targetArray.push(undefined);
+        }
+    }
+    targetArray.splice(new_index, 0, targetArray.splice(old_index, 1)[0]);
+    return targetArray; // for testing purposes
+  };
 
   worker.getZLevel = function(canvasObject){
     return worker.getZLevelFromCategory(canvasObject.categoryType);
