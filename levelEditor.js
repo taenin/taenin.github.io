@@ -17,6 +17,9 @@ function createWorker(categoryJSON){
   Call this function EVERY TIME we load in a new file!
   ******************************************************/
   worker.refresh = function(){
+    //refresh our action queue
+    worker.undoQueue.refresh();
+
     //initialize all of the variables we need to start things off
     worker.setDrawingMode(false);
     worker.desiredState = {};
@@ -316,7 +319,15 @@ function createWorker(categoryJSON){
     }
   }
 
-  worker.removeObject = function(canvasObject){
+  worker.removeObject = function(canvasObject, addToActionQueue=true){
+    //Craft a payload for our undo queue
+    var undo = () =>{
+      worker.addObject(canvasObject, false);
+      //TODO: handle Z levels here
+    };
+    var redo = () =>{
+      worker.removeObject(canvasObject, false);
+    };
     worker.canvas.remove(canvasObject);
     var zLevel = worker.getZLevel(canvasObject);
     if(Object.prototype.toString.call( worker.state[canvasObject.categoryType] ) === "[object Array]"){
@@ -339,9 +350,18 @@ function createWorker(categoryJSON){
       }
 
     }
+    addToActionQueue && worker.undoQueue.createAction(redo, undo);
   }
 
-  worker.addObject = function(canvasObject){
+  worker.addObject = function(canvasObject, addToActionQueue=true){
+    //Craft a payload for our undo queue
+    var undo = () =>{
+      worker.removeObject(canvasObject, false);
+    };
+    var redo = () =>{
+      worker.addObject(canvasObject, false);
+      //TODO: handle z levels here
+    };
     var zLevel = worker.getZLevel(canvasObject);
     if(worker.state.hasOwnProperty(canvasObject.categoryType)){
       //canvasObject.outputObject = worker.generateDefaulfObject(canvasObject);
@@ -363,13 +383,20 @@ function createWorker(categoryJSON){
           worker.zCounts[String(zLevel)] +=1;
         }
         else{
-          console.log("REMOVE!");
+          //In the case of objects that can only have one occurance, remove them before placing another.
+          //This means we have to override our "undo" function, as undoing is just placing another object at a different location
+          var oldObject = worker.state[canvasObject.categoryType];
           worker.canvas.remove(worker.state[canvasObject.categoryType]);
+          undo = () =>{
+            worker.addObject(oldObject, false);
+          }
         }
         worker.state[canvasObject.categoryType] = canvasObject;
       }
       //console.log("Move to: " + positions);
       worker.canvas.moveTo(canvasObject, positions);
+      //Append our action to the undo queue
+      addToActionQueue && worker.undoQueue.createAction(redo, undo);
     }
   }
 
@@ -1498,6 +1525,15 @@ function createWorker(categoryJSON){
     $(document).keydown(function(e) {
       if (e.target.nodeName != 'INPUT') {
         keys[e.which] = true;
+        //Check for control Z
+        if(e.which === 90 && e.ctrlKey){
+          console.log("undo");
+          worker.undoQueue.undo();
+        }
+        else if(e.which === 89 && e.ctrlKey){
+          console.log("redo");
+          worker.undoQueue.redo();
+        }
       }
     }).keyup(function(e) {
       if (e.target.nodeName != 'INPUT') {
@@ -1564,12 +1600,22 @@ function createWorker(categoryJSON){
           $("#categorySelect").change();
       }
       else if(e.keyCode == 46 && selectedGroup){
+        //This is a batch action, so we update our undoQueue here
           objectList = selectedGroup.getObjects();
           worker.canvas.deactivateAll().renderAll();
-          for(var i = 0; i < objectList.length; i++){
-            worker.removeObject(objectList[i]);
+          var redo = () => {
+            for(var i = 0; i < objectList.length; i++){
+              worker.removeObject(objectList[i], false);
+            }
+            $("#categorySelect").change();
+          };
+          var undo = () =>{
+            for(var i = 0; i < objectList.length; i++){
+              worker.addObject(objectList[i], false);
+            }
           }
-          $("#categorySelect").change();
+          redo();
+          worker.undoQueue.createAction(redo, undo);
       }
       worker.groupContents = [];
     });
@@ -2801,6 +2847,7 @@ worker.asyncLoop = function (iterations, func, callback) {
     });
   }
   worker.init = function(){
+    worker.undoQueue = createActionQueue();
     worker.refresh();
     worker.initializeLevelTypeDropDown();
     worker.initializeTypeGenerators();
@@ -3135,6 +3182,7 @@ function createActionQueue(){
   /** Refreshes all instance variables of action queue to a clean slate **/
   actionQueue.refresh = () =>{
     //Create a dummy header action with no-op functions
+    actionQueue.mostRecentAction = null;
     actionQueue.mostRecentAction = actionQueue.createAction( () => {}, () => {});
   };
 
