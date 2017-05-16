@@ -2575,7 +2575,7 @@ function createWorker(categoryJSON){
           if(!desiredState.hasOwnProperty(category)){
             desiredState[category] = {};
           }
-          worker.populateImage(newState[category], category, -1, desiredState);
+          worker.populateImage(newState[category], category, -1, desiredState, undefined);
         }
       }
     }/*
@@ -2626,14 +2626,14 @@ function createWorker(categoryJSON){
           for(var i =0; i < desiredState[category].length; i++){
             oImg = desiredState[category][i];
             worker.canvas.add(oImg);
-            worker.addObject(oImg);
+            worker.addObject(oImg, false);
             $("#categorySelect").change();
           }
         }
         else if(desiredState.hasOwnProperty(category) && Object.prototype.toString.call( desiredState[category] ) === "[object Object]" && desiredState[category]){
           oImg = desiredState[category];
             worker.canvas.add(oImg);
-            worker.addObject(oImg);
+            worker.addObject(oImg, false);
             $("#categorySelect").change(); 
         }
       }
