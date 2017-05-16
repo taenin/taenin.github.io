@@ -3128,13 +3128,14 @@ function createActionQueue(){
 
   /** Initializes the action queue **/
   actionQueue.init = () =>{
-    this.refresh();
+    actionQueue.refresh();
+    return actionQueue;
   };
 
   /** Refreshes all instance variables of action queue to a clean slate **/
   actionQueue.refresh = () =>{
     //Create a dummy header action with no-op functions
-    this.mostRecentAction = this.createActionI( () => {}, () => {});
+    actionQueue.mostRecentAction = actionQueue.createAction( () => {}, () => {});
   };
 
   /** This function creates a new action and places it after the mostRecentAction on the queue.
@@ -3145,39 +3146,39 @@ function createActionQueue(){
   actionQueue.createAction = (redo, undo) =>{
     const latestAction = {
       nextAction: null,
-      previousAction: this.mostRecentAction,
+      previousAction: actionQueue.mostRecentAction,
       redo: redo,
       undo: undo,
     };
     //If we already have an action in the queue, link our actions.
-    if(this.mostRecentAction){
-      this.mostRecentAction.nextAction = latestAction;
+    if(actionQueue.mostRecentAction){
+      actionQueue.mostRecentAction.nextAction = latestAction;
     }
     //Otherwise this is our first action, so we link it to itself
     else{
       latestAction.previousAction = latestAction;
     }
     //Set this action as our most recent action
-    this.mostRecentAction = latestAction;
+    actionQueue.mostRecentAction = latestAction;
     return latestAction;
   };
 
 
   /** Undoes the current action in the queue **/
   actionQueue.undo = ()=>{
-    if(this.mostRecentAction){
-      this.mostRecentAction.undo();
-      this.mostRecentAction = this.mostRecentAction.previousAction;
+    if(actionQueue.mostRecentAction){
+      actionQueue.mostRecentAction.undo();
+      actionQueue.mostRecentAction = actionQueue.mostRecentAction.previousAction;
     }
   };
 
   /** Redo's the parent of the current action in the queue **/
   actionQueue.redo = () =>{
-    if(this.mostRecentAction && this.mostRecentAction.nextAction){
-      this.mostRecentAction.nextAction.redo();
-      this.mostRecentAction = this.mostRecentAction.nextAction;
+    if(actionQueue.mostRecentAction && actionQueue.mostRecentAction.nextAction){
+      actionQueue.mostRecentAction.nextAction.redo();
+      actionQueue.mostRecentAction = actionQueue.mostRecentAction.nextAction;
     }
   };
 
-  return actionQueue;
+  return actionQueue.init();
 }
