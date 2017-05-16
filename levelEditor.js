@@ -320,10 +320,12 @@ function createWorker(categoryJSON){
   }
 
   worker.removeObject = function(canvasObject, addToActionQueue=true){
+    //The old position in the global canvas
+    const currentPosition = worker.canvas.getObjects().indexOf(canvasObject);
     //Craft a payload for our undo queue
     var undo = () =>{
       worker.addObject(canvasObject, false);
-      //TODO: handle Z levels here
+      //We don't handle Z level here as it's unecessary
     };
     var redo = () =>{
       worker.removeObject(canvasObject, false);
@@ -334,6 +336,15 @@ function createWorker(categoryJSON){
       if(worker.state.hasOwnProperty(canvasObject.categoryType)){
         var targetIndex = worker.state[canvasObject.categoryType].indexOf(canvasObject);
         if(targetIndex>-1){
+          //We're an array of objects, so we handle the Z level in a special cas for UNDO here:
+          undo = () =>{
+            worker.addObject(canvasObject, false);
+            //Move the displayed Z level (canvas level)
+            worker.canvas.moveTo(canvasObject, currentPosition);
+            //Update our internal Z level
+            var recentIndex = worker.state[canvasObject.categoryType].indexOf(canvasObject);
+            worker.arrayMove(worker.state[canvasObject.categoryType], recentIndex, targetIndex);
+          };
           worker.state[canvasObject.categoryType].splice(targetIndex, 1);
           if(worker.zCounts.hasOwnProperty(String(zLevel))){
             worker.zCounts[String(zLevel)] -=1;
@@ -1529,10 +1540,12 @@ function createWorker(categoryJSON){
         if(e.which === 90 && e.ctrlKey){
           console.log("undo");
           worker.undoQueue.undo();
+          $("#categorySelect").change();
         }
         else if(e.which === 89 && e.ctrlKey){
           console.log("redo");
           worker.undoQueue.redo();
+          $("#categorySelect").change();
         }
       }
     }).keyup(function(e) {
