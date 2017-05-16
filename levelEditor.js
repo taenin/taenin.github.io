@@ -1538,12 +1538,10 @@ function createWorker(categoryJSON){
         keys[e.which] = true;
         //Check for control Z
         if(e.which === 90 && e.ctrlKey){
-          console.log("undo");
           worker.undoQueue.undo();
           $("#categorySelect").change();
         }
         else if(e.which === 89 && e.ctrlKey){
-          console.log("redo");
           worker.undoQueue.redo();
           $("#categorySelect").change();
         }
