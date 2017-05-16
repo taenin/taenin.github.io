@@ -3123,3 +3123,61 @@ function download(filename, text) {
   document.body.removeChild(element);
 }
 
+function createActionQueue(){
+  var actionQueue = {};
+
+  /** Initializes the action queue **/
+  actionQueue.init = () =>{
+    this.refresh();
+  };
+
+  /** Refreshes all instance variables of action queue to a clean slate **/
+  actionQueue.refresh = () =>{
+    //Create a dummy header action with no-op functions
+    this.mostRecentAction = this.createActionI( () => {}, () => {});
+  };
+
+  /** This function creates a new action and places it after the mostRecentAction on the queue.
+      Any actions after our mostRecentAction will be orphaned.
+      "redo" is a function that executes the current action
+      "undo" is a function that undoes the current action
+   **/
+  actionQueue.createAction = (redo, undo) =>{
+    const latestAction = {
+      nextAction: null,
+      previousAction: this.mostRecentAction,
+      redo: redo,
+      undo: undo,
+    };
+    //If we already have an action in the queue, link our actions.
+    if(this.mostRecentAction){
+      this.mostRecentAction.nextAction = latestAction;
+    }
+    //Otherwise this is our first action, so we link it to itself
+    else{
+      latestAction.previousAction = latestAction;
+    }
+    //Set this action as our most recent action
+    this.mostRecentAction = latestAction;
+    return latestAction;
+  };
+
+
+  /** Undoes the current action in the queue **/
+  actionQueue.undo = ()=>{
+    if(this.mostRecentAction){
+      this.mostRecentAction.undo();
+      this.mostRecentAction = this.mostRecentAction.previousAction;
+    }
+  };
+
+  /** Redo's the parent of the current action in the queue **/
+  actionQueue.redo = () =>{
+    if(this.mostRecentAction && this.mostRecentAction.nextAction){
+      this.mostRecentAction.nextAction.redo();
+      this.mostRecentAction = this.mostRecentAction.nextAction;
+    }
+  };
+
+  return actionQueue;
+}
