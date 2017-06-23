@@ -731,7 +731,7 @@ input[type=checkbox]:checked:after {
 					padding: 4px 0px;
 				}
 
-				.toolPopulate, .selectPopulate {
+				.toolPopulate, #selectPopulate {
 					height: calc(100% - 96px - 32px);
 					overflow: auto;
 					padding: 8px;
