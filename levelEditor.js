@@ -1764,8 +1764,19 @@ function createWorker(categoryJSON){
     }
   };
 
+  worker.initializeBackgroundDropDown = function(){
+    worker.removeAllOptions("#backgroundSelect");
+    worker.drawData.BackgroundLayers.img.forEach( (backgroundCategory) =>{
+      worker.addToDropDown("#backgroundSelect", backgroundCategory.name);
+    });
+  }
+
   worker.updateLevelType = function(val){
     $("#levelTypeSelect").val(val);
+  }
+
+  worker.updateBackgroundSet = function(val){
+    $("#backgroundSelect").val(val);
   }
 
   worker.initializeWorldControls = function(){
@@ -2559,6 +2570,9 @@ function createWorker(categoryJSON){
         }
         else if(category==="Properties"){
           worker.updateLevelType(worker.levelTypes[newState.Properties.Type]);
+          if(newState.Properties.BackgroundSet){
+            worker.updateBackgroundSet(newState.Properties.BackgroundSet);
+          }
           $("#leftLevel").val(newState.Properties.LeftLevel);
           $("#rightLevel").val(newState.Properties.RightLevel);
           $("#dynamicLightSwitch").prop("checked", newState.Properties.UseDynamicLighting === true);
@@ -2760,6 +2774,7 @@ worker.asyncLoop = function (iterations, func, callback) {
     };
     output.Properties = {
       "Type": worker.getLevelTypeEnum($("#levelTypeSelect").val()),
+      "BackgroundSet": $("#backgroundSelect").val(),
       "LeftLevel": $("#leftLevel").val(),
       "RightLevel": $("#rightLevel").val(),
       "UseDynamicLighting": $("#dynamicLightSwitch").is(":checked"),
@@ -2905,6 +2920,9 @@ $(document).ready(function(){
     }
     //----
     worker.drawData = data;
+    //Initialize the BG dropdown
+    worker.initializeBackgroundDropDown();
+
     worker.removeAllOptions("#categorySelect");
     worker.removeAllOptions("#categoryTool");
     worker.removeAllOptions("#subcategorySelect");
