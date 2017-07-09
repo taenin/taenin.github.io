@@ -62,6 +62,7 @@ var createCSEditor = function(){
 				AvatarRemoveReflector: 8,
 				AvatarStopMoving: 9,
 				AvatarPlayDead: 10,
+				TeleportAvatar: 11,
 			},
 			DialogAction: {
 				DisplayText: 0
@@ -301,6 +302,7 @@ var createCSEditor = function(){
                     "CustomCameraBoundsAction": worker.createCustomCameraBoundsAction,
                     "ResetCameraBoundsAction": worker.createResetCameraBoundsAction,
                     "MoveAvatar": worker.createMoveAvatar,
+                    "TeleportAvatar": worker.createTeleportAvatar,
                     "JumpAvatar": worker.createJumpAvatar,
                     "BoundAvatarObject": worker.createBoundAvatarObject,
                     "BoundAvatarLocation": worker.createBoundAvatarLocation,
@@ -460,6 +462,12 @@ var createCSEditor = function(){
   	}
 
   	worker.createMoveAvatar = function(){
+  		return {
+  			TargetLocation: {X: 0, Y: 0},
+  		};
+  	};
+
+  	worker.createTeleportAvatar = function(){
   		return {
   			TargetLocation: {X: 0, Y: 0},
   		};
