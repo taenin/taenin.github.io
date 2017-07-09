@@ -107,6 +107,7 @@ function createWorker(categoryJSON){
                       "Portals": [],
                       "CheckPoints": [],
                       "CutsceneTriggers": [],
+                      "NPCs": []
                    };
 
 
@@ -1951,6 +1952,20 @@ function createWorker(categoryJSON){
     return keystone;
   };
 
+  worker.createNPC = function(canvasObject){
+    var npc = {
+                  "PNGSource": canvasObject.imgSource,
+                  "Width": canvasObject.width,
+                  "Height": canvasObject.height,
+                  "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
+                  "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
+                  "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
+                  "Radius": 0.0,
+                  "Text": "",
+    };
+    return npc;
+  };
+
   worker.createAnimatedDetail = function(canvasObject){
     var detail = {
                 "SpriteSheet": canvasObject.imgSource,
@@ -2852,7 +2867,8 @@ worker.asyncLoop = function (iterations, func, callback) {
                     "Portals": worker.createPortal,
                     "CheckPoints": worker.createCheckPoint,
                     "Receptacles" : worker.createReceptacle,
-                    "CutsceneTriggers": worker.createCutsceneTrigger
+                    "CutsceneTriggers": worker.createCutsceneTrigger,
+                    "NPCs": worker.createNPC
                  };
   }
 
