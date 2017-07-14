@@ -1456,26 +1456,29 @@ function createWorker(categoryJSON){
     $(".tab").click(toggleCanvasParamTab);
 
     // PHIL: toggle tool tab
-    toggleToolTab = function() {
+    updateActiveToolTab = function() {
       if ($(this).hasClass("active")) {
         // do nothing
       } else {
         // make this tab active, deactivate others
         $(".toolTab").removeClass("active");
         $(this).addClass("active");
+      }
+      showToolTab();
+    };
 
-        if ($(this).attr("id") == "toolTabA") {
+    showToolTab = function() {
+        if ($("#toolTabA").hasClass("active")) {
           $("#tilesetWrapper").show();
           $("#propertiesWrapper").hide();
-        } else if (($(this).attr("id") == "toolTabB")) {
+        } else if ($("#toolTabB").hasClass("active")) {
           $("#tilesetWrapper").hide();
           $("#propertiesWrapper").show();
-        } 
-      }
+        }
     };
 
     // on click event for toggling tool tab
-    $(".toolTab").click(toggleToolTab);
+    $(".toolTab").click(updateActiveToolTab);
 
     // panning with right mouse click
     function startPan(event) {
@@ -1657,9 +1660,10 @@ function createWorker(categoryJSON){
       if(selectedObject){
         //This means that only one object is selected rather than a group
         if(worker.hoverImage){
-          //worker.deselect();
+          // worker.deselect();
           worker.addObject(selectedObject);
           worker.updateDropDownID(selectedObject.imgSource);
+          worker.canvas.deactivateAll();
           worker.redrawSelection();
 
         }
@@ -1670,6 +1674,9 @@ function createWorker(categoryJSON){
         $("#subcategorySelect").val(selectedObject.dropDownID);
         //$("#subcategorySelect").change();
         worker.drawSelection();
+
+        // PHIL
+        worker.autoToggleToolTab();
       }
       else if(selectedGroup){
 
@@ -1691,6 +1698,9 @@ function createWorker(categoryJSON){
       worker.groupContents = [];    
         
       $("#categorySelect").change();
+
+      // PHIL
+      worker.autoToggleToolTab();
     });
 
     $("#canvas").mouseleave(function(){
@@ -2520,6 +2530,20 @@ function createWorker(categoryJSON){
     if(category){
       worker.updateDynamicControls("selectPopulate", "selectPopulateCanvas", canvasObject.outputObject, [], category);
     }
+  }
+
+  worker.autoToggleToolTab = function() {
+    // check if there is an active canvas object
+    if (worker.canvas.getActiveObject()) {
+      // properties active
+      $("#toolTabA").removeClass("active");
+      $("#toolTabB").addClass("active");
+    } else {
+      // tileset active
+      $("#toolTabB").removeClass("active");
+      $("#toolTabA").addClass("active");
+    }
+    showToolTab();
   }
 
   worker.getCanvasObjectByCategoryAndID = function(category, dropDownID){
