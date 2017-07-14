@@ -1960,24 +1960,20 @@ function createWorker(categoryJSON){
                   "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
                   "PNGSource": canvasObject.imgSource,
                   "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
-                  "NPCType": worker.createGenericDropDownField(),
                   "NPCName": "",                  
-                  "Radius": 0.0,
+                  "Radius": 6.0,
                   "WillWander": worker.createGenericDropDownField(),
     };
     //Set the drop down fields
-    npc.NPCType.options.Radial = {
-      TriggerRadius: 5,
+    npc.WillWander.options.true = {
+      LeftBound: 0,
+      RightBound: 0,
     };
     //Set the drop down fields
-    npc.NPCType.options.BoundaryLine = {
-      UseX: true,
-      UseY: true,
-      LessThanX: true,
-      LessThanY: true,
+    npc.WillWander.options.false = {
     };
     //Set the default drop down field
-    npc.NPCType.currentSelection = "BoundaryLine";
+    npc.WillWander.currentSelection = "true";
     return npc;
   };
 
