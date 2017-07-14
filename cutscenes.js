@@ -11,7 +11,7 @@ var createCSEditor = function(){
 		worker.selectableTypes = ["Turret", "Node", "Spawner"];
 
 		//The types of NPCs that we can spawn / select
-		worker.npcTypes = ["inari", "scout", "evil spirit"];
+		worker.npcTypes = ["inari", "scout", "evilspirit", "signpost"];
 
 		worker.music = ["Big Bad Intro", "Big Bad Outro", "Big Bad Fight Scene Start", "sounds/Main_Menu.mp3", "sounds/Wander.mp3", "sounds/Ambience.mp3", "sounds/Puzzle.mp3", "sounds/05_Dawn.mp3"];
 		worker.sounds = ["sounds/low-swoosh.mp3"];
