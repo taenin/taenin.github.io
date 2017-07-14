@@ -1954,15 +1954,30 @@ function createWorker(categoryJSON){
 
   worker.createNPC = function(canvasObject){
     var npc = {
-                  "PNGSource": canvasObject.imgSource,
                   "Width": canvasObject.width,
                   "Height": canvasObject.height,
                   "WidthInMeters": worker.convertPixelsToMeters(canvasObject.width),
                   "HeightInMeters": worker.convertPixelsToMeters(canvasObject.height),
+                  "PNGSource": canvasObject.imgSource,
                   "Position": worker.getMeterLocationFromCanvasObject(canvasObject),
+                  "NPCType": worker.createGenericDropDownField(),
+                  "NPCName": "",                  
                   "Radius": 0.0,
-                  "Text": "",
+                  "WillWander": worker.createGenericDropDownField(),
     };
+    //Set the drop down fields
+    npc.NPCType.options.Radial = {
+      TriggerRadius: 5,
+    };
+    //Set the drop down fields
+    npc.NPCType.options.BoundaryLine = {
+      UseX: true,
+      UseY: true,
+      LessThanX: true,
+      LessThanY: true,
+    };
+    //Set the default drop down field
+    npc.NPCType.currentSelection = "BoundaryLine";
     return npc;
   };
 
