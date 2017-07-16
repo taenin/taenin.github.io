@@ -434,11 +434,6 @@ input[type=checkbox]:checked:after {
 			    vertical-align: top;
 			}
 
-				.fileToolbarSymbolWrapper.loading {
-					background: url(../img/progress.gif);
-					background-size: 100% 100%;
-				}
-
 				.fileToolbarSymbolWrapper.done {
 					background: url(../img/done.png);
 					background-size: 100% 100%;
@@ -446,6 +441,10 @@ input[type=checkbox]:checked:after {
 
 			#save {
 				background: none;
+			}
+
+			#load {
+				position: relative;
 			}
 
 
