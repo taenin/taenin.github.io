@@ -426,6 +426,28 @@ input[type=checkbox]:checked:after {
 				margin-right: 8px;
 			}
 
+			.fileToolbarSymbolWrapper {
+				display: inline-block;
+			    margin-left: 8px;
+			    height: 100%;
+			    width: 32px;
+			    vertical-align: top;
+			}
+
+				.fileToolbarSymbolWrapper.loading {
+					background: url(../img/progress.gif);
+					background-size: 100% 100%;
+				}
+
+				.fileToolbarSymbolWrapper.done {
+					background: url(../img/done.png);
+					background-size: 100% 100%;
+				}
+
+			#save {
+				background: none;
+			}
+
 
 /*MAIN BODY*/
 .wrapper {

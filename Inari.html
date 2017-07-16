@@ -16,6 +16,8 @@
 	</script>
 	<script type="text/javascript" src = "levelEditor.js">
 	</script>
+	<script type="text/javascript" src = "http://spin.js.org/spin.js">
+	</script>
 </head>
 
 <body>
@@ -114,10 +116,12 @@
 			<div class="fileToolbarBlock">
 				<input type="file" id="fileinput"/>
 		        <input type='button' id='btnLoad' value='Load Level'>
+		        <div id="load" class="fileToolbarSymbolWrapper"></div>
 	    	</div>
 	    	<div class = "fileToolbarBlock">
 	        	<input type="text" id="levelName" placeholder="saveFile.json">
 	        	<input type="button" id="btnSave" value="Save Level">
+	        	<div id="save" class="fileToolbarSymbolWrapper"></div>
 	    	</div>
 	    </div>
 

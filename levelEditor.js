@@ -2703,6 +2703,11 @@ function createWorker(categoryJSON){
       }
     }
     worker.canvas.renderAll();
+
+    // PHIL: loading UI
+    console.log("Done!");
+    $(".fileToolBarSymbolWrapper").removeClass("loading");
+    $(".fileToolBarSymbolWrapper").addClass("done");
   }
 
   worker.verifyPopulated = function(targetSize){
@@ -2867,10 +2872,14 @@ worker.asyncLoop = function (iterations, func, callback) {
   }
 
 
-  worker.receivedFile = function() {           
-     worker.refresh();
-     var newState = JSON.parse(fr.result);
-     worker.populate(newState);
+  worker.receivedFile = function() {   
+    // PHIL: loading UI
+    $(".fileToolBarSymbolWrapper").removeClass("done");
+    $(".fileToolBarSymbolWrapper").addClass("loading");
+
+    worker.refresh();
+    var newState = JSON.parse(fr.result);
+    worker.populate(newState);
   } 
 
   worker.snapToGrid = function (parameter){
@@ -3050,9 +3059,6 @@ $(document).ready(function(){
   });
 
 });
-
-
-
 
 function categoryToolUpdate(){
   worker.removeAllOptions("#subcategoryTool");
