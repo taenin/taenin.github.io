@@ -2708,6 +2708,8 @@ function createWorker(categoryJSON){
     console.log("Done!");
     $("#load").data("spinner").stop();
     $(".fileToolBarSymbolWrapper").addClass("done");
+    // overlay
+    worker.hideLoadingOverlay();
   }
 
   worker.verifyPopulated = function(targetSize){
@@ -2901,10 +2903,79 @@ worker.asyncLoop = function (iterations, func, callback) {
     var spinner = new Spinner(opts).spin(target);
     $(target).data("spinner", spinner);
 
+    //overlay
+    worker.showLoadingOverlay();
+
     worker.refresh();
     var newState = JSON.parse(fr.result);
     worker.populate(newState);
   } 
+
+  // PHIL: loading overlay
+  worker.showLoadingOverlay = function() {
+    $(document).clearQueue();
+    // show overlay - instant
+    $("#instructionOverlay").show();
+    // darken overlay
+    $("#instructionOverlay").animate(
+      {"background-color": "rgba(0,0,0,0.6)"}, 
+      {
+        duration: 500,
+        complete: function() {
+          var opts = {
+              lines: 71 // The number of lines to draw
+            , length: 10 // The length of each line
+            , width: 10 // The line thickness
+            , radius: 80 // The radius of the inner circle
+            , scale: 0.8 // Scales overall size of the spinner
+            , corners: 0.2 // Corner roundness (0..1)
+            , color: '#42999e' // #rgb or #rrggbb or array of colors
+            , opacity: 0.05 // Opacity of the lines
+            , rotate: 0 // The rotation offset
+            , direction: 1 // 1: clockwise, -1: counterclockwise
+            , speed: 0.8 // Rounds per second
+            , trail: 80 // Afterglow percentage
+            , fps: 30 // Frames per second when using setTimeout() as a fallback for CSS
+            , zIndex: 1 // The z-index (defaults to 2000000000)
+            , className: 'spinner' // The CSS class to assign to the spinner
+            , top: '50%' // Top position relative to parent
+            , left: '50%' // Left position relative to parent
+            , shadow: false // Whether to render a shadow
+            , hwaccel: false // Whether to use hardware acceleration
+            , position: 'absolute' // Element positioning
+            }
+          var target = document.getElementById('instructionOverlay');
+          var spinner = new Spinner(opts).spin(target);
+          $(target).data("spinner", spinner);
+          // text
+          $("#loadOverlayText").show();
+        }
+      }
+    );
+  }
+
+  worker.hideLoadingOverlay = function() {
+    $(document).clearQueue();
+    $("#loadOverlayText").fadeOut(200);
+    // remove spinner
+    $(".spinner").fadeOut(
+      {
+        duration: 1,
+        complete: function() {
+          $("#instructionOverlay").data("spinner").stop();
+          $("#instructionOverlay").animate(
+            {"background-color": "rgba(0,0,0,0.0)"},
+            {
+              duration: 500,
+              complete: function() {
+                $("#instructionOverlay").hide();
+              }
+            }
+          );
+        }
+      }
+    )
+  }
 
   worker.snapToGrid = function (parameter){
     return Math.round(parameter / worker.grid) * worker.grid;
@@ -3031,22 +3102,22 @@ $(document).ready(function(){
 
   function showOverlay() {
     $(document).clearQueue();
-      // show overlay - instant
-      $("#instructionOverlay").show();
-      // darken overlay
-      $("#instructionOverlay").animate(
-        {"background-color": "rgba(0,0,0,0.6)"}, 
-        {
-          duration: 500,
-          complete: function() {
-            $("#instructionBox").show();
-            $("#instructionBox").animate(
-              {top: "50%"}, 500
-            );
-          }
+    // show overlay - instant
+    $("#instructionOverlay").show();
+    // darken overlay
+    $("#instructionOverlay").animate(
+      {"background-color": "rgba(0,0,0,0.6)"}, 
+      {
+        duration: 500,
+        complete: function() {
+          $("#instructionBox").show();
+          $("#instructionBox").animate(
+            {top: "50%"}, 500
+          );
         }
-      );
-    }
+      }
+    );
+  }
 
   function hideOverlay() {
     $(document).clearQueue();

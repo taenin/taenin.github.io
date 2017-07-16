@@ -173,6 +173,15 @@ input[type=checkbox]:checked:after {
 		display: none;
 	}
 
+	#loadOverlayText {
+		position: absolute;
+		left: 50%;
+	    top: 50%;
+	    transform: translate(-50%, -50%);
+	    color: #42999e;
+	    font-size: 16pt;
+	}
+
 	#instructionBox {
 		position: absolute;
 	    width: 50%;
